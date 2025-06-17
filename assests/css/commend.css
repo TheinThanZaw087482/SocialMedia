@@ -1,0 +1,325 @@
+.post-section {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    margin-bottom: 15px;
+    padding: 15px;
+    position: relative;
+    max-width: auto;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Post Header styles (no change) */
+.post-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.post-header .profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+    object-fit: cover;
+}
+
+.post-header .user-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.post-header .user-name {
+    font-weight: bold;
+    color: #050505;
+}
+
+.post-header .post-time {
+    font-size: 13px;
+    color: #65676b;
+}
+
+.post-time i {
+    margin-left: 5px;
+}
+
+/* Post Content styles (no change) */
+.post-content p {
+    margin-bottom: 10px;
+    color: #050505;
+}
+
+/* Dropdown menu for post options (no change) */
+.dropdown {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+}
+
+.menu-btn {
+    border: none;
+    background: transparent;
+    padding: 5px;
+    border-radius: 50%;
+}
+
+.menu-btn:hover {
+    background-color: #f0f2f5;
+}
+
+/* Post Interactions Count (Likes and Comments count) (no change) */
+.post-interactions-count {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 7px 5px;
+    color: #65676b;
+    font-size: 13px;
+}
+
+.likes-count a,
+.comments-count a {
+    color: #65676b;
+    text-decoration: none;
+}
+
+.likes-count a:hover,
+.comments-count a:hover {
+    text-decoration: underline;
+}
+
+.likes-count i {
+    color: #1877f2;
+    margin-right: 4px;
+}
+
+/* Post Interactions Buttons (Like, Comment, Share) (no change) */
+.post-interactions-buttons {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 5px 0;
+    margin-top: 5px;
+}
+
+.interaction-button {
+    flex: 1;
+    text-align: center;
+    padding: 8px 12px;
+    cursor: pointer;
+    color: #65676b;
+    font-weight: 600;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.interaction-button:hover {
+    background-color: #f0f2f5;
+}
+
+.interaction-button i {
+    font-size: 16px;
+}
+
+.interaction-button span {
+    font-size: 14px;
+}
+
+/* Comments Section */
+.comments-section {
+    margin-top: 15px;
+    padding: 0 15px;
+}
+
+.comments-sort {
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    color: #65676b;
+    margin-bottom: 15px;
+    cursor: pointer;
+}
+
+.comments-sort .sort-text {
+    font-weight: 600;
+    margin-right: 5px;
+}
+
+.comments-sort i {
+    font-size: 12px;
+}
+
+/* Comment Item (main container for a single comment/reply) */
+/* It can be a top-level comment or a nested reply */
+.comment-item {
+    display: flex;
+    margin-bottom: 15px;
+    /* Space between comments/replies */
+    flex-wrap: wrap;
+    position: relative;
+    /* For the horizontal line segment of replies */
+    z-index: 2;
+    /* Ensure comment content is above lines */
+}
+
+/* Profile pictures within comments */
+.comment-profile-pic {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+    z-index: 1;
+    /* Keep it above lines */
+}
+
+.comment-content-bubble {
+    background-color: #f0f2f5;
+    border-radius: 18px;
+    padding: 8px 12px;
+    font-size: 14px;
+    line-height: 1.3;
+    flex-grow: 1;
+    max-width: calc(100% - 40px);
+}
+
+.comment-author {
+    font-weight: 600;
+    color: #050505;
+    margin-bottom: 2px;
+}
+
+.comment-text {
+    color: #050505;
+    word-wrap: break-word;
+}
+
+.comment-text .tag-user {
+    color: #1877f2;
+    font-weight: 600;
+}
+
+/* Comment actions (Like, Reply, Time, Reactions) */
+.comment-actions {
+    position: relative;
+    left: 0;
+    bottom: 0;
+    margin-top: 5px;
+    margin-left: 40px;
+    /* Aligns with the start of the comment text */
+    font-size: 12px;
+    color: #65676b;
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    align-items: center;
+}
+
+.comment-action-link {
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.comment-action-link:hover {
+    text-decoration: underline;
+}
+
+.comment-action-link.like-button.liked {
+    color: #1877f2;
+    font-weight: 700;
+}
+
+.comment-reactions {
+    display: flex;
+    align-items: center;
+    font-size: 11px;
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 2px 6px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    margin-left: auto;
+}
+
+.comment-reactions .emoji {
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+    margin-left: 2px;
+}
+
+/* NEW: Container for nested replies */
+.replies-container {
+    position: relative;
+    /* For absolute positioning of line */
+    padding-left: 45px;
+    /* Indent the entire replies block for this level */
+    margin-top: -5px;
+    /* Pull replies up slightly to meet parent's line */
+    width: 100%;
+    /* Ensure it takes full width */
+}
+
+/* NEW: Vertical line for *each* replies-container */
+.replies-container::before {
+    content: '';
+    position: absolute;
+    left: 23px;
+    /* Adjust to align with profile pic center of parent *at this level* */
+    top: -20px;
+    /* Start above the first reply in this container */
+    width: 1px;
+    height: calc(100% + 15px);
+    /* Extends to the bottom of the last reply + margin */
+    background-color: #ccc;
+}
+
+/* NEW: Horizontal line segment for each reply */
+/* This applies to *any* comment-item that is inside a replies-container */
+.replies-container>.comment-item::before {
+    content: '';
+    position: absolute;
+    left: -17px;
+    /* Position relative to the reply's content area */
+    top: 15px;
+    /* Vertical position where the horizontal line starts (mid-way of profile pic) */
+    width: 16px;
+    /* Length of the horizontal line */
+    height: 1px;
+    /* Thickness of the horizontal line */
+    background-color: #ccc;
+    /* Color of the horizontal line */
+}
+
+/* Styles for the reply input container */
+.reply-input-container {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+    margin-left: 40px;
+    width: calc(100% - 40px);
+    display: none;
+}
+
+.reply-input-container .profile-pic {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 8px;
+    object-fit: cover;
+}
+
+.reply-input-container input[type="text"] {
+    flex-grow: 1;
+    border: none;
+    background-color: #f0f2f5;
+    border-radius: 18px;
+    padding: 8px 12px;
+    font-size: 14px;
+    outline: none;
+}
