@@ -423,7 +423,7 @@ document.addEventListener('DOMContentLoaded', function () {
             clearInterval(fetchMessagesIntervalId);
         }
         fetchMessages(); // Fetch messages immediately
-        // fetchMessagesIntervalId = setInterval(fetchMessages, 2000); // Start polling for new messages
+        fetchMessagesIntervalId = setInterval(fetchMessages, 2000); // Start polling for new messages
 
         if (window.innerWidth <= 768) {
             closeContactListColumn();

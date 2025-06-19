@@ -3,6 +3,10 @@ session_start();
 include("../includes/db.php");
 include("../includes/get_users.php");
 
+// Get the logged-in user's information from the session
+$myUserId = $_SESSION['userid'] ?? 'my_user_id'; // Fallback for testing if session not set
+$myUserName = $_SESSION['username'] ?? 'Me'; // Assuming you have username in session
+$myProfileImage = $_SESSION['profileImagePath'] ?? 'https://placehold.co/45x45'; // Assuming profile image path
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -11,11 +15,28 @@ include("../includes/get_users.php");
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Metro Chat</title>
-    <script src="https://download.agora.io/sdk/release/AgoraRTC_N.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assests/css/messanger.css">
+    <style>
+        /* ... (your existing styles) ... */
+        .video-call-ui p {
+            font-size: 18px;
+            margin-top: -10px;
+            margin-bottom: 30px;
+        }
+
+        .modal {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .video-call-ui button {
+            width: 60px;
+            height: 60px;
+            font-size: 20px;
+        }
+    </style>
 </head>
 
 <body>
@@ -43,20 +64,19 @@ include("../includes/get_users.php");
                 <input type="text" id="searchInput" placeholder="Search">
             </div>
 
-
-
-
             <ul class="chat-users" id="chatUsers">
                 <?php
                 $users = get_all_users();
                 foreach ($users as $user) {
                     if ($user['userid'] != $_SESSION['userid']) {
-
                 ?>
-
-                        <li class="contact-item active" data-user-id="<?php echo $user['userid'] ?>" data-user-name="<?php echo $user['name'] ?>" data-user-status="Active now">
+                        <li class="contact-item active" data-user-id="<?php echo $user['userid'] ?>"
+                            data-user-name="<?php echo htmlspecialchars($user['name']) ?>"
+                            data-user-image="<?php echo htmlspecialchars($user['ProfileimagePath']) ?>"
+                            data-user-status="Active now">
                             <div class="contact-avatar">
-                                <img src="../assests/images/post_images/<?php echo $user['ProfileimagePath'] ?>" alt="Judi Avatar">
+                                <img src="../assests/images/post_images/<?php echo $user['ProfileimagePath'] ?>"
+                                    alt="User Avatar">
                                 <span class="status-dot online"></span>
                             </div>
                             <div class="contact-info">
@@ -65,11 +85,9 @@ include("../includes/get_users.php");
                             </div>
                             <div class="timestamp">21 Apr</div>
                         </li>
-
                 <?php
                     }
                 }
-
                 ?>
             </ul>
         </div>
@@ -85,7 +103,10 @@ include("../includes/get_users.php");
                 </div>
                 <div class="header-icons">
                     <i class="fas fa-phone-alt"></i>
-                    <i class="fas fa-video" id="callButton" style="cursor: pointer;"></i> <button id="hangupButton" class="btn btn-danger ms-3" style="display: none;"><i class="fas fa-phone-slash"></i> Hang Up</button> <i class="fas fa-info-circle" id="infoIcon"></i>
+                    <i class="fas fa-video" id="callButton" style="cursor: pointer;"></i>
+                    <button id="hangupButton" class="btn btn-danger ms-3" style="display: none;"><i
+                            class="fas fa-phone-slash"></i> Hang Up</button>
+                    <i class="fas fa-info-circle" id="infoIcon"></i>
                 </div>
             </div>
             <div class="message-list" id="messageList">
@@ -154,7 +175,8 @@ include("../includes/get_users.php");
                 </div>
                 <div class="option-section">
                     <h4>Shared Media</h4>
-                    <div style="height: 100px; background-color: #3a3a3a; display: flex; align-items: center; justify-content: center; color: #aaaaaa;">
+                    <div
+                        style="height: 100px; background-color: #3a3a3a; display: flex; align-items: center; justify-content: center; color: #aaaaaa;">
                         (Shared Media Gallery)
                     </div>
                 </div>
@@ -162,33 +184,107 @@ include("../includes/get_users.php");
         </div>
     </div>
 
-    <div id="videoCallModal" class="modal">
-        <div class="video-call-container">
-            <div class="main-video-area">
-                <video id="mainVideo" autoplay playsinline></video>
-            </div>
-            <div class="pip-video-area">
-                <video id="pipVideo" autoplay playsinline muted></video>
-            </div>
-            <div class="control-bar">
-                <button id="micToggle">
-                    <i class="fas fa-microphone"></i>
-                </button>
-                <button id="videoToggle">
+    <div id="videoCallModal" class="modal" style="display: none;">
+        <div class="video-call-ui d-flex flex-column align-items-center justify-content-center"
+            style="background-color: rgba(0,0,0,0.85); width: 100vw; height: 100vh; position: fixed; top: 0; left: 0; z-index: 1000;">
+            <img id="callUserImage" src="https://placehold.co/100x100" class="rounded-circle mb-3"
+                style="width: 170px; height: 170px; object-fit: cover; border: 3px solid white;" alt="User Image">
+            <h4 id="callUserName" class="text-white mb-1"></h4>
+            <p class="text-white mb-4" style="font-weight: 300;">Calling...</p>
+            <div class="d-flex gap-4">
+                <button id="toggleVideoBtnModal" class="btn btn-light rounded-circle">
                     <i class="fas fa-video"></i>
                 </button>
-                <button id="screenShare">
-                    <i class="fas fa-desktop"></i>
+                <button id="toggleMicBtnModal" class="btn btn-light rounded-circle">
+                    <i class="fas fa-microphone"></i>
                 </button>
-                <button id="endCall">
-                    <i class="fas fa-phone-slash"></i>
+                <button id="cancelCallBtnModal" class="btn btn-danger rounded-circle">
+                    <i class="fas fa-phone"></i>
                 </button>
             </div>
         </div>
     </div>
 
     <script>
-        window.myUserId = "<?php echo htmlspecialchars($_SESSION['userid']); ?>";
+        // PHP variables made available in JavaScript
+        window.myUserId = "<?php echo htmlspecialchars($myUserId); ?>";
+        window.myUserName = "<?php echo htmlspecialchars($myUserName); ?>";
+        window.myProfileImage = "<?php echo htmlspecialchars($myProfileImage); ?>";
+    </script>
+
+    <script>
+        const videoIcon = document.getElementById("callButton");
+        const videoCallModal = document.getElementById("videoCallModal");
+        const cancelCallBtnModal = document.getElementById("cancelCallBtnModal");
+        const micBtnModal = document.getElementById("toggleMicBtnModal");
+        const videoBtnModal = document.getElementById("toggleVideoBtnModal");
+
+        let micEnabledModal = true;
+        let videoEnabledModal = true;
+
+        function setCallUserInfo(name, imageUrl) {
+            document.getElementById("callUserName").textContent = name;
+            document.getElementById("callUserImage").src = imageUrl;
+        }
+
+        videoIcon.addEventListener("click", () => {
+            const activeContactItem = document.querySelector('.contact-item.active');
+            let targetUserId = null;
+            let targetUserName = "Unknown";
+            let targetUserImage = "https://placehold.co/100x100"; // Default image
+
+            if (activeContactItem) {
+                targetUserId = activeContactItem.dataset.userId;
+                targetUserName = activeContactItem.dataset.userName;
+                targetUserImage = `../assests/images/post_images/${activeContactItem.dataset.userImage}`; // Get full path
+            } else {
+                alert("Please select a user to call.");
+                return;
+            }
+
+            if (!targetUserId) {
+                alert("Could not determine recipient for the call.");
+                return;
+            }
+
+            // Set info in the "calling..." modal
+            setCallUserInfo(targetUserName, targetUserImage);
+            videoCallModal.style.display = "flex"; // Show the "calling..." modal
+
+            // Simulate a short delay before redirecting to the actual video call page
+            // In a real application, you'd send a signaling message here and wait for acceptance
+            // before redirecting.
+            setTimeout(() => {
+                // Redirect to video-call.php with necessary parameters for ZEGOCLOUD Call Kit
+                // roomID: A unique identifier for the call (e.g., sorted combination of user IDs)
+                // userID: Your user ID
+                // userName: Your user name
+                // targetUserID: The person you are calling
+                // targetUserName: The person you are calling's name
+                // targetUserImage: The person you are calling's image
+                const roomID = [window.myUserId, targetUserId].sort().join('_');
+                const redirectUrl = `video-call.php?roomID=${roomID}&userID=${window.myUserId}&userName=${encodeURIComponent(window.myUserName)}&targetUserID=${targetUserId}&targetUserName=${encodeURIComponent(targetUserName)}&targetUserImage=${encodeURIComponent(targetUserImage)}&myProfileImage=${encodeURIComponent(window.myProfileImage)}`;
+                window.location.href = redirectUrl;
+            }, 2000); // Show "calling..." for 2 seconds before redirecting
+        });
+
+        // Event listener for the "End Call" button inside the modal (before redirection)
+        cancelCallBtnModal.addEventListener("click", () => {
+            videoCallModal.style.display = "none";
+            // If you had a signaling mechanism, you'd cancel the call request here.
+        });
+
+        micBtnModal.addEventListener("click", () => {
+            micEnabledModal = !micEnabledModal;
+            micBtnModal.innerHTML = `<i class="fas fa-microphone${micEnabledModal ? '' : '-slash'}"></i>`;
+            // This only updates the icon in the modal. Actual mic state will be handled in video-call.php
+        });
+
+        videoBtnModal.addEventListener("click", () => {
+            videoEnabledModal = !videoEnabledModal;
+            videoBtnModal.innerHTML = `<i class="fas fa-video${videoEnabledModal ? '' : '-slash'}"></i>`;
+            // This only updates the icon in the modal. Actual video state will be handled in video-call.php
+        });
     </script>
     <script src="../assests/js/messanger.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
