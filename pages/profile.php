@@ -69,22 +69,21 @@ $user = get_user_by_userID($_SESSION['userid']);
 
                 <div class="profile-actions">
                     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMyDay">
-                            Add to story
-                        </button>
+                        Add to story
+                    </button>
 
-                        <!-- Modal -->
-                        <div class="modal fade" id="addMyDay" tabindex="-1" aria-hidden="true">
+                    <!-- Modal -->
+                    <div class="modal fade" id="addMyDay" tabindex="-1" aria-hidden="true">
+                        <form id="storyUploadForm">
                             <div class="modal-dialog modal-dialog-centered custom-modal-size">
                                 <div class="modal-content">
 
-                                    <!-- Modal Header -->
                                     <div class="modal-header border-0">
                                         <h5 class="modal-title" id="modal-title">Create Story</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                             aria-label="Close"></button>
                                     </div>
 
-                                    <!-- Modal Body -->
                                     <div class="modal-body">
                                         <label for="imageInput">
                                             <img src="../assests/images/icon/gallery-icon.png" class="gallery-icon"
@@ -94,19 +93,18 @@ $user = get_user_by_userID($_SESSION['userid']);
 
                                         <div class="story-area">
                                             <img id="imagePreview" style="display: none;" />
-                                            <textarea class="story-textarea" placeholder="Write here"></textarea>
-                                            <button id="removeImageBtn" title="Remove image">&times;</button>
+                                            <textarea class="story-textarea" id="storyTextArea" placeholder="Write here"></textarea>
+                                            <button id="removeImageBtn" type="button" title="Remove image">&times;</button>
                                         </div>
                                     </div>
 
-                                    <!-- Modal Footer -->
                                     <button type="button" class="custom-upload-btn" id="uploadBtn">
                                         Upload Story
                                     </button>
                                 </div>
                             </div>
-                        </div>
-
+                        </form>
+                    </div>
                     <button class="btn btn-edit" data-bs-toggle="modal" data-bs-target="#editProfileModal">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-fill me-2" viewBox="0 0 16 16">
                             <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 15.5v.5H.5a.5.5 0 0 1-.5-.5V.5a.5.5 0 0 1 .5-.5h5.5a.5.5 0 0 1 0 1H1v14h14V9.5a.5.5 0 0 1 1 0v6a.5.5 0 0 1-.5.5H6.018a.5.5 0 0 1-.458.307z" />
@@ -145,7 +143,7 @@ $user = get_user_by_userID($_SESSION['userid']);
 
                                         <div class="mb-2">
                                             <label for="profileBirthday" class="form-label">Birthday</label>
-                                            <input type="date" class="form-control" name="profileBirthday" id="profileBirthday" value="<?php echo $user['birthdate'];?>">
+                                            <input type="date" class="form-control" name="profileBirthday" id="profileBirthday" value="<?php echo $user['birthdate']; ?>">
                                         </div>
                                 </div>
                                 <div class="modal-footer">
@@ -199,32 +197,8 @@ $user = get_user_by_userID($_SESSION['userid']);
     </div>
 
     <script src="../assests/js/script.js"></script>
+    <script src="../assests/js/story.js"></script>
 
-    <script src="../assests/js/script.js"></script>
-        <script>
-            const imageInput = document.getElementById('imageInput');
-            const imagePreview = document.getElementById('imagePreview');
-
-            imageInput.addEventListener('change', function () {
-                const file = this.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        imagePreview.src = e.target.result;
-                        imagePreview.style.display = 'block';
-                        removeImageBtn.style.display = 'block';
-                    }
-                    reader.readAsDataURL(file);
-                }
-            });
-
-            removeImageBtn.addEventListener('click', function () {
-                imagePreview.src = '';
-                imagePreview.style.display = 'none';
-                removeImageBtn.style.display = 'none';
-                imageInput.value = null;
-            });
-        </script>
 
 </body>
 

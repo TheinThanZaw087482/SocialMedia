@@ -70,7 +70,5 @@ function renderGallery($images) {
         echo '<div class="image-gallery single-image">';
         echo '<img src="../assests/images/post_images/' . htmlspecialchars($images[0]['img_url']) . '" alt="Single Post Image">';
         echo '</div>';
-    } else {
-        echo '<p>No images found.</p>';
     }
 }

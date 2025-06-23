@@ -253,11 +253,6 @@ include("../includes/image_gallery.php");
         }
 
         /* Inside your <style> tags or your custom CSS file */
-        .story-card.story-bg-benjamin {
-            background: url('../assests/images/post_images/story-img-3.jpg') center/cover no-repeat;
-            /* Ensure the existing placeholder background for this specific card is overridden or removed */
-            /* If you have: .story-card:nth-child(2) { background: url('...') } then this new rule will override it */
-        }
 
         /* story modal for reaction buttons */
         .reactions-container {
@@ -373,21 +368,29 @@ include("../includes/image_gallery.php");
                 <span>Add Your Story</span>
             </div>
 
-            <div class="story-card story-bg-benjamin" data-bs-toggle="modal" data-bs-target="#storyModal" data-story-image="../assests/images/post_images/story-img-3.jpg" data-story-name="Benjamin Martinez">
-                <img src="../assests/images/post_images/story-img-3.jpg" alt="Benjamin Martinez" class="story-avatar">
-                <span class="story-name">Benjamin Martinez</span>
-            </div>
+            <?php
+            $all_story = get_all_story(); // Ensure this function returns an array of associative arrays for each story
 
-            <div class="story-card story-bg-benjamin" data-bs-toggle="modal" data-bs-target="#storyModal" data-story-image="../assests/images/post_images/story-img-4.jpg" data-story-name="Benjamin Martinez">
-                <img src="../assests/images/post_images/story-img-4.jpg" alt="Benjamin Martinez" class="story-avatar">
-                <span class="story-name">Benjamin Martinez</span>
-            </div>
+            foreach ($all_story as $story) {
+                // Make sure your database query for get_all_story() includes a 'name' or 'title' column.
+                // For example, if your column is named 'story_name':
+                $storyName = htmlspecialchars($story['content'] ?? 'Untitled Story'); // Use null coalescing to provide a default if 'story_name' is missing or null
+                $storyImagePath = htmlspecialchars($story['imagePath'] ?? ''); // Sanitize image path too
 
-            <div class="story-card story-bg-benjamin" data-bs-toggle="modal" data-bs-target="#storyModal" data-story-image="../assests/images/post_images/story-img-1.jpg" data-story-name="Benjamin Martinez">
-                <img src="../assests/images/post_images/story-img-6.jpg" alt="Benjamin Martinez" class="story-avatar">
-                <span class="story-name">Benjamin Martinez</span>
-            </div>
-
+                if (!empty($storyImagePath)) { // Check if imagePath is not empty
+            ?>
+                    <div class="story-card story-bg-benjamin"
+                        data-bs-toggle="modal"
+                        data-bs-target="#storyModal"
+                        data-story-image="../assests/images/story_images/<?php echo $storyImagePath; ?>"
+                        data-story-name="<?php echo $storyName; ?>" style="background: url(../assests/images/story_images/<?php echo $storyImagePath; ?>);">
+                        <img src="../assests/images/story_images/<?php echo $storyImagePath; ?>" alt="<?php echo $storyName; ?>" class="story-avatar">
+                        <span class="story-name"><?php echo $storyName; ?></span>
+                    </div>
+            <?php
+                }
+            }
+            ?>
 
         </div>
 

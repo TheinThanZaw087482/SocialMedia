@@ -126,7 +126,14 @@ function getCoverPhotoByID($userid)
         return 'porfileimage.png';
     }
 }
+function newstory(){
+    global $conn;
+    if(!isset($_SESSION['userid'])){
+        echo "<scirpt>alert('Please log in to Story') window.location.href='../index.php';</script>";
+        exit();
+    }
 
+}
 
 function newpost()
 {

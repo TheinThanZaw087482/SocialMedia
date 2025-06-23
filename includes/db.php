@@ -1,7 +1,7 @@
 <?php
 
-// // If you're testing on localhost and not using environment variables,
-// // you should directly assign the values (NOT using getenv()).
+// If you're testing on localhost and not using environment variables,
+// you should directly assign the values (NOT using getenv()).
 
 // $host = 'mysql-metromedia.alwaysdata.net'; // Alwaysdata's MySQL host
 // $username = '419038_theinthan'; // Your Alwaysdata username
