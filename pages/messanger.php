@@ -43,15 +43,19 @@ $myProfileImage = $_SESSION['profileImagePath'] ?? 'https://placehold.co/45x45';
 
     <div class="chat-container">
         <div class="global-sidebar" id="globalSidebar">
-            <div class="search-global">
-                <input type="text" placeholder="Search Messenger">
-            </div>
             <ul class="global-nav">
-                <li><a href="#"><i class="fas fa-comment"></i></a></li>
-                <li><a href="#"><i class="fas fa-users"></i></a></li>
-                <li><a href="#"><i class="fas fa-compass"></i></a></li>
-                <li><a href="#"><i class="fas fa-bell"><span class="badge">5</span></i></a></li>
-                <li><a href="#"><i class="fas fa-user-circle"></i></a></li>
+                <li class="nav-item"><a class="nav-link" href="../pages/Dashboard.php"><i
+                            class="fa-solid fa-house"></i></a></li>
+
+                <li><a class="nav-link" href="../pages/friend-add.php" title="Friends">
+                        <i class="fa-solid fa-user-group" style="font-size: 1.5rem; color: #fff;"></i>
+                    </a></li>
+                <li><a class="nav-link" href="../pages/profile.php" title="User">
+                        <i class="fa-solid fa-circle-user" style="font-size: 1.5rem; color: #fff;"></i>
+                    </a></li>
+                <li> <a class="nav-link" href="../pages/setting.php" title="Settings">
+                        <i class="fa-solid fa-gear" style="font-size: 1.5rem; color: #fff;"></i>
+                    </a></li>
             </ul>
         </div>
 

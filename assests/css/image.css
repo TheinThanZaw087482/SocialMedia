@@ -153,89 +153,66 @@ h1 {
     height: 150px; /* Height for bottom row images */
 }
 
-/* Six Images (Two top, four bottom - or similar configurations) */
-.image-gallery.six-images {
-    flex-direction: column; /* This still stacks the top row and the bottom row */
-}
-
-.image-gallery.six-images .top-row,
-.image-gallery.six-images .bottom-row {
-    display: flex;
-    gap: 5px;
-    width: 100%;
-}
-
-.image-gallery.six-images .top-row {
-    margin-bottom: 5px;
-}
-
-.image-gallery.six-images .top-row img {
-    flex: 1 1 calc(50% - 2.5px); /* Two images in top row */
-    height: 250px;
-}
-
-.image-gallery.six-images .bottom-row img {
-    flex: 1 1 calc(25% - 3.75px); /* Four images in bottom row, maintains side-by-side */
-    height: 120px; /* Adjust height for more images in a row */
-}
-
-/* More than 6 images (with overlay) */
-.image-gallery.more-than-six-images {
-    flex-direction: column; /* This still stacks the top row and the bottom row */
-}
-
-.image-gallery.more-than-six-images .top-row,
-.image-gallery.more-than-six-images .bottom-row {
-    display: flex;
-    gap: 5px;
-    width: 100%;
-}
-
-.image-gallery.more-than-six-images .top-row {
-    margin-bottom: 5px;
-}
-
-.image-gallery.more-than-six-images .top-row img {
-    flex: 1 1 calc(50% - 2.5px);
-    height: 250px;
-}
-
-.image-gallery.more-than-six-images .bottom-row img {
-    flex: 1 1 calc(25% - 3.75px); /* Four images in bottom row, maintains side-by-side */
-    height: 120px;
-}
-
-.image-gallery.more-than-six-images .image-overlay {
+.image-overlay {
     position: relative;
-    flex: 1 1 calc(25% - 3.75px);
-    height: 120px;
-    overflow: hidden;
-    border-radius: 8px;
+    display: inline-block;
 }
 
-.image-gallery.more-than-six-images .image-overlay img {
-    filter: brightness(50%);
-    height: 100%;
+.image-overlay img {
+    display: block;
     width: 100%;
-    transform: none;
-}
-.image-gallery.more-than-six-images .image-overlay img:hover {
-    transform: none;
 }
 
-.image-gallery.more-than-six-images .overlay-text {
+.overlay-text {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     color: white;
-    font-size: 2em;
-    font-weight: bold;
-    text-shadow: 0 0 5px rgba(0,0,0,0.5);
-    z-index: 10;
-    pointer-events: none;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    pointer-events: none; /* ✅ THIS LINE ensures click passes through */
 }
 
+.image-modal {
+  display: flex; /* Initially hidden */
+  position: fixed; /* Position relative to the viewport */
+  top: 50%; /* Start at 50% from the top */
+  left: 50%; /* Start at 50% from the left */
+  width: 50%; /* Set width to 50% of the viewport */
+  height: 60%; /* Set height to 60% of the viewport */
+  transform: translate(-50%, -50%); /* Crucially, shift it back by half its own width/height to truly center it */
+  background: rgba(0,0,0,0.9);
+  /* Use flexbox to center the *content* (the image) within this 50%x60% modal */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.image-modal img {
+  max-width: 80%; /* Image max-width relative to the modal's width */
+  max-height: 80%; /* Image max-height relative to the modal's height */
+  border-radius: 8px;
+}
+
+/* IMPORTANT CHANGE FOR CLOSE BUTTON */
+#closeBtn {
+  position: fixed; /* Make it fixed to the viewport */
+  top: 20px; /* Positions 20px from the top of the viewport */
+  right: 20px; /* Positions 20px from the right of the viewport */
+  font-size: 24px;
+  background: red;
+}
+#nextBtn {
+  right: 5%;
+  top: 50%;
+  transform: translateY(-50%);
+}
 /* ====================================================================== */
 /* RESPONSIVENESS (Adjusted to PREVENT stacking)                       */
 /* ====================================================================== */
@@ -305,12 +282,20 @@ h1 {
         flex: 1 1 calc(50% - 2.5px); /* Maintain two columns */
         min-width: 80px;
     }
-    .image-gallery.six-images .bottom-row img,
-    .image-gallery.more-than-six-images .bottom-row img,
-    .image-gallery.more-than-six-images .image-overlay {
+    .image-gallery.fives-images .bottom-row img,
+    .image-gallery.more-than-five-images .bottom-row img,
+    .image-gallery.more-than-five-images .image-overlay {
         flex: 1 1 calc(25% - 3.75px); /* Maintain four columns */
         min-width: 50px; /* Even smaller min-width for 4-column on mobile */
     }
+
+    .hidden {
+  visibility: hidden;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  position: absolute;
+}
 
     .image-gallery.more-than-six-images .overlay-text {
         font-size: 1.5em; /* Adjust overlay text size */

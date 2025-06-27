@@ -85,8 +85,12 @@ document.addEventListener('DOMContentLoaded', function () {
             return `<img src="${fullImageUrl}" alt="Image" class="chat-image" onclick="window.open('${fullImageUrl}', '_blank')">`;
         } else if (type === 'file' && url) {
             const fullFileUrl = url.startsWith('/') ? url : `../${url}`;
+            // You might want to display the original file name instead of `text` here
+            // If `text` is meant to be a caption, then keep it.
+            // For files, 'text' is often just the filename or "File sent"
+            // Consider passing the original filename from the server for better display.
             return `<a href="${fullFileUrl}" target="_blank" class="chat-file-link">
-                        <i class="fas fa-file"></i> ${text}
+                        <i class="fas fa-file"></i> ${text || 'Download File'}
                     </a>`;
         }
         return text; // For text messages
@@ -130,25 +134,28 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         const shouldAutoScroll = isUserAtBottom(messageList);
-
-        // Optional: remember previous scroll height to restore if needed
-        const previousScrollHeight = messageList.scrollHeight;
+        // const previousScrollHeight = messageList.scrollHeight; // Not strictly needed if re-rendering all
 
         fetch(`../process/get_messages.php?receiver_id=${currentReceiverId}&my_user_id=${myUserId}`)
             .then(res => {
                 if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
                 return res.json();
             })
-            .then(data => {
-                if (data.status === 'error' && data.message === 'Authentication required.') {
-                    window.location.href = '../login.php';
-                    return;
+            .then(response => { // Changed 'data' to 'response' for clarity
+                if (response.status === 'error') {
+                    console.error("Server error fetching messages:", response.message);
+                    if (response.message === 'Authentication required.') {
+                        window.location.href = '../login.php';
+                    }
+                    return; // Stop processing on error
                 }
 
+                const messages = response.messages || []; // Access the 'messages' array
                 messageList.innerHTML = ""; // Clear old messages
+
                 let latestMessageContent = '';
 
-                data.forEach(msg => {
+                messages.forEach(msg => { // Iterate over response.messages
                     const messageElement = createMessageElement(
                         msg.message,
                         msg.sender_id,
@@ -158,18 +165,24 @@ document.addEventListener('DOMContentLoaded', function () {
                         msg.file_url || null
                     );
                     messageList.prepend(messageElement);
-                    latestMessageContent = msg.message;
+                    // For last message preview, use the actual message content or indicate file type
+                    latestMessageContent = msg.message_type === 'text' ? msg.message :
+                        (msg.message_type === 'image' ? '📷 Image' :
+                            (msg.message_type === 'video' ? '🎬 Video' : '📄 File'));
                 });
 
-                if (latestMessageContent) {
-                    updateLastMessagePreview(currentReceiverId, latestMessageContent);
+                if (messages.length > 0) { // Only update preview if there are messages
+                    // Get the *truly* latest message for the preview
+                    const actualLatestMessage = messages[messages.length - 1]; // Because of prepend, the actual latest is the last in the array
+                    const previewText = actualLatestMessage.message_type === 'text' ? actualLatestMessage.message :
+                        (actualLatestMessage.message_type === 'image' ? '📷 Image' :
+                            (actualLatestMessage.message_type === 'video' ? '🎬 Video' : '📄 File'));
+                    updateLastMessagePreview(currentReceiverId, previewText);
                 }
 
-                // 👇 Scroll only if the user was already at the bottom (top in column-reverse)
                 if (shouldAutoScroll) {
                     messageList.scrollTop = 0;
                 }
-                // ❌ Otherwise, do nothing — let the user keep reading old messages
             })
             .catch(err => console.error("Error fetching messages:", err));
     }
@@ -178,19 +191,26 @@ document.addEventListener('DOMContentLoaded', function () {
     function sendMessage() {
         const text = messageInput.value.trim();
         if (text === "" || !currentReceiverId || !myUserId) {
-            return;
+            return; // Prevents sending empty text messages
         }
 
         // Optimistically add the message to the UI
-        const userMessageElement = createMessageElement(text, myUserId, 'Me');
+        const userMessageElement = createMessageElement(text, myUserId, 'Me', '', 'text', null); // Explicitly 'text' type
         messageList.prepend(userMessageElement);
         scrollToBottom(messageList);
-        messageInput.value = "";
+        messageInput.value = ""; // Clear input immediately
 
-        fetch("../process/send_message.php", { // <<< ADJUST PATH IF NECESSARY
+        fetch("../process/send_message.php", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ receiver_id: currentReceiverId, sender_id: myUserId, message: text }), // sender_id is technically redundant if server uses session
+            // Ensure message_type is 'text' and file_url is null for text messages
+            body: JSON.stringify({
+                receiver_id: currentReceiverId,
+                sender_id: myUserId, // Server should ideally use session ID for sender
+                message: text,
+                message_type: 'text', // Explicitly set type
+                file_url: null        // Explicitly set null
+            }),
         })
             .then(res => {
                 if (!res.ok) {
@@ -203,11 +223,12 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(data => {
                 console.log("Server response:", data);
                 if (data.status === 'success') {
-                    updateLastMessagePreview(currentReceiverId, text);
-                    // No need to call fetchMessages() here, polling handles it.
+                    // The polling (fetchMessages) will update the UI and last message preview,
+                    // so no need to call updateLastMessagePreview here immediately for text.
+                    // It will be updated when the message is confirmed by the server poll.
                 } else {
                     console.error("Server reported error sending message:", data.message);
-                    // Optionally, remove the optimistically added message or mark it as failed
+                    // Optionally, give visual feedback about the sending failure
                 }
             })
             .catch(err => {
@@ -219,49 +240,111 @@ document.addEventListener('DOMContentLoaded', function () {
     function sendFile(file, receiverId, messageType) {
         if (!receiverId || !myUserId) {
             console.error("Cannot send file: Receiver not selected or myUserId is missing.");
+            alert("Please select a contact before sending a file."); // Provide user feedback
             return;
         }
 
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('receiver_id', receiverId);
-        // formData.append('sender_id', myUserId); // Sender ID is taken from session on server
+        if (!file) {
+            console.error("No file selected.");
+            return;
+        }
 
-        // Optimistically add a placeholder message to the UI
-        const placeholderText = messageType === 'image' ? `Sending image: ${file.name}` : `Sending file: ${file.name}`;
-        const placeholderMessageElement = createMessageElement(placeholderText, myUserId, 'Me');
+        // Display a temporary UI indicator that upload is in progress
+        const tempFileName = file.name;
+        const placeholderText = messageType === 'image' ? `📷 Sending image: ${tempFileName}` : `📄 Sending file: ${tempFileName}`;
+        const placeholderMessageElement = createMessageElement(placeholderText, myUserId, 'Me', '', 'text', null); // Use 'text' for placeholder
         messageList.prepend(placeholderMessageElement);
         scrollToBottom(messageList);
 
 
-        fetch("../process/upload_file.php", { // <<< ADJUST PATH IF NECESSARY
+        const formData = new FormData();
+        formData.append('file', file);
+        // No need to append receiver_id or sender_id here, as upload_file.php should only handle the file itself.
+        // The main send_message.php will receive these.
+
+        fetch("../process/upload_file.php", { // Make sure this path is correct
             method: "POST",
             body: formData,
         })
             .then(response => {
                 if (!response.ok) {
-                    return response.text().then(errorText => {
-                        throw new Error(`HTTP error! status: ${response.status}, Response: ${errorText}`);
+                    // Attempt to parse error as JSON first, then plain text
+                    return response.json().catch(() => response.text()).then(errorContent => {
+                        const errorMessage = typeof errorContent === 'object' && errorContent.message
+                            ? errorContent.message
+                            : (typeof errorContent === 'string' ? errorContent : `Unknown error (HTTP ${response.status})`);
+                        throw new Error(`File upload failed: ${errorMessage}`);
                     });
                 }
                 return response.json();
             })
             .then(data => {
                 console.log('Upload response:', data);
-                if (data.status === 'success') {
-                    // Replace placeholder or let polling update
-                    // For now, remove placeholder and rely on next fetchMessages poll
-                    messageList.removeChild(placeholderMessageElement);
-                    updateLastMessagePreview(currentReceiverId, messageType === 'image' ? 'Image sent' : 'File sent');
+                if (data.status === 'success' && data.file_url) {
+                    // File successfully uploaded to the server
+                    const uploadedFileUrl = data.file_url;
+                    const actualMessageType = data.message_type || messageType; // Use type from server if provided
+
+                    // Now, send a message to the database via send_message.php
+                    fetch("../process/send_message.php", { // Make sure this path is correct
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            receiver_id: currentReceiverId,
+                            sender_id: myUserId, // Server should ideally use session ID for sender
+                            message: tempFileName, // Use filename as the message content/caption
+                            message_type: actualMessageType,
+                            file_url: uploadedFileUrl
+                        }),
+                    })
+                        .then(res => {
+                            if (!res.ok) {
+                                return res.text().then(errorText => {
+                                    throw new Error(`HTTP error! status: ${res.status}, Response: ${errorText}`);
+                                });
+                            }
+                            return res.json();
+                        })
+                        .then(sendData => {
+                            console.log("Message record response:", sendData);
+                            if (sendData.status === 'success') {
+                                // Message record saved. The polling will refresh the chat.
+                                // Remove the placeholder now that the actual message will appear
+                                if (placeholderMessageElement && messageList.contains(placeholderMessageElement)) {
+                                    messageList.removeChild(placeholderMessageElement);
+                                }
+                                // Update last message preview to reflect the sent file
+                                updateLastMessagePreview(currentReceiverId, actualMessageType === 'image' ? '📷 Image' : '📄 File');
+                            } else {
+                                alert("Failed to record message in database: " + sendData.message);
+                                console.error("Server reported error saving message record:", sendData.message);
+                                if (placeholderMessageElement && messageList.contains(placeholderMessageElement)) {
+                                    messageList.removeChild(placeholderMessageElement); // Remove placeholder on DB failure
+                                }
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error sending file message record to DB:', error);
+                            alert("An error occurred while saving the file message. Please try again.");
+                            if (placeholderMessageElement && messageList.contains(placeholderMessageElement)) {
+                                messageList.removeChild(placeholderMessageElement); // Remove placeholder on network error
+                            }
+                        });
+
                 } else {
-                    alert("File upload failed: " + data.message);
-                    messageList.removeChild(placeholderMessageElement); // Remove placeholder on failure
+                    alert("File upload failed: " + (data.message || "Unknown error."));
+                    console.error("Upload failed with data:", data);
+                    if (placeholderMessageElement && messageList.contains(placeholderMessageElement)) {
+                        messageList.removeChild(placeholderMessageElement); // Remove placeholder on upload failure
+                    }
                 }
             })
             .catch(error => {
-                console.error('Error uploading file:', error);
+                console.error('Error during file upload:', error);
                 alert("An error occurred during file upload.");
-                messageList.removeChild(placeholderMessageElement); // Remove placeholder on network error
+                if (placeholderMessageElement && messageList.contains(placeholderMessageElement)) {
+                    messageList.removeChild(placeholderMessageElement); // Remove placeholder on network error
+                }
             });
 
         popupMenu.style.display = "none"; // Close popup after selection

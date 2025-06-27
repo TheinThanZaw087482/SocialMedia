@@ -360,6 +360,65 @@ $currentUserID = isset($_SESSION['userid']) ? $_SESSION['userid'] : '';
             margin-top: 2px;
             padding: 10px;
         }
+        .image-modal {
+  display: none; /* hidden by default */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 50%;
+  height: 60%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.9);
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  flex-direction: row;
+  gap: 10px;
+  padding: 10px;
+}
+/* Optional: Adjust for very narrow screens */
+@media (max-width: 480px) {
+  .image-modal {
+     
+    width: 50%;
+    height: 20%;
+    gap: 4%;
+    padding: 4%;
+    border-radius: 2%;
+  }
+}
+
+.image-modal img {
+  max-width: 80%;
+  max-height: 80%;
+  border-radius: 8px;
+}
+
+.nav-button {
+  position: absolute;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 2rem;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+.close-btn {
+  top: 10px;
+  right: 15px;
+}
+
+.prev-btn {
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.next-btn {
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);}
     </style>
 </head>
 
@@ -508,8 +567,8 @@ $currentUserID = isset($_SESSION['userid']) ? $_SESSION['userid'] : '';
                                 <?php } ?>
                             </ul>
                         </div>
-                        <?php $images = getImagesByPostId($conn, $row['postID']); ?>
-                        <?php renderGallery($images); ?>
+                         <?php $images = getImagesByPostId($conn, $row['postID']); ?>
+                            <?php renderGallery($images, $row['postID']); ?>
 
                         <div class="post-interactions-count">
                             <a href="#" data-bs-toggle="modal" data-bs-target="#reactionModal"
@@ -714,6 +773,17 @@ $currentUserID = isset($_SESSION['userid']) ? $_SESSION['userid'] : '';
                 </div>
             </div>
         </div>
+
+        <div id="image-Modal" class="image-modal" style="display:none;">
+  <button id="closeBtn" class="nav-button close-btn">&times;</button>
+  <button id="prevBtn" class="nav-button prev-btn">&#10094;</button>
+  <img id="modal-Image" src="" alt="Modal Image">
+  <button id="nextBtn" class="nav-button next-btn">&#10095;</button>
+</div>
+
+
+  // Global references
+<script src="../assests/js/clickImage.js"></script>
 
         <!-- Report Modal -->
         <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">

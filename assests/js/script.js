@@ -114,9 +114,10 @@ document.addEventListener("DOMContentLoaded", () => {
             const parentGroup = img.closest('.group');
             const iconContainer = parentGroup.querySelector('.icon-container');
             iconContainer.innerHTML = `
-                <img src="${src}" alt="${reaction}" style="width: 20px; height: 20px;" />
-                <span class="reaction-text" style="color: gray;">${reaction}</span>
-            `;
+            <img src="${src}" alt="${reaction}" style="width: 20px; height: 20px; display: block;" />
+            <span class="reaction-text" style="color: gray;">${reaction}</span>
+            
+        `;
 
             const form = img.closest('form');
             const postID = form.querySelector('input[name="post_id"]').value;
@@ -324,7 +325,7 @@ function hidePost(postId) {
         });
 }
 
-function unhidePost(hide_ID,post_ID) {
+function unhidePost(hide_ID, post_ID) {
     fetch('../process/unhidepost.php', {
         method: 'POST',
         headers: {
@@ -342,42 +343,42 @@ function unhidePost(hide_ID,post_ID) {
             }
         });
 }
-function unsavepost(postID){
-    fetch('../process/unsavepost.php',{
+function unsavepost(postID) {
+    fetch('../process/unsavepost.php', {
         method: 'POST',
         headers: {
-            'Content-Type':'application/x-www-form-urlencoded',
+            'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: 'post_id='+encodeURIComponent(postID)
+        body: 'post_id=' + encodeURIComponent(postID)
     })
-    .then(response => response.text())
-    .then(data => {
-        if(data.trim()=== 'success'){
-            document.getElementById(postID).style.display ='none';
-            alert('You unsaved this post')
-        }else{
-            alert('Failed to unsave post');
-        }
-    });
+        .then(response => response.text())
+        .then(data => {
+            if (data.trim() === 'success') {
+                document.getElementById(postID).style.display = 'none';
+                alert('You unsaved this post')
+            } else {
+                alert('Failed to unsave post');
+            }
+        });
 }
-function savepost($postID){
-    fetch('../process/savepost.php',{
+function savepost($postID) {
+    fetch('../process/savepost.php', {
         method: 'POST',
         headers: {
-            'Content-Type':'application/x-www-form-urlencoded',
+            'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: 'post_id=' +encodeURIComponent($postID)
+        body: 'post_id=' + encodeURIComponent($postID)
 
     })
-    .then(response=>response.text())
-    .then(data =>{
-        if(data.trim()=== 'success'){
-            alert("You saved this post")
-        }else{
-            alert("Fail to save post");
-        }
-    });
-    
+        .then(response => response.text())
+        .then(data => {
+            if (data.trim() === 'success') {
+                alert("You saved this post")
+            } else {
+                alert("Fail to save post");
+            }
+        });
+
 
 }
 
@@ -435,11 +436,11 @@ function submitCoverPhotoForm() {
     }
 }
 
-let currentpostID =null;
+let currentpostID = null;
 
 
 
-function loadReactedUsers(postId,type) {
+function loadReactedUsers(postId, type) {
     const listContainer = document.getElementById('reactionGiversList');
     const spinner = document.getElementById('loadingSpinner');
 
@@ -454,7 +455,7 @@ function loadReactedUsers(postId,type) {
     // 🔁 First: Set PHP session postID
     fetch('../process/set_post_session.php', {
         method: 'POST',
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: `post_id=${postId}`
     });
 
@@ -489,19 +490,19 @@ function loadReactedUsers(postId,type) {
             console.error('Error loading reactions:', error);
         });
 
-        fetch(`../process/get_reaction_data.php?post_id=${postId}`)
-    .then(response => response.json())
-    .then(data => {
-        // console.log(data); // For debugging
-        updateReactionTabs(data);
-    })
-    .catch(error => {
-        console.error('Error loading reaction counts:', error);
-    });
+    fetch(`../process/get_reaction_data.php?post_id=${postId}`)
+        .then(response => response.json())
+        .then(data => {
+            // console.log(data); // For debugging
+            updateReactionTabs(data);
+        })
+        .catch(error => {
+            console.error('Error loading reaction counts:', error);
+        });
 }
 
 
-function setSessionAndLoad(postID,type) {
+function setSessionAndLoad(postID, type) {
     currentpostID = postID;
     fetch('../process/set_post_session.php', {
         method: 'POST',
@@ -510,10 +511,10 @@ function setSessionAndLoad(postID,type) {
         },
         body: `postID=${postID}`
     })
-    .then(() => {
-        loadReactedUsers(postID,type);  // After setting session, load reactions
-    })
-    .catch(error => console.error('Error setting session:', error));
+        .then(() => {
+            loadReactedUsers(postID, type);  // After setting session, load reactions
+        })
+        .catch(error => console.error('Error setting session:', error));
 }
 function updateReactionTabs(counts) {
     const reactionMap = {
@@ -595,7 +596,7 @@ function specific_reacted_user(type) {
             });
         })
 
-        
+
         .catch(error => {
             alert("error")
             spinner.style.display = 'none';

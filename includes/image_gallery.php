@@ -16,59 +16,87 @@ function getImagesByPostId($conn, $postId) {
     }
 }
 
-function renderGallery($images) {
+function renderGallery($images, $postId) {
     $totalImages = count($images);
+    $hiddenImagesHtml = ''; // ✅ Initialize variable to store hidden images
 
-    if ($totalImages >= 6) {
-        echo '<div class="image-gallery six-images"><div class="top-row">';
+    if ($totalImages >= 5) {
+        echo '<div class="image-gallery five-images"><div class="top-row">';
         for ($i = 0; $i < 2; $i++) {
-            echo '<img src="../assests/images/post_images/' . htmlspecialchars($images[$i]['img_url']) . '" alt="Image">';
+            echo '<img src="../assests/images/post_images/' . htmlspecialchars($images[$i]['img_url']) . 
+                 '" class="post-image" data-post-id="' . $postId . 
+                 '" alt="Image" onclick="openModal(this.src, ' . $postId . ')">';
         }
+
         echo '</div><div class="bottom-row">';
-        for ($i = 2; $i < 6; $i++) {
-            $overlay = ($i === 5 && $totalImages > 6) ? '<div class="overlay-text">+'.($totalImages - 6).' more</div>' : '';
+        for ($i = 2; $i < 5; $i++) {
+            $overlay = ($i === 4 && $totalImages > 5) 
+                ? '<div class="overlay-text">+'.($totalImages - 5).' more</div>' 
+                : '';
             echo '<div class="image-overlay">';
-            echo '<img src="../assests/images/post_images/' . htmlspecialchars($images[$i]['img_url']) . '" alt="Image">';
+            echo '<img src="../assests/images/post_images/' . htmlspecialchars($images[$i]['img_url']) . 
+                 '" class="post-image" data-post-id="' . $postId . 
+                 '" alt="Image" onclick="openModal(this.src, ' . $postId . ')">';
             echo $overlay;
             echo '</div>';
         }
-        echo '</div></div>';
-    } elseif ($totalImages === 5) {
-        echo '<div class="image-gallery five-images"><div class="top-row">';
-        for ($i = 0; $i < 2; $i++) {
-            echo '<img src="../assests/images/post_images/' . htmlspecialchars($images[$i]['img_url']) . '" alt="Image">';
+        echo '</div></div>'; // close .bottom-row and .image-gallery
+
+        // ✅ Add hidden images to DOM inside hidden div
+        for ($i = 5; $i < $totalImages; $i++) {
+            $hiddenImagesHtml .= '<img src="../assests/images/post_images/' . 
+                htmlspecialchars($images[$i]['img_url']) . 
+                '" class="post-image" data-post-id="' . $postId . 
+                '" alt="Image" onclick="openModal(this.src, ' . $postId . ')">';
         }
-        echo '</div><div class="bottom-row">';
-        for ($i = 2; $i < 5; $i++) {
-            echo '<img src="../assests/images/post_images/' . htmlspecialchars($images[$i]['img_url']) . '" alt="Image">';
+
+        if (!empty($hiddenImagesHtml)) {
+            echo '<div style="display:none;">' . $hiddenImagesHtml . '</div>';
         }
-        echo '</div></div>';
+
     } elseif ($totalImages === 4) {
         echo '<div class="image-gallery four-images"><div class="top-row">';
         for ($i = 0; $i < 2; $i++) {
-            echo '<img src="../assests/images/post_images/' . htmlspecialchars($images[$i]['img_url']) . '" alt="Image">';
+            echo '<img src="../assests/images/post_images/' . htmlspecialchars($images[$i]['img_url']) . 
+                 '" class="post-image" data-post-id="' . $postId . 
+                 '" alt="Image" onclick="openModal(this.src, ' . $postId . ')">';
         }
         echo '</div><div class="bottom-row">';
         for ($i = 2; $i < 4; $i++) {
-            echo '<img src="../assests/images/post_images/' . htmlspecialchars($images[$i]['img_url']) . '" alt="Image">';
+            echo '<img src="../assests/images/post_images/' . htmlspecialchars($images[$i]['img_url']) . 
+                 '" class="post-image" data-post-id="' . $postId . 
+                 '" alt="Image" onclick="openModal(this.src, ' . $postId . ')">';
         }
         echo '</div></div>';
+
     } elseif ($totalImages === 3) {
         echo '<div class="image-gallery three-images">';
-        echo '<img src="../assests/images/post_images/' . htmlspecialchars($images[0]['img_url']) . '" alt="Image">';
+        echo '<img src="../assests/images/post_images/' . htmlspecialchars($images[0]['img_url']) . 
+             '" class="post-image" data-post-id="' . $postId . 
+             '" alt="Image" onclick="openModal(this.src, ' . $postId . ')">';
         echo '<div class="bottom-row">';
-        echo '<img src="../assests/images/post_images/' . htmlspecialchars($images[1]['img_url']) . '" alt="Image">';
-        echo '<img src="../assests/images/post_images/' . htmlspecialchars($images[2]['img_url']) . '" alt="Image">';
+        echo '<img src="../assests/images/post_images/' . htmlspecialchars($images[1]['img_url']) . 
+             '" class="post-image" data-post-id="' . $postId . 
+             '" alt="Image" onclick="openModal(this.src, ' . $postId . ')">';
+        echo '<img src="../assests/images/post_images/' . htmlspecialchars($images[2]['img_url']) . 
+             '" class="post-image" data-post-id="' . $postId . 
+             '" alt="Image" onclick="openModal(this.src, ' . $postId . ')">';
         echo '</div></div>';
+
     } elseif ($totalImages === 2) {
         echo '<div class="image-gallery two-images">';
         for ($i = 0; $i < 2; $i++) {
-            echo '<img src="../assests/images/post_images/' . htmlspecialchars($images[$i]['img_url']) . '" alt="Image">';
+            echo '<img src="../assests/images/post_images/' . htmlspecialchars($images[$i]['img_url']) . 
+                 '" class="post-image" data-post-id="' . $postId . 
+                 '" alt="Image" onclick="openModal(this.src, ' . $postId . ')">';
         }
         echo '</div>';
+
     } elseif ($totalImages === 1) {
         echo '<div class="image-gallery single-image">';
-        echo '<img src="../assests/images/post_images/' . htmlspecialchars($images[0]['img_url']) . '" alt="Single Post Image">';
+        echo '<img src="../assests/images/post_images/' . htmlspecialchars($images[0]['img_url']) . 
+             '" class="post-image" data-post-id="' . $postId . 
+             '" alt="Image" onclick="openModal(this.src, ' . $postId . ')">';
         echo '</div>';
     }
 }

@@ -133,110 +133,47 @@ $users = get_all_users();
 <body>
 
   <!-- Navigation bar -->
-  <?php include("../includes/header.php"); ?>
+  <?php include("../includes/header.php");
+   ?>
 
   
 
 <div class="container py-5"> <!-- py-5 adds vertical padding -->
-        <h2 class="mb-4 text-center">People You May Know</h2>
-        <!-- Updated row classes:
-             row-cols-2: 2 cards on extra small screens (<576px) and up to large screens
-             row-cols-lg-5: 5 cards on large screens (>=992px) and larger
-        -->
+        <h2 class="mb-4 text-center">All Metro Students</h2>
         <div class="row row-cols-2 row-cols-lg-5 g-4">
-            <!-- Card 1: HaemannMoe -->
-            <div class="col">
+
+        <?php
+        $all_user = get_all_users();
+        foreach($all_user as $user){
+            if($user['userid'] != $_SESSION['userid']){
+
+            
+            ?>
+        
+           <div class="col">
+            <a href="otherprofile.php?user_id=<?php echo $user['userid']; ?>" class="btn btn-add-friend">
                 <div class="card friend-suggestion-card">
                     <div class="profile-img-container">
                         <!-- Placeholder image from placehold.co, adjust dimensions and colors as needed -->
-                        <img src="https://placehold.co/120x120/FF0000/FFFFFF?text=HM" alt="Profile Picture" class="profile-img" onerror="this.onerror=null;this.src='https://placehold.co/120x120/E0E0E0/666666?text=Image+Error';">
+                        <img src="../assests/images/post_images/<?php echo $user['ProfileimagePath']?>" alt="Profile Picture" class="profile-img" onerror="this.onerror=null;this.src='https://placehold.co/120x120/E0E0E0/666666?text=Image+Error';">
                     </div>
-                    <h5 class="card-name">HaemannMoe</h5>
-                    <p class="mutual-friends">22 mutual friends</p>
+                    <h5 class="card-name"><?php echo $user['name']?></h5>
+                    <p class="mutual-friends"><?php echo $user['Batch']?></p>
                     <div class="btn-group-custom">
-                        <button class="btn btn-add-friend">Add friend</button>
-                        <button class="btn btn-remove">Remove</button>
+                        <a href="otherprofile.php?user_id=<?php echo $user['userid']; ?>" class="btn btn-add-friend">View Profile</a>
+
+                        <button class="btn btn-remove">Message</button>
                     </div>
                 </div>
             </div>
 
-            <!-- Card 2: Zwe Min Khant Zaw -->
-            <div class="col">
-                <div class="card friend-suggestion-card">
-                    <div class="profile-img-container">
-                        <img src="https://placehold.co/120x120/0000FF/FFFFFF?text=ZMKZ" alt="Profile Picture" class="class="profile-img" onerror="this.onerror=null;this.src='https://placehold.co/120x120/E0E0E0/666666?text=Image+Error';">
-                    </div>
-                    <h5 class="card-name">Zwe Min Khant Zaw</h5>
-                    <p class="mutual-friends">1 mutual friend</p>
-                    <div class="btn-group-custom">
-                        <button class="btn btn-add-friend">Add friend</button>
-                        <button class="btn btn-remove">Remove</button>
-                    </div>
-                </div>
-            </div>
+        <?php }
+        }
 
-            <!-- Card 3: Thar Nge -->
-            <div class="col">
-                <div class="card friend-suggestion-card">
-                    <div class="profile-img-container">
-                        <img src="https://placehold.co/120x120/008000/FFFFFF?text=TN" alt="Profile Picture" class="profile-img" onerror="this.onerror=null;this.src='https://placehold.co/120x120/E0E0E0/666666?text=Image+Error';">
-                    </div>
-                    <h5 class="card-name">Thar Nge</h5>
-                    <p class="mutual-friends">20 mutual friends</p>
-                    <div class="btn-group-custom">
-                        <button class="btn btn-add-friend">Add friend</button>
-                        <button class="btn btn-remove">Remove</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card 4: Zin Min Thant -->
-            <div class="col">
-                <div class="card friend-suggestion-card">
-                    <div class="profile-img-container">
-                        <img src="https://placehold.co/120x120/FFFF00/000000?text=ZMT" alt="Profile Picture" class="profile-img" onerror="this.onerror=null;this.src='https://placehold.co/120x120/E0E0E0/666666?text=Image+Error';">
-                    </div>
-                    <h5 class="card-name">Zin Min Thant</h5>
-                    <p class="mutual-friends">1 mutual friend</p>
-                    <div class="btn-group-custom">
-                        <button class="btn btn-add-friend">Add friend</button>
-                        <button class="btn btn-remove">Remove</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card 5: Ying Gau -->
-            <div class="col">
-                <div class="card friend-suggestion-card">
-                    <div class="profile-img-container">
-                        <img src="https://placehold.co/120x120/FFC0CB/000000?text=YG" alt="Profile Picture" class="profile-img" onerror="this.onerror=null;this.src='https://placehold.co/120x120/E0E0E0/666666?text=Image+Error';">
-                    </div>
-                    <h5 class="card-name">Ying Gau</h5>
-                    <p class="mutual-friends">16 mutual friends</p>
-                    <div class="btn-group-custom">
-                        <button class="btn btn-add-friend">Add friend</button>
-                        <button class="btn btn-remove">Remove</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Example of an additional card to demonstrate scalability -->
-            <div class="col">
-                <div class="card friend-suggestion-card">
-                    <div class="profile-img-container">
-                        <img src="https://placehold.co/120x120/800080/FFFFFF?text=New" alt="Profile Picture" class="profile-img" onerror="this.onerror=null;this.src='https://placehold.co/120x120/E0E0E0/666666?text=Image+Error';">
-                    </div>
-                    <h5 class="card-name">New Friend</h5>
-                    <p class="mutual-friends">5 mutual friends</p>
-                    <div class="btn-group-custom">
-                        <button class="btn btn-add-friend">Add friend</button>
-                        <button class="btn btn-remove">Remove</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- You can easily duplicate the 'col' div to add more cards -->
-
+        
+         ?>
+            
+         
         </div>
     </div>
 

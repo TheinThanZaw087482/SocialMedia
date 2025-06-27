@@ -4,9 +4,6 @@ include("../includes/db.php");
 include("../includes/get_users.php");
 $user = null;
 $userId = null;
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['user_id'])) {
-    $userId = $_POST['user_id'];
-}
 
 if (isset($_GET['user_id'])) {
     $userId = $_GET['user_id'];

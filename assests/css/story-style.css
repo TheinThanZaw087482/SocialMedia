@@ -1,157 +1,725 @@
- body.modal-open {
-     overflow: hidden;
-     padding-right: 0 !important;
- }
+/* GLOBAL/BASE STYLES */
+body {
+    background-color: #f0f2f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+}
 
- .modal-backdrop.show {
-     opacity: 0.5;
- }
+body.modal-open {
+    overflow: hidden;
+    padding-right: 0 !important; /* Override Bootstrap's scrollbar compensation */
+}
 
- .modal-dialog {
-     max-height: 90vh;
-     display: flex;
-     align-items: center;
-     margin-top: 28px !important;
- }
+/* MODAL BACKDROP (Bootstrap standard) */
+.modal-backdrop.show {
+    opacity: 0.5;
+}
 
- .modal-header {
-     padding-top: 0 !important;
-     /* Reduce top padding */
-     padding-bottom: 0.5rem;
-     margin-bottom: 0;
-     /* Remove extra spacing */
- }
+/* GENERAL MODAL STYLES (for create story modal, etc.) */
+.modal-dialog {
+    max-height: 90vh; /* For non-story viewer modals */
+    display: flex;
+    align-items: center;
+    /* margin-top: 28px !important; -- Removed, let specific modals control their position */
+}
 
- .modal-content {
-     padding-top: 0 !important;
-     max-height: 100%;
-     overflow-y: auto;
-     background: #fff;
-     border-radius: 20px;
-     overflow: hidden;
-     box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
- }
+/* Custom size for generic modals, like the create story modal */
+.custom-modal-size {
+    max-width: 300px;
+    width: 90%;
+}
 
- .modal-title {
-     margin-top: 0;
-     color: rgb(120, 151, 255);
-     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
-     font-size: 2em;
- }
+.modal-content {
+    background: #fff;
+    border-radius: 20px;
+    overflow: hidden; /* Important for containing content and rounded corners */
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    border: none; /* Ensure no default border */
+}
 
- .custom-modal-size {
-     max-width: 300px;
-     /* wider modal */
-     width: 90%;
- }
+.modal-header {
+    padding-top: 0;
+    padding-bottom: 0.5rem;
+    margin-bottom: 0;
+    border-bottom: none; /* Default for the story viewer modal, overridden for create */
+}
 
- .modal-body {
-     display: flex;
-     align-items: center;
-     justify-content: center;
-     gap: 10px;
-     /* space between icon and story-area */
-     flex-wrap: wrap;
- }
+.modal-title {
+    margin-top: 0;
+    color: rgb(120, 151, 255);
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    font-size: 2em;
+}
 
- .gallery-icon {
-     width: 40px;
-     height: 40px;
-     cursor: pointer;
- }
+.story-footer {
+    position: absolute;
+    bottom: 0; /* Position at the bottom of the modal */
+    left: 0;
+    width: 100%;
+    padding: 15px; /* Add some padding */
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0)); /* Gradient for better visibility */
+    display: flex; /* Use flexbox for alignment */
+    justify-content: center; /* Center the action buttons horizontally */
+    align-items: center;
+    box-sizing: border-box; /* Include padding in width calculation */
+    z-index: 1060; /* Ensure it's above other modal content but below overlay */
+}
 
- .story-area {
-     background-image: linear-gradient(60deg, rgb(191, 221, 255), rgb(77, 148, 255));
-     height: 500px;
-     width: 300px;
-     position: relative;
-     padding-top: 10px;
-     padding: 20px;
-     border-radius: 20px;
-     overflow: hidden;
-     margin-left: 30px;
- }
+.story-footer .action-buttons {
+    display: flex;
+    gap: 10px; /* Space between buttons */
+    /* If you want them to spread out more, change justify-content */
+    /* justify-content: space-around; */ /* This was in your HTML, good for spreading them out */
+    width: 100%; /* Take full width of the parent */
+    max-width: 400px; /* Limit max width for better appearance on wide screens */
+    margin-top: auto; /* Push to the bottom */
+}
 
- .story-textarea {
-     position: relative;
-     background: transparent;
-     border: none;
-     outline: none;
-     color: #ffffff;
-     font-size: 1.2rem;
-     width: 100%;
-     height: 100%;
-     resize: none;
-     padding: 14px;
-     z-index: 2;
-     background-color: transparent;
- }
+/* Style for individual reaction buttons */
+.story_reaction_btn {
+    background: none; /* No background color */
+    border: none; /* No border */
+    /* Original padding: 5px; */
+    padding: 10px 15px; /* Increase padding to make the button larger */
+    cursor: pointer; /* Changed from zoom-out for better UX on a button */
+    transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+    border-radius: 50%; /* Make it circular */
+    display: flex; /* Use flexbox to center the image */
+    justify-content: center;
+    align-items: center;
+    /* Define explicit width/height for a consistent larger target */
+    width: 50px; /* Example: 30px img + 10px padding left/right */
+    height: 50px; /* Example: 30px img + 10px padding top/bottom */
+    flex-shrink: 0; /* Prevent buttons from shrinking in flex container */
+}
 
- .story-textarea::placeholder {
-     color: #ffffff;
-     opacity: 0.6;
- }
+.story_reaction_btn:hover {
+    transform: scale(1.1); /* Slightly enlarge on hover (adjust as needed, 1.5 might be too much) */
+    background-color: rgba(255, 255, 255, 0.1); /* Subtle background on hover */
+}
 
- #imagePreview {
-     position: absolute;
-     top: 0;
-     left: 0;
-     width: 100%;
-     object-fit: contain;
-     height: 100%;
-     z-index: 1;
-     border-radius: 20px;
-     display: none;
-     pointer-events: none;
- }
+.story_reaction_btn:active {
+    transform: scale(0.95); /* Slightly shrink on click */
+}
 
- #removeImageBtn {
-     position: absolute;
-     top: 10px;
-     right: 10px;
-     background: rgba(0, 0, 0, 0.3);
-     border: none;
-     color: white;
-     font-size: 20px;
-     border-radius: 50%;
-     width: 30px;
-     height: 30px;
-     cursor: pointer;
-     display: none;
-     z-index: 2;
-     transition: background 0.3s ease;
- }
+/* Style for the images inside the reaction buttons */
+.story_reaction_btn img {
+    width: 30px; /* Keep icon size consistent */
+    height: 30px; /* Keep icon size consistent */
+    object-fit: contain;
+    display: block;
+    pointer-events: none; /* Ensures clicks pass through to the button */
+}
 
- #removeImageBtn:hover {
-     background: rgba(40, 40, 58, 0.7);
- }
+/* Ensure the .action-buttons container doesn't constrain too much */
+.story-footer .action-buttons {
+    display: flex;
+    gap: 10px; /* Space between buttons */
+    justify-content: center; /* or space-around, depending on desired layout */
+    width: 100%;
+    max-width: 400px; /* Adjust this if your buttons overflow the max-width */
+    margin-top: auto;
+}
+/* --- Create Story Modal Specific Styles --- */
+/* These styles appear to be for a modal where a user creates a story, not views one */
+.modal-body.create-story-modal-body { /* Added class to differentiate this modal-body */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px; /* space between icon and story-area */
+    flex-wrap: wrap;
+    padding: 20px; /* Example padding */
+}
 
- .modal-footer {
-     border-top: none;
-     justify-content: flex-end;
- }
+.gallery-icon {
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+}
 
- .custom-upload-btn {
-     background: #5d7fb3;
-     color: rgb(253, 253, 253);
-     font-size: 17px;
-     font-style: bold;
-     padding: 10px 10px;
-     border-radius: 10px;
-     width: 170px;
-     border: none;
-     margin-left: 250px;
- }
+.story-area {
+    background-image: linear-gradient(60deg, rgb(191, 221, 255), rgb(77, 148, 255));
+    height: 500px;
+    width: 300px;
+    position: relative;
+    padding: 20px; /* Consistent padding */
+    border-radius: 20px;
+    overflow: hidden;
+    margin-left: 30px;
+}
 
- .custom-upload-btn:hover {
-     background-color: #476fbe;
- }
+.story-textarea {
+    position: relative;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #ffffff;
+    font-size: 1.2rem;
+    width: 100%;
+    height: 100%;
+    resize: none;
+    padding: 14px;
+    z-index: 2;
+    background-color: transparent;
+}
+
+.story-textarea::placeholder {
+    color: #ffffff;
+    opacity: 0.6;
+}
+
+#imagePreview { /* This seems specific to the create story modal */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    z-index: 1;
+    border-radius: 20px;
+    display: none;
+    pointer-events: none;
+}
+
+#removeImageBtn { /* This seems specific to the create story modal */
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    border: none;
+    color: white;
+    font-size: 20px;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    display: none;
+    z-index: 2;
+    transition: background 0.3s ease;
+}
+
+#removeImageBtn:hover {
+    background: rgba(40, 40, 58, 0.7);
+}
+
+.custom-upload-btn {
+    background: #5d7fb3;
+    color: rgb(253, 253, 253);
+    font-size: 17px;
+    font-weight: bold;
+    padding: 10px 10px;
+    border-radius: 10px;
+    width: 170px;
+    border: none;
+    margin-left: 250px;
+}
+
+.custom-upload-btn:hover {
+    background-color: #476fbe;
+}
+
+/* --- Main Dashboard Story Cards (Not the modal viewer) --- */
+.stories-container {
+    display: flex;
+    gap: 1rem;
+    padding: 1.5rem;
+    background-color: #fff;
+    border-radius: .5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+    padding-bottom: 2rem;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+.stories-container::-webkit-scrollbar { /* Chrome, Safari, Opera */
+    display: none;
+}
+
+.stories-section {
+    /* This section seems to be a wrapper around .stories-container, some styles might be redundant */
+    /* Keeping it for structural integrity if used elsewhere */
+    overflow-x: auto; /* Handled by stories-container */
+    white-space: nowrap; /* Handled by flex on stories-container */
+    -webkit-overflow-scrolling: touch;
+    margin-top: 2px;
+    padding: 10px; /* Consider if this padding is desired or if stories-container's padding is enough */
+}
+
+.story-card {
+    width: 100px;
+    height: 180px;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end; /* Pushes user name to the bottom */
+    align-items: center;
+    background-color: #eee; /* Placeholder if no image */
+    transition: transform 0.2s ease-in-out;
+    flex-shrink: 0;
+}
+
+.story-card:hover {
+    transform: translateY(-5px);
+}
+
+.story-card .story-thumbnail {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    filter: brightness(0.8); /* Darken thumbnail slightly */
+    transition: filter 0.2s ease-in-out;
+    z-index: 0; /* Behind other content */
+}
+
+.story-card .user-avatar-wrapper {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 1; /* Above thumbnail */
+}
+
+.story-card .user-avatar { /* This is the small avatar on the dashboard story card */
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid #1877f2; /* Facebook blue for avatar ring */
+    object-fit: cover; /* Ensure avatar image covers the circle */
+}
+
+.story-card .user-name { /* Moved to be a direct child of .story-card */
+    position: relative; /* To be above the thumbnail */
+    color: #fff;
+    font-size: 0.8em;
+    text-align: center;
+    margin-bottom: 10px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+    width: 100%;
+    padding-top: 20px;
+    padding-bottom: 5px;
+    box-sizing: border-box;
+    z-index: 1;
+}
+
+/* Specific styling for 'Add Your Story' card */
+.story-card.add-story {
+    background-color: #fff;
+    border: 1px dashed #ccc;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #1877f2;
+    font-weight: bold;
+}
+
+.story-card.add-story .add-icon {
+    font-size: 2em;
+    margin-bottom: 5px;
+}
+/* Ensure the image within add-story card doesn't interfere */
+.story-card.add-story .story-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px; /* Match parent border-radius */
+}
+
+
+/* --- Story Viewer Modal (The actual Messenger Story UI) --- */
+#storyViewerModal .modal-dialog {
+    max-width: 420px; /* Typical story aspect ratio width */
+    width: 90%; /* Responsive width */
+    margin: auto; /* Center the modal horizontally */
+    height: 100vh; /* Allow modal to take full viewport height */
+    display: flex; /* For vertical centering */
+    align-items: center; /* Center vertically */
+    justify-content: center; /* Center horizontally */
+}
+
+#storyViewerModal .modal-content.custom-dark-modal {
+    background-color: #000; /* Dark background for the story viewer content */
+    border-radius: 12px;
+    overflow: hidden;
+    width: 100%;
+    height: 95vh; /* Max height to fit within modal, adjust as needed */
+    max-height: 800px; /* Absolute max height for desktop */
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8);
+    position: relative; /* For absolutely positioning header/progress/footer */
+}
+
+/* --- Modal Header (User Info & Controls) for Story Viewer Modal --- */
+#storyViewerModal .modal-header.custom-dark-modal-header {
+    border-bottom: none;
+    padding: 1rem 1.5rem;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0));
+    position: absolute; /* Position over the story content */
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10; /* Higher than progress bar and content */
+    color: white;
+    align-items: center;
+    display: flex; /* Ensure flex behavior */
+    justify-content: flex-start; /* Align content to start */
+    width: 100%; /* Ensure it spans full width */
+    box-sizing: border-box; /* Include padding in width */
+}
+
+#modal-user-avatar { /* Specific ID for the avatar in the modal header */
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 0.75rem;
+    border: 1px solid white;
+}
+
+#storyViewerModal .modal-header .modal-title { /* Targeting the container of user name and time */
+    font-size: 1rem; /* Adjust if needed */
+    font-weight: 600;
+    color: white; /* Ensure text is white */
+    margin-bottom: 0; /* Remove default margin */
+    display: flex; /* Allow inline elements to be flexible */
+    flex-direction: column; /* Stack name and time */
+    align-items: flex-start; /* Align text to the left */
+    flex-grow: 1; /* Allow title to take available space */
+}
+
+#modal-user-name { /* User name in modal header */
+    font-size: 1em; /* Relative to modal-title font-size */
+    font-weight: bold;
+    color: inherit; /* Inherit color from parent */
+}
+
+#modal-story-time { /* Time in modal header */
+    font-size: 0.75rem;
+    color: #bbb;
+    margin-top: 2px; /* Small space below name */
+}
+
+#storyViewerModal .modal-header .btn-close {
+    filter: invert(1); /* Make close button white */
+    opacity: 0.8;
+    margin-left: auto; /* Push to right */
+}
+
+/* Story Progress Bar Styling (within modal) */
+#modal-story-progress {
+    display: flex;
+    gap: 4px; /* Space between segments */
+    padding: 8px 10px 0; /* Padding top and sides */
+    position: absolute;
+    top: 0; /* Positioned within modal-content */
+    left: 0;
+    right: 0;
+    z-index: 11; /* Above header background gradient */
+    box-sizing: border-box; /* Include padding in width */
+}
+
+.progress-segment {
+    flex-grow: 1;
+    height: 3px;
+    background-color: rgba(255, 255, 255, 0.4); /* Inactive segment color */
+    border-radius: 2px;
+    overflow: hidden; /* For inner progress bar */
+}
+
+.progress-bar-inner {
+    height: 100%;
+    background-color: white; /* Active segment color */
+    width: 0%; /* Initial state */
+    transition: width linear; /* Transition is dynamically set by JS */
+}
+
+.progress-segment.completed .progress-bar-inner {
+    width: 100%;
+    transition: none; /* No transition when instantly completing */
+}
+
+/* Story Content Area Styling (within modal) */
+#storyViewerModal .modal-body { /* Main content area for the story */
+    padding: 0;
+    flex-grow: 1; /* Takes up remaining height */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #000; /* Ensures black background behind story content */
+    position: relative; /* For absolutely positioned content like story items */
+    overflow: hidden; /* Prevent story content from overflowing */
+}
+
+#story-content-modal-viewer { /* This is the container for the actual story img/video */
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute; /* Occupy full space of modal-body */
+    top: 0;
+    left: 0;
+    z-index: 1; /* Below header/progress and navigation buttons */
+}
+
+.story-item { /* The individual story container (active state applied by JS) */
+    position: absolute; /* Positioned within #story-content-modal-viewer */
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.3s ease-in-out;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.story-item.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.story-item img,
+.story-item video { /* Styling for the actual story media (img or video) */
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Scales to fit without cropping, adding black bars if needed */
+    display: block; /* Remove extra space below inline elements */
+}
+
+
+/* Story Navigation Arrows (within modal) */
+.story-navigation {
+    position: absolute;
+    top: 0; /* Occupy full height of modal body */
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Vertically center the buttons */
+    padding: 0 0.5rem; /* Padding for the buttons from edges */
+    z-index: 12; /* Above story content, below header/progress */
+}
+
+.story-navigation .btn {
+    background-color: rgba(0, 0, 0, 0.4);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    padding: 0;
+}
+
+.story-navigation .btn:hover {
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+/* --- Story Viewer Modal Footer (Reply/Reactions) --- */
+.story-footer {
+    position: absolute; /* Position at the bottom of the modal content */
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0)); /* Gradient background */
+    z-index: 10; /* Above story content */
+    display: flex;
+    flex-direction: column; /* Stack input and buttons */
+    align-items: center;
+    gap: 10px; /* Space between elements */
+    box-sizing: border-box; /* Include padding in width */
+}
+
+.story-footer .action-buttons {
+    width: 100%; /* Take full width */
+    display: flex;
+    justify-content: center; /* Center reaction buttons */
+    gap: 15px; /* Space between reaction buttons */
+}
+
+.story-footer .action-buttons .btn {
+    background: none;
+    border: none;
+    font-size: 1.8em; /* Larger emojis/icons */
+    cursor: pointer;
+    padding: 5px;
+    transition: transform 0.2s ease;
+}
+
+.story-footer .action-buttons .btn:hover {
+    transform: scale(1.2);
+}
+
+/* --- Image Modal (Separate from Story Viewer Modal) --- */
+.image-modal { /* This appears to be a separate, simpler image viewer */
+    display: none; /* hidden by default */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 50%;
+    height: 60%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.9);
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    flex-direction: row;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 8px; /* Added border-radius for consistency */
+}
+
+.image-modal img {
+    max-width: 80%;
+    max-height: 80%;
+    border-radius: 8px;
+}
+
+.nav-button { /* For the image-modal navigation */
+    position: absolute;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    z-index: 1000;
+}
+
+.close-btn { /* For the image-modal close button */
+    top: 10px;
+    right: 15px;
+}
+
+.prev-btn { /* For the image-modal prev button */
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.next-btn { /* For the image-modal next button */
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+
+/* --- Left Settings Panel (Sticky Sidebar) --- */
+#left-settings-panel {
+    position: -webkit-sticky; /* For Safari */
+    position: sticky;
+    top: 20px; /* Adjust this value based on your header's height + desired top margin. */
+    height: calc(100vh - 40px); /* Calculates height to fill viewport minus top and some bottom space. */
+    overflow-y: auto; /* Allows content within the sidebar to scroll if it's too long */
+    align-self: flex-start; /* Ensures it aligns to the top if the row is a flex container */
+    background-color: #f8f9fa; /* Light background for visibility */
+    padding: 15px;
+    /* min-height: 100vh; - Removed as it conflicts with sticky height calculation */
+}
+
+/* --- Reaction Panel (For Posts, not Story Viewer) --- */
+/* Ensure reaction panel displays correctly */
+.group:hover .reaction-panel {
+    display: flex !important;
+}
+
+.reaction-panel {
+    bottom: 100%; /* Position above the like button */
+    margin-bottom: 5px; /* Add some space */
+}
+
+/* --- Custom Gradient Icon (e.g., for Saved Posts) --- */
+.icon-saved {
+    width: 32px; /* Increased size */
+    height: 32px; /* Increased size */
+    background: linear-gradient(to right, #ee0979, #ff6a00); /* Example gradient */
+    border-radius: 8px; /* Slightly more rounded */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 18px; /* Larger icon inside */
+    margin-right: 15px; /* More space between icon and text */
+}
+
+/* --- Menu Item Styling (General UI elements) --- */
+.menu-item {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px; /* Increased padding for a larger overall item */
+    cursor: pointer;
+    border-radius: 10px; /* Slightly more rounded overall item */
+    transition: background-color 0.2s;
+}
+
+.menu-item:hover {
+    background-color: #f0f2f5; /* Light grey on hover, similar to Facebook */
+}
+
+.menu-item-text {
+    font-weight: 500;
+    color: #333;
+    font-size: 1.1rem; /* Slightly larger text */
+}
+
+/* --- Story Reactions (Within Story Viewer Modal's footer/overlay) --- */
+/* These styles are for reactions, assumed to be part of the .story-footer now */
+.reactions-container { /* This class name might be obsolete if the action-buttons are direct */
+    padding-left: 15px;
+}
+
+.reaction-button { /* General reaction button style, can be reused */
+    background-color: transparent;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.reaction-button:hover {
+    transform: scale(1.1);
+}
+
+.reaction-button:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.reaction-icon {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+}
+
+/* --- Responsive Adjustments --- */
 
 @media (max-width: 768px) {
+    /* General Modal Adjustments (e.g., Create Story Modal) */
     .modal-dialog {
         height: 94vh;
         max-height: 94vh;
-        display: flex;
         margin: 20px auto !important;
         width: 480px;
         max-width: 95vw;
@@ -159,10 +727,10 @@
         align-items: center;
     }
 
-    .modal-content {
+    .modal-content { /* General modal content */
         height: 100%;
         max-height: 100%;
-        overflow: hidden; /* Prevent scroll */
+        overflow: hidden;
         display: flex;
         flex-direction: column;
     }
@@ -173,15 +741,12 @@
         padding: 5px 10px;
     }
 
-    .modal-body {
-        flex-grow: 1; /* Takes remaining space */
-        overflow: hidden; /* Prevent internal scroll */
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    .modal-body.create-story-modal-body { /* Specific to create story modal */
+        flex-grow: 1;
+        overflow: hidden;
+        flex-wrap: nowrap;
         gap: 10px;
         padding: 5px;
-        flex-wrap: nowrap;
     }
 
     .modal-title {
@@ -190,12 +755,12 @@
         width: 100%;
     }
 
-    .story-area {
+    .story-area { /* Specific to create story modal */
         width: 300px;
-        height: 480px; /* Reduce height to fit */
+        height: 480px;
     }
 
-    .gallery-icon {
+    .gallery-icon { /* Specific to create story modal */
         margin-left: 0;
         width: 38px;
         height: 38px;
@@ -205,75 +770,199 @@
     .custom-upload-btn {
         font-size: 15px;
         width: 35%;
-        margin: 0 auto 0 252px;
+        margin: 0 auto 0 252px; /* Re-evaluate this margin for responsiveness */
         display: block;
+    }
+
+    /* Story Viewer Modal specific adjustments for 768px */
+    #storyViewerModal .modal-dialog {
+        margin: 0; /* Remove margin to fill screen */
+        height: 100vh;
+        max-width: 100vw;
+    }
+
+    #storyViewerModal .modal-content.custom-dark-modal {
+        border-radius: 0; /* No border-radius on full-screen modal */
+        height: 100vh;
+        max-height: 100vh;
+    }
+
+    #storyViewerModal .modal-header.custom-dark-modal-header {
+        padding: 0.75rem 1rem; /* Reduced padding for smaller screens */
+    }
+
+    #modal-user-avatar {
+        width: 28px; /* Slightly smaller avatar */
+        height: 28px;
+        margin-right: 0.5rem;
+    }
+
+    #storyViewerModal .modal-header .modal-title {
+        font-size: 0.9rem; /* Smaller text */
+    }
+
+    #modal-story-time {
+        font-size: 0.7rem; /* Smaller time text */
+    }
+
+    .story-navigation .btn {
+        width: 35px; /* Smaller navigation buttons */
+        height: 35px;
+        font-size: 1.3rem;
+    }
+
+    .story-footer .action-buttons .btn {
+        font-size: 1.5em; /* Smaller emojis */
     }
 }
 
- @media (max-width: 575.98px) {
-     .modal {
-         padding: 0 !important;
-         /* Remove default Bootstrap padding */
-     }
+@media (max-width: 575.98px) {
+    .modal {
+        padding: 0 !important; /* Remove default Bootstrap padding */
+    }
 
-     .modal-dialog {
-         height: 800px;
-         margin: 0 auto !important;
-         width: 500px;
-         max-width: 85vw;
-         position: fixed;
-     }
+    /* General Modal Adjustments (e.g., Create Story Modal) */
+    .modal-dialog {
+        height: 800px; /* Specific height for smaller screens */
+        margin: 0 auto !important;
+        width: 500px; /* Re-evaluate this fixed width for very small screens */
+        max-width: 85vw;
+        position: fixed;
+    }
 
-     .modal-content {
-         max-height: 95vh;
-         /* Prevent overflow */
-         overflow-y: auto;
-     }
+    .modal-content { /* General modal content */
+        max-height: 95vh;
+        overflow-y: auto;
+    }
 
-     .modal-header,
-     .modal-footer {
-         padding: 5px 5px;
-     }
+    .modal-header,
+    .modal-footer {
+        padding: 5px 5px;
+    }
 
-     .modal-body {
-         flex-wrap: nowrap;
-         /* Maintain row layout */
-         gap: 8px;
-         justify-content: center;
-         padding: 5px;
-     }
+    .modal-body.create-story-modal-body { /* Specific to create story modal */
+        flex-wrap: nowrap;
+        gap: 8px;
+        justify-content: center;
+        padding: 5px;
+    }
 
-     .modal-title {
-         margin-top: 20px;
-         font-size: 1.6em;
-         text-align: center;
-         width: 100%;
-     }
+    .modal-title {
+        margin-top: 20px;
+        font-size: 1.6em;
+        text-align: center;
+        width: 100%;
+    }
 
-     .gallery-icon {
-         width: 32px;
-         height: 32px;
-         flex-shrink: 0;
-     }
+    .gallery-icon { /* Specific to create story modal */
+        width: 32px;
+        height: 32px;
+        flex-shrink: 0;
+    }
 
-     .story-area {
-         width: 90%;
-         height: 450px;
-     }
+    .story-area { /* Specific to create story modal */
+        width: 90%;
+        height: 450px;
+    }
 
-     .story-textarea {
-         font-size: 1rem;
-         padding: 8px;
-     }
+    .story-textarea {
+        font-size: 1rem;
+        padding: 8px;
+    }
 
-     .custom-upload-btn {
-         font-size: 15px;
-         width: 55%;
-         margin: 10px auto 8px;
-         display: block;
-     }
+    .custom-upload-btn {
+        font-size: 15px;
+        width: 55%;
+        margin: 10px auto 8px;
+        display: block;
+    }
 
-     .modal-footer {
-         justify-content: center;
-     }
- }
+    .modal-footer {
+        justify-content: center;
+    }
+
+    /* Image Modal adjustments */
+    .image-modal {
+        width: 90%; /* Make it wider for very small screens */
+        height: auto; /* Auto height to fit content */
+        max-height: 80vh; /* Max height to avoid overflow */
+        gap: 4%;
+        padding: 4%;
+        border-radius: 2%;
+    }
+
+    /* Story Viewer Modal specific adjustments for 575.98px */
+    #storyViewerModal .modal-dialog {
+        width: 100%; /* Full width */
+        max-width: 100%;
+        height: 100vh;
+    }
+
+    #storyViewerModal .modal-content.custom-dark-modal {
+        border-radius: 0;
+        height: 100vh;
+        max-height: 100vh;
+    }
+
+    #storyViewerModal .modal-header.custom-dark-modal-header {
+        padding: 0.5rem; /* Even less padding */
+    }
+
+    #modal-user-avatar {
+        width: 24px; /* Even smaller avatar */
+        height: 24px;
+        margin-right: 0.4rem;
+    }
+
+    #storyViewerModal .modal-header .modal-title {
+        font-size: 0.85rem; /* Smallest text */
+    }
+
+    #modal-story-time {
+        font-size: 0.65rem;
+    }
+
+    .story-navigation .btn {
+        width: 30px; /* Smallest navigation buttons */
+        height: 30px;
+        font-size: 1.2rem;
+    }
+
+    .story-footer .action-buttons .btn {
+        font-size: 1.3em; /* Smallest emojis */
+    }
+}
+
+/* Existing .story-footer */
+.story-footer {
+    /* ... existing styles ... */
+    z-index: 1060; /* This is already quite high. */
+    position: absolute; /* Already correctly positioned */
+}
+
+/* Existing .story-footer .action-buttons */
+.story-footer .action-buttons {
+    /* ... existing styles ... */
+    z-index: 1061; /* Try making this higher than the footer, but it inherits from footer */
+    position: relative; /* Add position if not already present for z-index to work */
+}
+
+/* Existing .story_reaction_btn */
+.story_reaction_btn {
+    /* ... existing styles ... */
+    position: relative; /* Ensure it's positioned for z-index to work */
+    z-index: 1062; /* Make it higher than anything else in the footer */
+}
+
+/* Important: Check other elements in the modal-body */
+/* If #story-content-modal-viewer or .story-item have a very high z-index,
+   they might be covering parts of your footer. */
+#story-content-modal-viewer {
+    /* ... existing styles ... */
+    z-index: 1; /* This is good, it's low */
+}
+
+.story-item {
+    /* ... existing styles ... */
+    z-index: 0; /* This is good, it's even lower */
+}

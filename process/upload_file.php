@@ -1,13 +1,11 @@
 <?php
-// process/upload_file.php
+session_start();
 header('Content-Type: application/json');
 ini_set('display_errors', 0);
 ini_set('log_errors', 1);
 error_reporting(E_ALL);
 
-require_once 'db_connection.php';
-
-session_start();
+include("../includes/db.php"); // This must provide a MySQLi $conn object
 
 $myUserId = $_SESSION['userid'] ?? null;
 if (!$myUserId) {
@@ -17,15 +15,17 @@ if (!$myUserId) {
 }
 
 $receiverId = $_POST['receiver_id'] ?? null;
-if ($receiverId === null || ($receiverId = filter_var($receiverId, FILTER_VALIDATE_INT)) === false) {
+
+if (!is_numeric($receiverId) || $receiverId <= 0) {
     http_response_code(400);
-    echo json_encode(["status" => "error", "message" => "Invalid or missing receiver ID."]);
+    echo json_encode(["status" => "error", "message" => "Invalid receiver ID."]);
     exit();
 }
+$receiverId = (int)$receiverId;
 
 if (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
     http_response_code(400);
-    echo json_encode(["status" => "error", "message" => "No file uploaded or upload error occurred."]);
+    echo json_encode(["status" => "error", "message" => "No file uploaded or an upload error occurred. Error code: " . ($_FILES['file']['error'] ?? 'N/A')]);
     exit();
 }
 
@@ -37,24 +37,35 @@ $fileType = $file['type'];
 $fileExt = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
 
 $allowedImageExtensions = ['jpg', 'jpeg', 'png', 'gif'];
-$allowedFileExtensions = ['pdf', 'doc', 'docx', 'txt', 'zip', 'rar'];
+$allowedFileExtensions = ['pdf', 'doc', 'docx', 'txt', 'zip', 'rar', 'mp4', 'mov', 'avi', 'webm'];
 $allowedExtensions = array_merge($allowedImageExtensions, $allowedFileExtensions);
 
-$maxFileSize = 10 * 1024 * 1024; // 10MB limit
+$maxFileSize = 25 * 1024 * 1024;
 
 if (!in_array($fileExt, $allowedExtensions)) {
     http_response_code(400);
-    echo json_encode(["status" => "error", "message" => "Unsupported file type."]);
+    echo json_encode(["status" => "error", "message" => "Unsupported file type. Allowed types: " . implode(', ', $allowedExtensions) . "."]);
     exit();
 }
+
 if ($fileSize > $maxFileSize) {
     http_response_code(400);
     echo json_encode(["status" => "error", "message" => "File size exceeds the limit (" . ($maxFileSize / (1024 * 1024)) . "MB)."]);
     exit();
 }
 
-$uploadDir = __DIR__ . '/../uploads/chat_files/';
-$fileUrlBase = '/uploads/chat_files/';
+$baseUploadPath = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'assests' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'chat_files';
+$uploadDir = realpath($baseUploadPath);
+
+if ($uploadDir === false) {
+    error_log("Base upload directory does not exist or is inaccessible. Attempted path: " . $baseUploadPath);
+    http_response_code(500);
+    echo json_encode(["status" => "error", "message" => "Server could not determine upload directory path. Check folder existence and permissions."]);
+    exit();
+}
+$uploadDir .= DIRECTORY_SEPARATOR;
+
+$fileUrlBase = '/assests/uploads/chat_files/';
 
 if (!is_dir($uploadDir)) {
     if (!mkdir($uploadDir, 0775, true)) {
@@ -65,49 +76,39 @@ if (!is_dir($uploadDir)) {
     }
 }
 
-$newFileName = uniqid('chat_file_') . '.' . $fileExt;
+$newFileName = uniqid('chat_file_', true) . '.' . $fileExt;
 $filePath = $uploadDir . $newFileName;
 $fileUrl = $fileUrlBase . $newFileName;
 
 if (move_uploaded_file($fileTmpName, $filePath)) {
+    // --- MySQLi Transaction and Statement Handling ---
     try {
-        $conn->beginTransaction();
+        $conn->begin_transaction(); // Start MySQLi transaction
 
-        $messageType = (in_array($fileExt, $allowedImageExtensions)) ? 'image' : 'file';
+        $messageType = 'file';
+        $allowedVideoExtensions = ['mp4', 'mov', 'avi', 'webm'];
+
+        if (in_array($fileExt, $allowedImageExtensions)) {
+            $messageType = 'image';
+        } elseif (in_array($fileExt, $allowedVideoExtensions)) {
+            $messageType = 'video';
+        }
+
         $messageContent = $fileName;
 
         $stmt = $conn->prepare("
-            INSERT INTO messages (sender_id, receiver_id, message_content, message_type, file_url, created_at)
-            VALUES (:sender_id, :receiver_id, :message_content, :message_type, :file_url, NOW())
+            INSERT INTO messages (sender_id, receiver_id, message, message_type, file_url, created_at)
+            VALUES (?, ?, ?, ?, ?, NOW())
         ");
-        $stmt->bindParam(':sender_id', $myUserId, PDO::PARAM_INT);
-        $stmt->bindParam(':receiver_id', $receiverId, PDO::PARAM_INT);
-        $stmt->bindParam(':message_content', $messageContent, PDO::PARAM_STR);
-        $stmt->bindParam(':message_type', $messageType, PDO::PARAM_STR);
-        $stmt->bindParam(':file_url', $fileUrl, PDO::PARAM_STR);
+
+        // MySQLi bind_param uses type definition string ('i' for int, 's' for string)
+        $stmt->bind_param('iisss', $myUserId, $receiverId, $messageContent, $messageType, $fileUrl);
+
         $stmt->execute();
 
-        $messageId = $conn->lastInsertId();
+        $messageId = $conn->insert_id; // Get the ID of the newly inserted message (MySQLi)
 
-        $user1 = min($myUserId, $receiverId);
-        $user2 = max($myUserId, $receiverId);
-
-        $previewText = ($messageType === 'image') ? '📷 Image' : '📎 File';
-        $stmt_conv = $conn->prepare("
-            INSERT INTO conversations (user1_id, user2_id, last_message_id, last_message_content, last_message_timestamp)
-            VALUES (:user1, :user2, :msg_id, :msg_content, NOW())
-            ON DUPLICATE KEY UPDATE
-                last_message_id = :msg_id,
-                last_message_content = :msg_content,
-                last_message_timestamp = NOW();
-        ");
-        $stmt_conv->bindParam(':user1', $user1, PDO::PARAM_INT);
-        $stmt_conv->bindParam(':user2', $user2, PDO::PARAM_INT);
-        $stmt_conv->bindParam(':msg_id', $messageId, PDO::PARAM_INT);
-        $stmt_conv->bindParam(':msg_content', $previewText, PDO::PARAM_STR);
-        $stmt_conv->execute();
-
-        $conn->commit();
+        $conn->commit(); // Commit MySQLi transaction
 
         echo json_encode([
             "status" => "success",
@@ -117,18 +118,23 @@ if (move_uploaded_file($fileTmpName, $filePath)) {
             "message_type" => $messageType
         ]);
 
-    } catch (PDOException $e) {
-        $conn->rollBack();
-        error_log("Database error after file upload: " . $e->getMessage());
+    } catch (Exception $e) { // Catch general Exception for MySQLi errors, or check $stmt->error
+        $conn->rollBack(); // Rollback MySQLi transaction
+        error_log("Database error after file upload: " . $e->getMessage() . " (MySQLi Error: " . ($conn->error ?? 'N/A') . ")");
         if (file_exists($filePath)) {
             unlink($filePath);
+            error_log("Deleted uploaded file due to DB error: " . $filePath);
         }
         http_response_code(500);
-        echo json_encode(["status" => "error", "message" => "Failed to record message in database after upload."]);
+        echo json_encode(["status" => "error", "message" => "Failed to record message in database after upload. Please try again."]);
+    } finally {
+        if (isset($stmt) && $stmt instanceof mysqli_stmt) {
+            $stmt->close(); // Close statement if it was successfully prepared
+        }
     }
 } else {
     error_log("Failed to move uploaded file from {$fileTmpName} to {$filePath}");
     http_response_code(500);
-    echo json_encode(["status" => "error", "message" => "Failed to store the uploaded file on the server."]);
+    echo json_encode(["status" => "error", "message" => "Failed to store the uploaded file on the server. Please check server logs."]);
 }
 ?>

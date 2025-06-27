@@ -1,13 +1,42 @@
 <?php
 include("../includes/db.php");
 include("../includes/noti_functions.php");
-function getAllpost()
+function getAllpost($viewerID)
 {
     global $conn;
-    $sql = "SELECT * FROM `post` ORDER BY `post`.`postdate` DESC";
-    $result = mysqli_query($conn, $sql);
-    return $result;
+
+    $sql = "SELECT 
+                p.postID,
+                p.postdate,
+                p.privacy,
+                p.content,
+                p.userID 
+            FROM post p
+            JOIN users poster ON p.userID = poster.userID
+            JOIN users viewer ON viewer.userID = ?
+            WHERE 
+                (viewer.userType = 'admin' AND p.privacy != 'only_me')
+                OR (p.privacy = 'public')
+                OR (p.privacy = 'batch' AND poster.Batch = viewer.Batch)
+            ORDER BY p.postdate DESC";
+
+    $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        die("Prepare failed: " . $conn->error);
+    }
+
+    $stmt->bind_param("s", $viewerID);
+
+    if (!$stmt->execute()) {
+        die("Execute failed: " . $stmt->error);
+    }
+
+    // ✅ fetch the result set
+    $result = $stmt->get_result();
+
+    return $result; // this is now usable in while loop
 }
+
 function getHidePost()
 {
     $userid = $_SESSION['userid'];
@@ -315,4 +344,24 @@ function getUserIDByPost($postid){
     $stmt->execute();
     $result = $stmt->get_result();
     return $result->fetch_all(MYSQLI_ASSOC);
+}
+
+function get_comment_count($postID){
+    global $conn;
+    $postID = (int)$postID;
+    $sql = "SELECT COUNT(*) AS count FROM comment WHERE postID = $postID";
+    $result = mysqli_query($conn, $sql);
+    
+    if ($result) {
+        $row = mysqli_fetch_assoc($result);
+        $count = $row['count'];
+        if($count>0){
+            echo $count . " comment" . ($count == 1 ? "" : "s");
+        }else{
+           echo "comment";  
+        }
+        
+    }else{
+        echo "comment";
+    }
 }

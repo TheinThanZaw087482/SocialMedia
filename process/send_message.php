@@ -1,6 +1,6 @@
 <?php
 // Add this at the very top for general logging
-error_log("send_message.php: Script started.");
+error_log("send_message.php: Script started. Current time: " . date('Y-m-d H:i:s'));
 
 session_start();
 header('Content-Type: application/json'); // Tell the client we're sending JSON
@@ -15,14 +15,12 @@ const CHATBOT_ID = '99999'; // Example: Replace with your actual chatbot's user 
 // Your OpenRouter.ai API Key.
 // !!! IMPORTANT !!! In a production environment, NEVER hardcode your API key directly.
 // Use environment variables (e.g., getenv('OPENROUTER_API_KEY')) or a secure config file outside the web root.
-const OPENROUTER_API_KEY = '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'; // <<< REPLACE THIS WITH YOUR ACTUAL OPENROUTER API KEY
+const OPENROUTER_API_KEY = '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'; // <<< REPLACE THIS WITH YOUR ACTUAL OPENROUTER API KEY
 
 const OPENROUTER_API_ENDPOINT = 'https://openrouter.ai/api/v1/chat/completions';
-// CORRECTED MODEL NAME: Use the exact model string provided by OpenRouter
-const OPENROUTER_MODEL = 'deepseek/deepseek-r1-0528:free'; 
+const OPENROUTER_MODEL = 'deepseek/deepseek-r1-0528:free';
 
 // Optional: Your site URL and title for OpenRouter rankings.
-// Replace with your actual site URL and name.
 const YOUR_SITE_URL = 'https://your-messenger-app.com'; // IMPORTANT: Change this to your live site URL
 const YOUR_SITE_NAME = 'My Awesome Messenger'; // IMPORTANT: Change this to your app's name
 
@@ -32,23 +30,40 @@ if (!$conn) {
     echo json_encode(['status' => 'error', 'message' => 'Database connection failed. Please try again later.']);
     exit();
 }
-error_log("send_message.php: Database connected."); // Log after successful connection
+error_log("send_message.php: Database connected.");
 
 $input = json_decode(file_get_contents('php://input'), true);
 
 $receiver_id = $input['receiver_id'] ?? null;
-$sender_id = $_SESSION['userid'] ?? null;
-$message = $input['message'] ?? null;
+$sender_id = $_SESSION['userid'] ?? null; // Securely get sender_id from session
+$message = $input['message'] ?? null; // Optional: for text messages or captions
+$message_type = $input['message_type'] ?? 'text'; // Default to 'text' if not provided
+$file_url = $input['file_url'] ?? null; // For image/video/file attachments
 
-if (empty($receiver_id) || empty($sender_id) || empty($message)) {
-    error_log("send_message.php: Missing message parameters. Receiver: $receiver_id, Sender: $sender_id, Message: $message");
-    echo json_encode(['status' => 'error', 'message' => 'Missing required message parameters or unauthorized sender.']);
+// Validate inputs
+// If message_type is 'text', 'message' is mandatory.
+// If message_type is 'image', 'video', or 'file', 'file_url' is mandatory.
+if (empty($receiver_id) || empty($sender_id)) {
+    error_log("send_message.php: Missing receiver_id or sender_id. Receiver: $receiver_id, Sender: $sender_id");
+    echo json_encode(['status' => 'error', 'message' => 'Missing required chat parameters or unauthorized sender.']);
     exit();
 }
-error_log("send_message.php: Inputs validated."); // Log after validation
+
+if ($message_type === 'text' && empty($message)) {
+    error_log("send_message.php: Message is empty for text type.");
+    echo json_encode(['status' => 'error', 'message' => 'Text message cannot be empty.']);
+    exit();
+} elseif (in_array($message_type, ['image', 'video', 'file']) && empty($file_url)) {
+    error_log("send_message.php: File URL is empty for media/file type ($message_type).");
+    echo json_encode(['status' => 'error', 'message' => 'File attachment is missing.']);
+    exit();
+}
+
+error_log("send_message.php: Inputs validated. Type: $message_type, File URL: $file_url, Message: $message");
 
 // --- Function to interact with OpenRouter.ai API ---
 function getOpenRouterResponse($prompt) {
+    // ... (Your existing getOpenRouterResponse function remains the same) ...
     $api_key = OPENROUTER_API_KEY;
     $url = OPENROUTER_API_ENDPOINT;
 
@@ -68,9 +83,8 @@ function getOpenRouterResponse($prompt) {
         'temperature' => 0.7
     ];
 
-    $ch = curl_init($url); // Initialize $ch here
+    $ch = curl_init($url);
 
-    // IMPORTANT: Check if curl_init was successful
     if ($ch === false) {
         error_log("cURL Error: Could not initialize cURL for URL: " . $url);
         return "Oops! I couldn't connect to the AI service. (cURL Init Error)";
@@ -113,8 +127,10 @@ function getOpenRouterResponse($prompt) {
 }
 
 // --- Main Logic: Save User Message ---
-error_log("send_message.php: Preparing to save user message."); // Log before user message save
-$sql_user_message = "INSERT INTO messages (sender_id, receiver_id, message, created_at) VALUES (?, ?, ?, NOW())";
+error_log("send_message.php: Preparing to save user message (Type: $message_type).");
+
+// Modified SQL query to include message_type and file_url
+$sql_user_message = "INSERT INTO messages (sender_id, receiver_id, message, message_type, file_url, created_at) VALUES (?, ?, ?, ?, ?, NOW())";
 $stmt_user_message = $conn->prepare($sql_user_message);
 
 if ($stmt_user_message === false) {
@@ -123,7 +139,9 @@ if ($stmt_user_message === false) {
     exit();
 }
 
-$stmt_user_message->bind_param("sss", $sender_id, $receiver_id, $message);
+// Bind parameters: sender_id (string), receiver_id (string), message (string), message_type (string), file_url (string)
+// Note: Even if message or file_url are null, bind_param expects 's' and will treat null as empty string, which is fine for VARCHAR.
+$stmt_user_message->bind_param("sssss", $sender_id, $receiver_id, $message, $message_type, $file_url);
 
 if (!$stmt_user_message->execute()) {
     error_log("send_message.php: Failed to save user message: " . $stmt_user_message->error);
@@ -133,47 +151,62 @@ if (!$stmt_user_message->execute()) {
     exit();
 }
 $stmt_user_message->close();
-error_log("send_message.php: User message saved successfully."); // Log after user message save
+error_log("send_message.php: User message (Type: $message_type) saved successfully.");
 
 // --- Chatbot Interaction Logic (if message is for the chatbot) ---
-// Compare IDs as strings to avoid type juggling issues
-if (strval($receiver_id) === strval(CHATBOT_ID)) {
-    error_log("send_message.php: Initiating chatbot interaction."); // Log before chatbot call
+// Chatbot currently only responds to 'text' messages for simplicity.
+// You could extend this to process image content if your AI model supports it (e.g., multimodal models).
+if (strval($receiver_id) === strval(CHATBOT_ID) && $message_type === 'text') {
+    error_log("send_message.php: Initiating chatbot interaction for text message.");
     $chatbot_response_text = getOpenRouterResponse($message);
-    error_log("send_message.php: Chatbot response received."); // Log after chatbot call
+    error_log("send_message.php: Chatbot response received.");
 
     // Prepare SQL to insert the chatbot's response
-    $sql_chatbot_response = "INSERT INTO messages (sender_id, receiver_id, message, created_at) VALUES (?, ?, ?, NOW())";
+    $sql_chatbot_response = "INSERT INTO messages (sender_id, receiver_id, message, message_type, file_url, created_at) VALUES (?, ?, ?, ?, ?, NOW())";
     $stmt_chatbot_response = $conn->prepare($sql_chatbot_response);
 
     if ($stmt_chatbot_response === false) {
         error_log("send_message.php: Failed to prepare chatbot response statement: " . $conn->error);
-        // Continue to send success for user message, but log the chatbot response failure
     } else {
-        // *** FIX START ***
-        // Assign CHATBOT_ID to a temporary variable so it can be passed by reference
-        $chatbotSenderId = CHATBOT_ID; // <--- ADD THIS LINE
-        // *** FIX END ***
+        $chatbotSenderId = CHATBOT_ID;
+        $chatbotMessageType = 'text'; // Chatbot always sends text for now
+        $chatbotFileUrl = null; // Chatbot doesn't send files currently
 
-        // Bind parameters for the chatbot's response.
-        // Sender for this message is the chatbot (CHATBOT_ID), receiver is the original sender ($sender_id).
-        // Use "sss" as all IDs and message are strings.
-        // Change CHATBOT_ID to $chatbotSenderId here:
-        $stmt_chatbot_response->bind_param("sss", $chatbotSenderId, $sender_id, $chatbot_response_text); // <--- MODIFIED LINE
+        // Bind parameters for the chatbot's response
+        $stmt_chatbot_response->bind_param("sssss", $chatbotSenderId, $sender_id, $chatbot_response_text, $chatbotMessageType, $chatbotFileUrl);
         if (!$stmt_chatbot_response->execute()) {
             error_log("send_message.php: Failed to insert chatbot response: " . $stmt_chatbot_response->error);
         }
         $stmt_chatbot_response->close();
     }
-    error_log("send_message.php: Chatbot response (attempted) saved."); // Log after chatbot response save attempt
+    error_log("send_message.php: Chatbot response (attempted) saved.");
+} else if (strval($receiver_id) === strval(CHATBOT_ID) && $message_type !== 'text') {
+    // Optionally, send a message back to the user if they send a file to the chatbot
+    error_log("send_message.php: Chatbot received non-text message. No response generated.");
+    $chatbot_response_text = "Sorry, I can only process text messages at the moment. I'm still learning about images and files!";
+    $sql_chatbot_response = "INSERT INTO messages (sender_id, receiver_id, message, message_type, file_url, created_at) VALUES (?, ?, ?, ?, ?, NOW())";
+    $stmt_chatbot_response = $conn->prepare($sql_chatbot_response);
+
+    if ($stmt_chatbot_response === false) {
+        error_log("send_message.php: Failed to prepare chatbot non-text response statement: " . $conn->error);
+    } else {
+        $chatbotSenderId = CHATBOT_ID;
+        $chatbotMessageType = 'text';
+        $chatbotFileUrl = null;
+        $stmt_chatbot_response->bind_param("sssss", $chatbotSenderId, $sender_id, $chatbot_response_text, $chatbotMessageType, $chatbotFileUrl);
+        if (!$stmt_chatbot_response->execute()) {
+            error_log("send_message.php: Failed to insert chatbot non-text response: " . $stmt_chatbot_response->error);
+        }
+        $stmt_chatbot_response->close();
+    }
 }
 
+
 // --- Final Success Response ---
-// If we reach here, the user's message was saved successfully.
-// If it was for the chatbot, we also attempted to get and save its response.
-error_log("send_message.php: Script finished successfully."); // Log at the end
+error_log("send_message.php: Script finished successfully.");
 echo json_encode(['status' => 'success', 'message' => 'Message processed successfully.']);
 
 // Close the main database connection
 $conn->close();
 
+?>

@@ -197,7 +197,6 @@ $user = get_user_by_userID($_SESSION['userid']);
     </div>
 
     <script src="../assests/js/script.js"></script>
-    <script src="../assests/js/story.js"></script>
 
 
 </body>
