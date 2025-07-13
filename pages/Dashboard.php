@@ -4,6 +4,8 @@ include("../process/post.php");
 include("../process/reaction_helper.php");
 include("../includes/image_gallery.php");
 
+$loggedInUserId = $_SESSION['userid'];
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -16,96 +18,81 @@ include("../includes/image_gallery.php");
     <link rel="stylesheet" href="../assests/css/friend-add-style.css">
     <link rel="stylesheet" href="../assests/css/reaction-style.css">
     <link rel="stylesheet" href="../assests/css/image.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="../assests/css/story-style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dosis:wght@200..800&display=swap" rel="stylesheet">
     <title>Metro Book</title>
     <style>
-        /* Optional: Custom styling for the modal or button */
-        .modal-body img#storyImagePreview {
-            /* More specific ID for story image preview */
-            max-width: 100%;
-            margin-top: 10px;
+        @import url('https://fonts.googleapis.com/css2?family=Dosis:wght@200..800&display=swap');
+
+        body {
+            font-family: "Dosis", sans-serif;
         }
 
+        /* Custom CSS for the sticky sidebar and scrollbar hiding */
         #left-settings-panel {
-            /* --- Sticky Sidebar CSS --- */
             position: -webkit-sticky;
             /* For Safari */
             position: sticky;
             top: 20px;
-            /* Adjust this value based on your header's height + desired top margin.
-                                    If your header is fixed and, for example, 60px tall, you might set top: 70px (60px + 10px margin).
-                                    If you have no fixed header, you might use a smaller value like 10px or 20px for some spacing. */
+            /* Adjust based on your header's height + desired top margin */
             height: calc(100vh - 40px);
-            /* Calculates height to fill viewport minus top and some bottom space.
-                                            Adjust 40px (e.g., top value + desired bottom margin).
-                                            For example, if top is 70px, you might use height: calc(100vh - 80px); */
-            overflow-y: auto;
-            /* Allows content within the sidebar to scroll if it's too long */
+            /* Calculates height to fill viewport minus top and some bottom space */
+            /* overflow-y: auto; */
+            /* Removed to prevent default scrollbar */
             align-self: flex-start;
             /* Ensures it aligns to the top if the row is a flex container */
-            /* --- End Sticky Sidebar CSS --- */
-
-            background-color: #f8f9fa;
-            /* Light background for visibility */
+            background-color: #252426;
+            /* Dark background */
             padding: 15px;
-            /* min-height: 100vh; */
-            /* Remove or comment out min-height if using calculated height for sticky */
+            border-radius: 10px;
+            /* Rounded corners */
         }
 
-        .stories-section .add-story {
-            cursor: pointer;
-            /* Indicate it's clickable */
+        /* Hide scrollbar for Webkit browsers (Chrome, Safari) */
+        #left-settings-panel::-webkit-scrollbar {
+            display: none;
         }
 
-        /* Ensure reaction panel displays correctly */
-        .group:hover .reaction-panel {
-            display: flex !important;
+        /* Hide scrollbar for Firefox */
+        #left-settings-panel {
+            scrollbar-width: none;
+            /* Firefox */
         }
 
-        .reaction-panel {
-            bottom: 100%;
-            /* Position above the like button */
-            margin-bottom: 5px;
-            /* Add some space */
-        }
 
         /* Custom CSS for the gradient icon */
         .icon-saved {
             width: 32px;
-            /* Increased size */
             height: 32px;
-            /* Increased size */
-            background: linear-gradient(to right, #ee0979, #ff6a00);
-            /* Example gradient */
             border-radius: 8px;
-            /* Slightly more rounded */
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-size: 18px;
-            /* Larger icon inside */
             margin-right: 15px;
-            /* More space between icon and text */
         }
 
-        /* Styling for the list item itself */
         .menu-item {
             display: flex;
             align-items: center;
-            padding: 15px 20px;
-            /* Increased padding for a larger overall item */
-            cursor: pointer;
-            border-radius: 10px;
-            /* Slightly more rounded overall item */
-            transition: background-color 0.2s;
+            padding: 5px 0;
+            margin-bottom: 5px;
+            border-radius: 8px;
+            /* Rounded corners for menu items */
+            transition: background-color 0.3s ease;
         }
 
         .menu-item:hover {
-            background-color: #f0f2f5;
-            /* Light grey on hover, similar to Facebook */
+            background-color: #252426;
+            transform: scale(1.07);
         }
 
         .menu-item-text {
@@ -115,240 +102,722 @@ include("../includes/image_gallery.php");
             /* Slightly larger text */
         }
 
-        /* story new css */
-        body {
+        /*Suiko */
+        .comment-box {
+            display: flex;
+            align-items: center;
             background-color: #f0f2f5;
+            border-radius: 999px;
+            padding: 8px 12px;
+            margin-right: 10px;
+            max-width: 650px;
+            flex: 1;
+            min-width: 100px;
+            transition: box-shadow 0.3s ease;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+            position: relative;
+        }
+
+        .social-icons-wrapper {
+            position: absolute;
+
+            top: 0;
+            /* Adjust as needed */
+            right: 0;
+            /* Adjust as needed */
+            margin-top: 10px;
+            /* Adjust as needed */
+            margin-right: 10px;
+            /* Adjust as needed */
+            z-index: 1000;
+            /* Ensure it's on top */
+            display: flex;
+            /* Allows positioning of toggle and content */
+            flex-direction: column;
+            /* Stacks toggle and content vertically */
+            align-items: flex-end;
+            /* Aligns content to the right */
+        }
+
+        .circular-dropdown-toggle {
+            width: 40px;
+            /* Same size as your social icons */
+            height: 40px;
+            border-radius: 50%;
+            background-color: #333;
+            /* Dark background similar to your example */
+            color: #fff;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 200vh;
-            margin: 0px 40px 0px 0px;
-        }
-
-        .stories-container {
-            display: flex;
-            gap: 1rem;
-            /* Bootstrap's default gap is often .5 or 1rem */
-            padding: 1.5rem;
-            background-color: #fff;
-            border-radius: .5rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            overflow-x: auto;
-            /* Enable horizontal scrolling if many stories */
-            padding-bottom: 2rem;
-            /* Space for scrollbar */
-        }
-
-        .story-card {
-            width: 100px;
-            /* Fixed width */
-            height: 180px;
-            /* Fixed height */
-            border-radius: 10px;
-            /* More rounded corners */
-            overflow: hidden;
-            position: relative;
             cursor: pointer;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            font-size: 1.2em;
+            /* Size of the three dots icon */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease;
+        }
+
+        .circular-dropdown-toggle:hover {
+            background-color: #555;
+            /* Slightly lighter on hover */
+        }
+
+        .social-icons-content {
+            /* Styles for the container of the social icons */
+            margin-top: 10px;
+            /* Space below the toggle icon */
+
+            background-color: white;
+            /* Or transparent, depending on desired look */
+            border-radius: 8px;
+            /* Slightly rounded corners */
+            padding: 8px;
+            /* Padding inside the container */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            /* Subtle shadow */
+            /* Initially hidden, will be controlled by JS */
+            display: none;
+            flex-direction: column;
+            /* This will stack the icons vertically */
+            align-items: center;
+            /* Center the icons within their new vertical stack */
+        }
+
+
+        /* Add these new styles (from previous response) */
+        .social-icons-wrapper {
+            position: absolute;
+            top: 0;
+            /* Adjust as needed */
+            right: 0;
+            /* Adjust as needed */
+            margin-top: 10px;
+            /* Adjust as needed */
+            margin-right: 10px;
+            /* Adjust as needed */
+            z-index: 1000;
+            /* Ensure it's on top */
+            display: flex;
+            /* Allows positioning of toggle and content */
+            flex-direction: column;
+            /* Stacks toggle and content vertically */
+            align-items: flex-end;
+            /* Aligns content to the right */
+        }
+
+        .circular-dropdown-toggle {
+            width: 40px;
+            /* Same size as your social icons */
+            height: 40px;
+            border-radius: 50%;
+            background-color: #333;
+            /* Dark background similar to your example */
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 1.2em;
+            /* Size of the three dots icon */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease;
+        }
+
+        .circular-dropdown-toggle:hover {
+            background-color: #555;
+            /* Slightly lighter on hover */
+        }
+
+        .social-icons-content {
+            /* Styles for the container of the social icons */
+            margin-top: 10px;
+            /* Space below the toggle icon */
+            background-color: white;
+            /* Or transparent, depending on desired look */
+            border-radius: 8px;
+            /* Slightly rounded corners */
+            padding: 8px;
+            /* Padding inside the container */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            /* Subtle shadow */
+            /* Initially hidden, will be controlled by JS */
+            display: none;
+            flex-direction: column;
+            /* This will stack the icons vertically */
+            align-items: center;
+            /* Center the icons within their new vertical stack */
+        }
+
+
+        /* Modify your existing .example-2 styles */
+        .example-2.vertical-layout {
+            /* Apply this specific style when the vertical-layout class is present */
+            display: flex;
+            /* Keep flex for children arrangement */
+            flex-direction: column;
+            /* Stack icons vertically */
+            align-items: center;
+            /* Center them horizontally */
+            gap: 2px;
+            /* Space between vertical icons */
+        }
+
+        /* Ensure individual icon content still displays correctly */
+        .example-2 .icon-content {
+            margin: 0;
+            /* Remove horizontal margin for vertical layout */
+            margin-bottom: 5px;
+            /* Add some vertical spacing if needed */
+            position: relative;
+            /* Keep for tooltips */
+            display: flex;
+            /* Make icon content a flex container to align icon and tooltip */
+            align-items: center;
+            /* Vertically align icon and tooltip */
+            width: 100%;
+            /* Ensure it takes full width for alignment */
+            justify-content: flex-start;
+            /* Align icon to the start */
+        }
+
+        /* MODIFY THIS SECTION FOR TOOLTIP PLACEMENT */
+        .example-2 .icon-content .tooltip {
+            position: absolute;
+            left: auto;
+            /* Reset left */
+            right: calc(100% + 10px);
+            /* Position to the right of the icon-content */
+            top: 50%;
+            /* Center vertically relative to icon-content */
+            transform: translateY(-50%);
+            /* Adjust for perfect vertical centering */
+
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 5px;
+            opacity: 0;
+            visibility: hidden;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            /* Prevent text from wrapping */
+        }
+
+        .example-2 .icon-content:hover .tooltip {
+            opacity: 1;
+            visibility: visible;
+            /* top: -50px; */
+            /* Remove or comment this out */
+            /* The new top/left/transform properties defined above will take effect */
+        }
+
+        .example-2 .icon-content a {
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            /* Keep this as flex for the icon itself */
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: #4d4d4d;
+            background-color: #fff;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .example-2 .icon-content a:hover {
+            box-shadow: 3px 2px 45px 0px rgb(0 0 0 / 12%);
+            color: white;
+        }
+
+        .example-2 .icon-content a svg,
+        .example-2 .icon-content a i {
+            /* Added 'i' for Font Awesome icons */
+            position: relative;
+            z-index: 1;
+            width: 20px;
+            height: 20px;
+        }
+
+        .example-2 .icon-content a .filled {
+            position: absolute;
+            top: auto;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0;
+            background-color: #000;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .example-2 .icon-content a:hover .filled {
+            height: 100%;
+        }
+
+        /* Color specific tooltips and filled backgrounds */
+        .example-2 .icon-content a[data-social="spotify"] .filled,
+        .example-2 .icon-content a[data-social="spotify"]~.tooltip {
+            background-color: #1db954;
+        }
+
+        .example-2 .icon-content a[data-social="pinterest"] .filled,
+        .example-2 .icon-content a[data-social="pinterest"]~.tooltip {
+            background-color: #bd081c;
+        }
+
+        .example-2 .icon-content a[data-social="dribbble"] .filled,
+        .example-2 .icon-content a[data-social="dribbble"]~.tooltip {
+            background-color: #ea4c89;
+        }
+
+        .example-2 .icon-content a[data-social="telegram"] .filled,
+        .example-2 .icon-content a[data-social="telegram"]~.tooltip {
+            background-color: #0088cc;
+        }
+
+        /* postmodal scroll */
+        /* Styles for the overall modal container */
+        .post-modal {
+            margin-top: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            /* Adjust as needed */
+            max-width: 500px;
+            /* Adjust max width */
             display: flex;
             flex-direction: column;
-            justify-content: flex-end;
-            align-items: center;
-            background-color: #eee;
-            /* Placeholder for actual story content */
-            transition: transform 0.2s ease-in-out;
+            /* This is important for header, body, footer stacking */
+            max-height: 90vh;
+            /* Limit the overall height of the modal (e.g., 90% of viewport height) */
+        }
+
+        /* Styles for the modal header and footer */
+        .post-modal-header,
+        .post-modal-footer {
+            /* Your existing styles for header/footer */
+            padding: 15px 20px;
+            background-color: #f0f2f5;
+            /* Example background */
             flex-shrink: 0;
-            /* Prevent cards from shrinking */
+            /* Prevents header/footer from shrinking */
         }
 
-        .story-card:hover {
-            transform: translateY(-5px);
+        .post-modal-header {
+            border-bottom: 1px solid #ddd;
         }
 
-        .story-card .story-avatar {
+        .post-modal-footer {
+            border-top: 1px solid #ddd;
+            text-align: right;
+            /* Example */
+        }
+
+        /* THE KEY STYLES FOR THE SCROLLABLE BODY */
+        .post-modal-body {
+            flex-grow: 1;
+            /* Allows the body to take up available space */
+            overflow-y: auto;
+            /* Enables vertical scrollbar if content overflows */
+            padding: 20px;
+        }
+
+        /* Optional: Style the scrollbar (for better aesthetics) */
+        .post-modal-body::-webkit-scrollbar {
+            width: 8px;
+            /* Width of the scrollbar */
+        }
+
+        .post-modal-body::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            /* Color of the scrollbar track */
+            border-radius: 10px;
+        }
+
+        .post-modal-body::-webkit-scrollbar-thumb {
+            background: #888;
+            /* Color of the scrollbar thumb */
+            border-radius: 10px;
+        }
+
+        .post-modal-body::-webkit-scrollbar-thumb:hover {
+            background: #555;
+            /* Color of the scrollbar thumb on hover */
+        }
+
+        #preview-container {
+            margin-top: 15px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            max-height: 300px;
+            /* You can adjust this height */
+            overflow-y: auto;
+        }
+
+        #preview-container img {
+            width: 100px;
+            /* Sets a fixed width for the preview */
+            height: 100px;
+            /* Sets a fixed height for the preview */
+            object-fit: cover;
+            /* Ensures the image covers the area without distortion */
+            border-radius: 5px;
+            /* Adds slightly rounded corners to the preview */
+        }
+
+        /* More specific selector */
+        .post-modal-body .post-textarea {
+            height: 80px !important;
+            /* Or a smaller pixel value like 50px */
+            min-height: 50px !important;
+            /* Ensure it doesn't shrink smaller than this */
+            box-sizing: border-box;
+            /* Important for consistent sizing */
+            resize: none;
+            /* Allow user to resize vertically, if desired */
+        }
+
+        .top-right-close {
             position: absolute;
             top: 10px;
-            left: 10px;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            border: 2px solid #1877f2;
-            /* Facebook blue for avatar ring */
-            z-index: 1;
-            object-fit: cover;
-            /* Ensure avatar image covers the circle */
+            right: 15px;
+            font-size: 24px;
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            transition: color 0.2s ease-in-out;
         }
 
-        .story-card .story-name {
-            color: #fff;
-            font-size: 0.8em;
-            text-align: center;
-            margin-bottom: 10px;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
-            width: 100%;
-            padding-top: 20px;
-            padding-bottom: 5px;
-            box-sizing: border-box;
+        .top-right-close:hover {
+            color: #000;
         }
 
-        /* Specific styling for 'Add Your Story' card */
-        .story-card.add-story {
-            background-color: #fff;
-            border: 1px dashed #ccc;
+        .dropdown-menu {
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: #1877f2;
-            font-weight: bold;
-        }
-
-        .story-card.add-story .add-icon {
-            font-size: 2em;
-            margin-bottom: 5px;
-        }
-
-        /* Background images for story cards (replace with actual images) */
-        /* These are custom styles, Bootstrap doesn't provide background images this way */
-        .story-card[data-story-image="story-benjamin.jpg"] {
-            background: url('https://via.placeholder.com/100x180/e91e63/ffffff?text=Story1') center/cover no-repeat;
-        }
-
-        .story-card[data-story-image="story-ethan.jpg"] {
-            background: url('https://via.placeholder.com/100x180/9c27b0/ffffff?text=Story2') center/cover no-repeat;
-        }
-
-        .story-card[data-story-image="story-liam-1.jpg"] {
-            background: url('https://via.placeholder.com/100x180/00bcd4/ffffff?text=Story3') center/cover no-repeat;
-        }
-
-        .story-card[data-story-image="story-liam-2.jpg"] {
-            background: url('https://via.placeholder.com/100x180/4caf50/000000?text=Story4') center/cover no-repeat;
-        }
-
-        .story-card[data-story-image="story-liam-3.jpg"] {
-            background: url('https://via.placeholder.com/100x180/ffc107/000000?text=Story5') center/cover no-repeat;
-        }
-
-        .story-card[data-story-image="story-liam-4.jpg"] {
-            background: url('https://via.placeholder.com/100x180/ff5722/ffffff?text=Story6') center/cover no-repeat;
-        }
-
-        /* Modal specific styling to match the dark theme */
-        .modal-content.custom-dark-modal {
-            background-color: #242526;
-            /* Dark background */
-            color: #fff;
-            /* White text */
-        }
-
-        .modal-header.custom-dark-modal-header {
-            border-bottom: 1px solid #444;
-            /* Darker border */
-        }
-
-        .modal-header.custom-dark-modal-header .btn-close {
-            filter: invert(1);
-            /* Invert close button color for dark background */
-        }
-
-        /* Inside your <style> tags or your custom CSS file */
-        .story-card.story-bg-benjamin {
-            background: url('../assests/images/post_images/story-img-3.jpg') center/cover no-repeat;
-            /* Ensure the existing placeholder background for this specific card is overridden or removed */
-            /* If you have: .story-card:nth-child(2) { background: url('...') } then this new rule will override it */
-        }
-
-        /* story modal for reaction buttons */
-        .reactions-container {
-            padding-left: 15px;
-            /* Adjust as needed for spacing from the image */
-        }
-
-        .reaction-button {
-            background-color: transparent;
-            /* No background */
-            border: none;
-            /* No border */
-            padding: 5px;
-            /* Some padding around the icon */
-            cursor: pointer;
-            /* Indicates it's clickable */
-            transition: transform 0.2s ease-in-out;
-            /* Smooth hover effect */
-            display: flex;
-            /* Use flex to easily center the icon if needed */
-            justify-content: center;
-            align-items: center;
-        }
-
-        .reaction-button:hover {
-            transform: scale(1.1);
-            /* Slightly enlarge on hover */
-        }
-
-        .reaction-button:focus {
-            outline: none;
-            /* Remove outline on focus */
-            box-shadow: none;
-            /* Remove default focus shadow */
-        }
-
-        .reaction-icon {
-            width: 30px;
-            /* Adjust size of your reaction icons */
-            height: 30px;
-            /* Ensure aspect ratio is maintained */
-            object-fit: contain;
-            /* Keep the icon within its bounds */
-        }
-
-        /* Optional: Adjust modal body padding if needed */
-        .custom-dark-modal .modal-body {
-            padding: 20px;
-            /* Example padding */
-        }
-
-        .story {
-            flex: 0 0 160px;
-            height: 240px;
-            border-radius: 16px;
-            overflow: hidden;
-            position: relative;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-            cursor: pointer;
+            gap: 6px;
+            /* space between items */
+            padding: 8px;
             background-color: #fff;
-            transition: transform 0.4s ease, box-shadow 0.4s ease, filter 0.3s ease;
-            transform-origin: center;
-            will-change: transform, box-shadow;
+            border-radius: 12px;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+            border: none;
+            min-width: 200px;
+            z-index: 999;
+            animation: dropdownFade 0.2s ease-out;
         }
 
-        .stories-container {
-            padding: 10px 15px;
+        .dropdown-item {
             display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .dropdown-item i {
+            margin-right: 10px;
+            font-size: 16px;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f0f0f0;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transform: translateY(-1px);
+        }
+
+        .check-icon {
+            color: green;
+            font-size: 14px;
+            display: none;
+        }
+
+        @keyframes dropdownFade {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .post-modal {
+                height: 75%;
+            }
+        }
+
+        /**end */
+
+        /* post dropdown */
+
+        /* Styling for the dropdown container */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Styling for the dropdown toggle button */
+        .dropdown-toggle {
+            background-color: #e0e0e0;
+            /* Light gray background for a modern look */
+            color: #333;
+            /* Darker text for better contrast */
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            /* Slightly rounded corners */
+            cursor: pointer;
+            font-size: 15px;
+            /* Slightly smaller font for a sleek look */
+            font-weight: 500;
+            /* Medium weight */
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            /* Space between icon and text */
+            transition: background-color 0.3s ease, box-shadow 0.2s ease, color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            /* Subtle shadow */
+            outline: none;
+            /* Remove default focus outline */
+        }
+
+        .dropdown-toggle:hover {
+            background-color: #d0d0d0;
+            /* Slightly darker on hover */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            /* More pronounced shadow on hover */
+        }
+
+        .dropdown-toggle:focus {
+            background-color: #c0c0c0;
+            /* Even darker on focus */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            color: #1a1a1a;
+        }
+
+        /* Styling for the dropdown menu */
+        .dropdown-menu {
+            display: none;
+            /* Hidden by default */
+            position: absolute;
+            background-color: #ffffff;
+            /* White background for the menu */
+            min-width: 180px;
+            box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            /* Ensure it's above other content */
+            border-radius: 8px;
+            overflow: hidden;
+            /* Ensures rounded corners apply to content */
+            margin-top: 4px;
+            /* Space below the toggle button */
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            left: 0;
+            /* Align menu to the left of the toggle button */
+        }
+
+        /* Show the dropdown menu when the dropdown container is hovered or the toggle button is focused */
+        .dropdown:hover .dropdown-menu,
+        .dropdown-toggle:focus+.dropdown-menu,
+        /* For keyboard navigation */
+        .dropdown:focus-within .dropdown-menu {
+            /* More robust for focus inside dropdown */
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Styling for individual dropdown items */
+        .dropdown-item {
+            color: #333;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
             gap: 10px;
-            overflow-x: auto;
-            padding-bottom: 10px;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
+            background-color: #ffffff;
+            border: none;
+            width: 100%;
+            /* Make button fill the width */
+            text-align: left;
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            font-size: 15px;
+            font-weight: 400;
+            margin: 0;
+            padding: 0;
         }
 
-        .story:hover {
-            transform: scale(1.08) rotateZ(-0.5deg);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+        .dropdown-item:hover {
+            background-color: #f0f0f0;
+            /* Light gray on hover */
+            color: #007bff;
+            /* Primary blue text on hover */
         }
 
-        .stories-section {
-            overflow-x: auto;
-            white-space: nowrap;
-            -webkit-overflow-scrolling: touch;
-            margin-top: 2px;
-            padding: 10px;
+        /* Styling for the check icon */
+        .check-icon {
+            margin-left: auto;
+            /* Pushes the checkmark to the right */
+            color: #28a745;
+            /* Green color for checkmark */
+            display: none;
+            /* Hidden by default */
+            font-size: 0.9em;
+            /* Slightly smaller checkmark */
+        }
+
+        /* Show check icon when the specific dropdown item is hovered or focused */
+        .dropdown-item:hover .check-icon,
+        .dropdown-item:focus .check-icon {
+            display: inline-block;
+        }
+
+        /* Icons styling */
+        .fa-solid,
+        .fas {
+            font-size: 1em;
+            color: #666;
+            /* Slightly muted icon color */
+        }
+
+        .dropdown-item:hover .fa-solid,
+        .dropdown-item:hover .fas {
+            color: #007bff;
+            /* Blue icon on hover */
+        }
+
+        /* Rotate chevron icon when dropdown is open (via hover/focus on parent) */
+        .dropdown:hover .fa-chevron-down,
+        .dropdown:focus-within .fa-chevron-down {
+            transform: rotate(180deg);
+        }
+
+        .fa-chevron-down {
+            transition: transform 0.3s ease;
+        }
+
+        /* Ensure text is visible by adjusting color and removing unnecessary display: none */
+        .dropdown-toggle::after {
+            display: none !important;
+            /* Keep this if you don't want the default Bootstrap-like caret */
+        }
+
+        .textWhite {
+            color: white;
+        }
+
+        .iconColor {
+            background: linear-gradient(20deg, #00E1FD, #FC007A);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+            font-size: 1.5rem;
+        }
+
+        .borderStyle {
+            border: 1px solid;
+            padding: 20px;
+            border-image: linear-gradient(to left, rgb(107, 212, 219), rgb(224, 130, 180)) 1 / 1 / 0 stretch;
+            box-shadow:
+                rgba(107, 212, 219, 0.35) 0px 30px 80px -10px,
+                rgba(224, 130, 180, 0.3) 0px 15px 30px -15px,
+                rgba(221, 219, 224, 0.4) 0px -2px 3px 0px inset;
+
+        }
+
+        .postBorder {
+            border: 1px solid;
+            padding: 20px;
+            border-image: linear-gradient(to left, #e0aa3e, #f9f295) 1 / 1 / 0 stretch;
+            box-shadow:
+                rgba(107, 212, 219, 0.35) 0px 30px 80px -10px,
+                rgba(224, 130, 180, 0.3) 0px 15px 30px -15px,
+                rgba(221, 219, 224, 0.4) 0px -2px 3px 0px inset;
+        }
+
+        .btnDesign {
+            border: 2px solid #C5558E !important;
+            border-radius: 999px !important;
+            background: rgb(255, 255, 255);
+            color: white;
+        }
+
+        .btnDesign:hover {
+            border-color: #0D47A1 !important;
+            box-shadow:
+                0 0 15px #a855f7,
+                0 0 30px #9333ea,
+                inset 0 0 20px rgba(168, 85, 247, 0.4);
+        }
+
+        .cmtBoxStyle {
+            background-color: #252426;
+            border: 2px solid #C5558E !important;
+            border-radius: 999px !important;
+        }
+
+        /* new */
+        .post-option:hover {
+            background-color: #252426;
+            transform: scale(1.07);
+            color: black;
+        }
+
+        /* Add this to style the <a> tag as the hoverable area */
+        .create-post-bottom>a {
+            display: block;
+            /* Make the anchor tag take up space */
+            text-decoration: none;
+            /* Keep original style */
+            color: inherit;
+            /* Inherit color from parent or define a base color */
+        }
+
+        /* This is the key: Apply the hover to the <a> and let it affect its child .post-option */
+        .create-post-bottom>a:hover .post-option {
+            background-color: #252426;
+            transform: scale(1.07);
+            color: black;
+        }
+
+        /* Also ensure the color on the span and icon changes if needed */
+        .create-post-bottom>a:hover .post-option span {
+            color: black;
+            /* Or your desired hover color */
+        }
+
+        .create-post-bottom>a:hover .post-option .iconColor {
+            color: black;
+            /* Or your desired hover color */
         }
     </style>
+
 </head>
 
-<body>
+<body style="background: #252426;">
 
     <div class="container-fluid">
         <?php
@@ -361,98 +830,37 @@ include("../includes/image_gallery.php");
         }
         ?>
 
+        <?php
 
+        // Assuming header.php is a full-width navigation bar
+        if (file_exists("../includes/mainStory.php")) {
+            include("../includes/mainStory.php");
+        } else {
+            echo '<nav class="navbar navbar-expand-lg navbar-light bg-light mb-3"><div class="container-fluid"><a class="navbar-brand" href="#">Metro Book (Header Placeholder)</a></div></nav>';
+        }
+        ?>
 
-
-
-
-
-        <div class="stories-container">
-            <div class="story-card add-story" onclick="addYourStory()">
-                <div class="add-icon">+</div>
-                <span>Add Your Story</span>
-            </div>
-
-            <div class="story-card story-bg-benjamin" data-bs-toggle="modal" data-bs-target="#storyModal" data-story-image="../assests/images/post_images/story-img-3.jpg" data-story-name="Benjamin Martinez">
-                <img src="../assests/images/post_images/story-img-3.jpg" alt="Benjamin Martinez" class="story-avatar">
-                <span class="story-name">Benjamin Martinez</span>
-            </div>
-
-            <div class="story-card story-bg-benjamin" data-bs-toggle="modal" data-bs-target="#storyModal" data-story-image="../assests/images/post_images/story-img-4.jpg" data-story-name="Benjamin Martinez">
-                <img src="../assests/images/post_images/story-img-4.jpg" alt="Benjamin Martinez" class="story-avatar">
-                <span class="story-name">Benjamin Martinez</span>
-            </div>
-
-            <div class="story-card story-bg-benjamin" data-bs-toggle="modal" data-bs-target="#storyModal" data-story-image="../assests/images/post_images/story-img-1.jpg" data-story-name="Benjamin Martinez">
-                <img src="../assests/images/post_images/story-img-6.jpg" alt="Benjamin Martinez" class="story-avatar">
-                <span class="story-name">Benjamin Martinez</span>
-            </div>
-
-
-        </div>
-
-        <div class="modal fade" id="storyModal" tabindex="-1" aria-labelledby="storyModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content custom-dark-modal">
-                    <div class="modal-header custom-dark-modal-header">
-                        <h5 class="modal-title" id="storyModalLabel">Story from <span id="storyDate"></span></h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body text-center d-flex justify-content-center align-items-center">
-                        <img id="modalStoryImage" src="../assests/images/post_images/story-img-3.jpg" class="img-fluid rounded me-3" alt="Story Image">
-                        <div class="reactions-container d-flex flex-column">
-                            <button class="reaction-button mb-2">
-                                <img src="path/to/reaction1.png" alt="Reaction 1" class="reaction-icon">
-                            </button>
-                            <button class="reaction-button mb-2">
-                                <img src="path/to/reaction2.png" alt="Reaction 2" class="reaction-icon">
-                            </button>
-                            <button class="reaction-button mb-2">
-                                <img src="path/to/reaction3.png" alt="Reaction 3" class="reaction-icon">
-                            </button>
-                            <button class="reaction-button mb-2">
-                                <img src="path/to/reaction4.png" alt="Reaction 4" class="reaction-icon">
-                            </button>
-                            <button class="reaction-button mb-2">
-                                <img src="path/to/reaction5.png" alt="Reaction 5" class="reaction-icon">
-                            </button>
-                            <button class="reaction-button">
-                                <img src="path/to/reaction6.png" alt="Reaction 6" class="reaction-icon">
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="container-fluid ">
+        <div class="container-fluid" style="background: #252426;">
             <div class="row">
-                <div class="col-lg-3 d-none d-lg-block" id="left-settings-panel">
-                    <h4>Settings Section</h4>
+                <div class="col-lg-3 d-none d-lg-block" id="left-settings-panel"
+                    style="padding: none; background: #252426;">
+                    <h2 class="textWhite">Settings</h2>
                     <li>
                         <a href="savepost.php" class="menu-item text-decoration-none">
-                            <div class="icon-saved">
-                                <i class="fas fa-bookmark"></i>
+                            <div class="icon-saved"
+                                style="background: linear-gradient(to right,rgb(255, 25, 25),rgb(48, 165, 255));">
+                                <i class="fas fa-bookmark textWhite"></i>
                             </div>
-                            <span class="menu-item-text">Saved</span>
-                        </a>
-                    </li>
-
-                    <li>
-                        <a href="../pages/storyhistory.php" class="menu-item text-decoration-none">
-                            <div class="icon-saved" style="background: linear-gradient(to right, #6a11cb, #2575fc);">
-                                <i class="fas fa-history"></i>
-                            </div>
-                            <span class="menu-item-text">Story History</span>
+                            <span class="menu-item-text textWhite">Saved</span>
                         </a>
                     </li>
 
                     <li>
                         <a href="hidepost.php" class="menu-item text-decoration-none">
                             <div class="icon-saved" style="background: linear-gradient(to right, #dc3545, #fd7e14);">
-                                <i class="fas fa-eye-slash"></i>
+                                <i class="fas fa-eye-slash textWhite"></i>
                             </div>
-                            <span class="menu-item-text">Hide Post</span>
+                            <span class="menu-item-text textWhite">Hide Post</span>
                         </a>
                     </li>
                     <?php
@@ -462,18 +870,18 @@ include("../includes/image_gallery.php");
                         <li>
                             <a href="report-notifications.php" class="menu-item text-decoration-none">
                                 <div class="icon-saved" style="background: linear-gradient(to right, #dc3545, #ef476f);">
-                                    <i class="fas fa-flag"></i>
+                                    <i class="fas fa-flag textWhite"></i>
                                 </div>
-                                <span class="menu-item-text">Report Notification</span>
+                                <span class="menu-item-text textWhite">Report Notification</span>
                             </a>
                         </li>
 
                         <li>
                             <a href="request-notifications.php" class="menu-item text-decoration-none">
                                 <div class="icon-saved" style="background: linear-gradient(to right, #28a745, #82e0aa);">
-                                    <i class="fas fa-bell"></i>
+                                    <i class="fas fa-bell textWhite"></i>
                                 </div>
-                                <span class="menu-item-text">Request Notification</span>
+                                <span class="menu-item-text textWhite">Request Notification</span>
                             </a>
                         </li>
 
@@ -481,59 +889,111 @@ include("../includes/image_gallery.php");
 
                     <li>
                         <a href="#" class="menu-item text-decoration-none">
-                            <div class="icon-saved" style="background: linear-gradient(to right, #6c757d, #adb5bd);">
-                                <i class="fas fa-question-circle"></i>
+                            <div class="icon-saved"
+                                style="background: linear-gradient(to right,rgb(31, 241, 94),rgb(148, 44, 196));">
+                                <i class="fas fa-question-circle textWhite"></i>
                             </div>
-                            <span class="menu-item-text">Help & Support</span>
+                            <span class="menu-item-text textWhite">Help & Support</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="menu-item text-decoration-none">
-                            <div class="icon-saved" style="background: linear-gradient(to right, #17a2b8, #5bc0de);">
-                                <i class="fas fa-info-circle"></i>
+                        <a href="./aboutus.php" class="menu-item text-decoration-none">
+                            <div class="icon-saved" style="background: linear-gradient(to right,rgb(255, 52, 153),rgb(57, 60, 255));">
+                                <i class="fas fa-info-circle textWhite"></i>
                             </div>
-                            <span class="menu-item-text">About Us</span>
+                            <span class="menu-item-text textWhite">About Us</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="" class="menu-item text-decoration-none">
+                            <div class="icon-saved" style="background: linear-gradient(60deg,rgb(226, 224, 82),rgb(238, 180, 22));">
+                                <i class="fa-solid fa-star textWhite"></i>
+                            </div>
+                            <span class="menu-item-text textWhite">Rate Our App</span>
+                        </a>
+                    </li>
+                    <!-- Admin Panel -->
+                    <li>
+                        <a href="#" class="menu-item text-decoration-none" data-bs-toggle="modal"
+                            data-bs-target="#adminPanelModal">
+                            <div class="icon-saved" style="background: linear-gradient(60deg,rgb(16, 119, 134),rgb(56, 205, 250));">
+                                <i class="fa-solid fa-user-tie textWhite"></i>
+                            </div>
+                            <span class="menu-item-text textWhite">Admin Panel</span>
                         </a>
                     </li>
                 </div>
+
+                <div class="modal" id="adminPanelModal" tabindex="-1" aria-labelledby="adminPanelModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="adminPanelModalLabel">Admin Panel</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-5">
+                                    <label for="loginIdentifier"
+                                        class="block text-gray-700 text-sm font-medium mb-2">Email Address</label>
+                                    <input type="email" id="loginIdentifier"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out placeholder-gray-400"
+                                        placeholder="your email@example.com" aria-required="true">
+                                </div>
+                                <div class="mb-6">
+                                    <label for="password"
+                                        class="block text-gray-700 text-sm font-medium mb-2">Password</label>
+                                    <input type="password" id="password"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out placeholder-gray-400"
+                                        placeholder="Enter your password" aria-required="true">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button class="btn btn-primary">Save changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="col-lg-9">
-                    <div class="create-post-section">
+                    <div class="create-post-section borderStyle" style="background: #252426;">
                         <div class="create-post-top">
-                            <img src="../assests/images/post_images/<?= getUserPorfileImageByID($_SESSION['userid']) ?>" alt="User Profile Picture" class="profile-pic">
+                            <img src="../assests/images/post_images/<?= getUserPorfileImageByID($_SESSION['userid']) ?>"
+                                alt="User Profile Picture" class="profile-pic">
                             <div class="post-input-container">
                                 <p>What's on your mind?</p>
                             </div>
                         </div>
                         <div class="create-post-bottom">
-                            <a href="../pages/groupcall.php">
+                            <a href="../pages/groupcall.php" style="text-decoration: none;">
                                 <div class="post-option">
-                                    <i class="fa-solid fa-video live-video"></i>
-                                    <span>Live Video</span>
+                                    <i class="fa-solid fa-video live-video iconColor"></i>
+                                    <span style="color: white;">Group Call</span>
                                 </div>
                             </a>
 
-                            <div class="post-option">
-                                <i class="fa-solid fa-images photo-video"></i>
-                                <span>Photo / Video</span>
-                            </div>
-                            <div class="post-option">
-                                <i class="fa-solid fa-face-smile feeling-activity"></i>
-                                <span>Feeling / Activity</span>
-                            </div>
+                            <a href="#" style="text-decoration: none;">
+                                <div class="post-option">
+                                    <i class="fa-solid fa-images photo-video iconColor"></i>
+                                    <span style="color: white;">Photo</span>
+                                </div>
+                            </a>
                         </div>
                     </div>
 
 
                     <?php
 
-                    $allpost = getAllpost();
+                    $allpost = getAllpost($_SESSION['userid']);
                     while ($row = $allpost->fetch_assoc()) { ?>
 
-                        <div class="post-section" id="<?= $row['postID'] ?>">
+                        <div class="post-section postBorder" style="background: #252426;" id="<?= $row['postID'] ?>">
                             <?php
                             $postuserID = $row['userID'];
                             $sessionUserID = $_SESSION['userid'] ?? null; // make sure session userid is set
-
+                        
                             // Decide link target
                             if ($postuserID == $sessionUserID) {
                                 $profileLink = "profile.php";
@@ -542,12 +1002,14 @@ include("../includes/image_gallery.php");
                             }
                             ?>
 
-                            <div class="post-header">
+                            <div class="post-header ">
                                 <a href="<?= $profileLink ?>">
-                                    <img src="../assests/images/post_images/<?= getUserPorfileImageByID($postuserID) ?>" alt="User Profile Picture" class="profile-pic">
+                                    <img src="../assests/images/post_images/<?= getUserPorfileImageByID($postuserID) ?>"
+                                        alt="User Profile Picture" class="profile-pic">
                                 </a>
                                 <div class="user-info">
-                                    <a href="<?= $profileLink ?>" class="user-name">
+                                    <a href="<?= $profileLink ?>" class="user-name"
+                                        style="text-decoration: none; color: white;">
                                         <?php echo htmlspecialchars(getUserNamebyID($postuserID)); ?>
                                     </a>
                                     <div class="post-time">
@@ -566,48 +1028,103 @@ include("../includes/image_gallery.php");
                                 </div>
                             </div>
 
-                            <div class="post-content">
+                            <div class="post-content textWhite">
                                 <p><?php echo $row["content"]; ?></p>
                             </div>
-                            <div class="dropdown ms-auto position-absolute top-0 end-0 mt-2" style="margin-right: 60px;">
-                                <button class="btn btn-light btn-sm menu-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fa-solid fa-ellipsis-vertical"></i>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end">
-                                    <?php if ($_SESSION['userid'] == $row['userID']) { ?>
-                                        <button class="dropdown-item" onclick="deletePost(<?= $row['postID'] ?>)">Delete</button>
-                                        <button class="dropdown-item" onclick="hidePost(123)">Edit</button>
-                                    <?php } else { ?>
-                                        <button class="dropdown-item" onclick="hidePost(<?= $row['postID'] ?>)">Hide</button>
-                                        <button class="dropdown-item" data-bs-toggle="modal"
-                                            data-bs-target="#reportModal">Report</button>
-                                        <button class="dropdown-item" onclick="savepost(<?= $row['postID'] ?>)">Save</button>
-                                    <?php } ?>
-                                </ul>
+
+
+                            <!-- Custom dropdown content styled like the second one -->
+                            <div class="social-icons-wrapper position-absolute top-0 end-0 mt-2 me-4">
+
+                                <div class="circular-dropdown-toggle" id="socialDropdownToggle_<?= $row['postID'] ?>">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </div>
+
+                                <div class="social-icons-content" id="socialIconsContent_<?= $row['postID'] ?>"
+                                    style="display: none; background-color:grey;">
+                                    <div class="example-2 vertical-layout">
+                                        <?php
+                                        $user = get_user_by_userID($_SESSION['userid']);
+                                        if ($_SESSION['userid'] == $row['userID']) { ?>
+                                            <div class="icon-content">
+                                                <a data-social="pinterest" onclick="deletePost(<?= $row['postID'] ?>)">
+                                                    <div class="filled"></div>
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </a>
+                                                <div class="tooltip">DELETE</div>
+                                            </div>
+                                        <?php } else { ?>
+                                            <div class="icon-content">
+                                                <a data-social="pinterest" onclick="hidePost(<?= $row['postID'] ?>)">
+                                                    <div class="filled"></div>
+                                                    <i class="fas fa-eye-slash"></i>
+                                                </a>
+                                                <div class="tooltip">HIDE</div>
+                                            </div>
+                                            <div class="icon-content">
+                                                <a data-social="dribbble">
+                                                    <div class="filled"></div>
+                                                    <i class="fas fa-bookmark" onclick="savepost(<?= $row['postID'] ?>)"></i>
+                                                </a>
+                                                <div class="tooltip">SAVE</div>
+                                            </div>
+
+
+                                        <?php }
+                                        if ($user['userType'] == "admin" && $_SESSION['userid'] != $row['userID']) { ?>
+                                            <div class="icon-content">
+                                                <a data-social="pinterest" onclick="ban_post(<?= $row['postID'] ?>)">
+                                                    <div class="filled"></div>
+                                                    <i class="fa-solid fa-ban"></i>
+                                                </a>
+                                                <div class="tooltip">BAN</div>
+                                            </div>
+
+                                        <?php }
+                                        if ($user['userType'] != "admin" && $_SESSION['userid'] != $row['userID']) { ?>
+                                            <div class="icon-content">
+                                                <a href="#" data-social="telegram" data-bs-toggle="modal"
+                                                    data-bs-target="#reportModal" data-post-id="<?= $row['postID'] ?>">
+                                                    <div class="filled"></div>
+                                                    <i class="fas fa-flag"></i>
+                                                </a>
+                                                <div class="tooltip">REPORT</div>
+                                            </div>
+
+                                        <?php }
+                                        ?>
+
+
+                                    </div>
+                                </div>
                             </div>
+
+
+
                             <?php $images = getImagesByPostId($conn, $row['postID']); ?>
-                            <?php renderGallery($images); ?>
+                            <?php renderGallery($images, $row['postID']); ?>
 
                             <div class="post-interactions-count">
                                 <a href="#" data-bs-toggle="modal" data-bs-target="#reactionModal"
-                                    onclick="setSessionAndLoad(<?= $row['postID'] ?>,'All')">
+                                    onclick="setSessionAndLoad(<?= $row['postID'] ?>,'All')" style="text-decoration: none;">
                                     <div class="likes-count" data-postid="<?= $row['postID'] ?>">
                                         <?php have_reaction($row['postID']); ?>
                                         <span>
-                                            <h4 id="like_text">
+                                            <h7 id="like_text" style="color: white;">
                                                 <?php
                                                 $summary = getReactionSummary($row["postID"], $_SESSION["userid"], $conn);
                                                 if (!empty($summary)) {
                                                     echo $summary;
                                                 }
                                                 ?>
-                                            </h4>
+                                            </h7>
                                         </span>
                                     </div>
                                 </a>
 
                                 <div class="comments-count">
-                                    <a href="../pages/comment_postframe.php?postID=<?= $row['postID'] ?> ">1K Comments</a>
+                                    <a href="../pages/comment_postframe.php?postID=<?= $row['postID'] ?> "
+                                        style="text-decoration: none; color: white;"><?php get_comment_count($row["postID"]) ?></a>
                                 </div>
                             </div>
 
@@ -619,7 +1136,7 @@ include("../includes/image_gallery.php");
                                     <!-- LIKE BUTTON -->
                                     <div class="group position-relative">
                                         <button type="button"
-                                            class="btn btn-outline-primary d-flex align-items-center gap-2 px-3 py-2 rounded-pill shadow-sm">
+                                            class="btn btnDesign d-flex align-items-center gap-2 px-3 py-2 rounded-pill shadow-sm">
                                             <div class="icon-container d-flex align-items-center gap-2">
                                                 <?php
                                                 $have_react = already_react($row['postID'], $_SESSION['userid'], $conn);
@@ -628,10 +1145,11 @@ include("../includes/image_gallery.php");
                                                 <?php if ($currentReaction): ?>
                                                     <img src="../assests/images/icon/<?php echo $currentReaction; ?>.png"
                                                         alt="<?php echo $currentReaction; ?>" class="reaction-img" />
-                                                    <span class="text-muted"><?php echo $currentReaction; ?></span>
+                                                    <span class="text"
+                                                        style="color: white;"><?php echo $currentReaction; ?></span>
                                                 <?php else: ?>
-                                                    <i class="fa-regular fa-thumbs-up"></i>
-                                                    <span class="text-muted">Like</span>
+                                                    <i class="fa-regular fa-thumbs-up textWhite"></i>
+                                                    <span class="text" style="color: white;">Like</span>
                                                 <?php endif; ?>
                                             </div>
                                         </button>
@@ -639,144 +1157,70 @@ include("../includes/image_gallery.php");
                                         <!-- Reaction Panel -->
                                         <div class="reaction-panel">
                                             <?php foreach (["Like", "Love", "Haha", "Wow", "Sad", "Angry"] as $reaction): ?>
-                                                <img src="../assests/images/icon/<?php echo $reaction; ?>.png" class="reaction-img"
-                                                    title="<?php echo $reaction; ?>" data-reaction="<?php echo $reaction; ?>" />
+                                                <img src="../assests/images/icon/<?php echo $reaction; ?>.png"
+                                                    class="reaction-img" title="<?php echo $reaction; ?>"
+                                                    data-reaction="<?php echo $reaction; ?>" />
                                             <?php endforeach; ?>
                                         </div>
                                     </div>
 
                                     <!-- Comment box -->
-                                    <div class="comment-box">
-                                        <img src="../assests/images/post_images/1747928434_682f457218aad.png" alt="profile"
-                                            class="avatar">
-                                        <input type="text" class="comment-input" placeholder="Write a comment...">
-                                        <button class="send-btn" type="button" onclick="write_comment(<?php echo $postID; ?>)">
-                                            <i class="fas fa-paper-plane"></i>
+                                    <div class="comment-box cmtBoxStyle">
+                                        <img src="../assests/images/post_images/<?php echo getUserPorfileImageByID($sessionUserID) ?>"
+                                            alt="profile" class="avatar">
+                                        <input type="text" class="comment-input" id="comment_input" style="color: white;"
+                                            placeholder="Write a comment...">
+                                        <button class="send-btn" type="button"
+                                            onclick="write_comment(<?php echo $row['postID'] ?>)">
+                                            <i class="fas fa-paper-plane iconColor"></i>
                                         </button>
                                     </div>
-
                                 </div>
 
                             </form>
 
                         </div>
                     <?php } ?>
-                    <div class="post-section">
-                        <div class="post-header">
-                            <img src="../assests/images/post_images/porfileimage.png" alt="User Profile Picture" class="profile-pic">
-                            <div class="user-info">
-                                <div class="user-name">Myo Aung</div>
-                                <div class="post-time">20h ago <i class="fa-solid fa-earth-americas"></i></div>
-                            </div>
-                        </div>
-                        <div class="post-content">
-                            <p>Myo Aung back to the Group ; ;</p>
-                        </div>
+    
 
-                        <div class="dropdown ms-auto position-absolute top-0 end-0 mt-2" style="margin-right: 60px;">
-                            <button class="btn btn-light btn-sm menu-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fa-solid fa-ellipsis-vertical "></i>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><button class="dropdown-item" href="#">Save post</button></li>
-                                <li><a class="dropdown-item" href="#">Edit post</a></li>
-                                <li><a class="dropdown-item" href="#">Delete Post</a></li>
-                            </ul>
-                        </div>
-
-                        <div class="post-interactions-count">
-                            <div class="likes-count">
-                                <a href="#" data-bs-toggle="modal" onclick="loadReactedUsers(postId)">
-                                    <i class="fa-solid fa-thumbs-up"></i> <span>John Muriithi and 108 others</span>
-                                </a>
-
-                            </div>
-                            <div class="comments-count">
-                                <span>1k Comments</span>
-                            </div>
-                        </div>
-                        <div class="post-interactions-buttons">
-                            <div class="interaction-button">
-                                <i class="fa-regular fa-thumbs-up"></i> <span>Like</span>
-                            </div>
-                            <div class="interaction-button">
-                                <i class="fa-regular fa-comment"></i> <span>Comment</span>
-                            </div>
-                            <div class="interaction-button">
-                                <i class="fa-solid fa-share"></i> <span>Share</span>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div class="comments-count">
-                        <span>1k Comments</span>
-                    </div>
-                </div>
-                <div class="post-interactions-buttons">
-                    <div class="interaction-button">
-                        <i class="fa-regular fa-thumbs-up"></i> <span>Like</span>
-                    </div>
-                    <div class="interaction-button">
-                        <i class="fa-regular fa-comment"></i> <span>Comment</span>
-                    </div>
-                    <div class="interaction-button">
-                        <i class="fa-solid fa-share"></i> <span>Share</span>
-                    </div>
-                </div>
-            </div>
-            <div class="post-section">
-                <div class="post-header">
-                    <img src="../assests/images/icon/m.jpg" alt="User Profile Picture" class="profile-pic">
-                    <div class="user-info">
-                        <div class="user-name">Myo Aung</div>
-                        <div class="post-time">20h ago <i class="fa-solid fa-earth-americas"></i></div>
-                    </div>
-                </div>
-                <div class="post-content">
-                    <p>Metro Social media</p>
-                    <img src="../assests/images/icon/m.jpg" alt="Post Image">
-                </div>
-                <div class="post-interactions-count">
-                    <div class="likes-count">
-                        <i class="fa-solid fa-thumbs-up"></i> <span>John Muriithi and 108 others</span>
-                    </div>
-                    <div class="comments-count">
-                        <span>1k Comments</span>
-                    </div>
-                </div>
-                <div class="post-interactions-buttons">
-                    <div class="interaction-button">
-                        <i class="fa-regular fa-thumbs-up"></i> <span>Like</span>
-                    </div>
-                    <div class="interaction-button">
-                        <i class="fa-regular fa-comment"></i> <span>Comment</span>
-                    </div>
-                    <div class="interaction-button">
-                        <i class="fa-solid fa-share"></i> <span>Share</span>
-                    </div>
-                </div>
-            </div>
-
-            <form action="../process/post.php" method="post" enctype="multipart/form-data">
+            <form action="../process/post.php" method="post" enctype="multipart/form-data" style="margin-top:20px;">
                 <div class="post-modal-overlay">
                     <div class="post-modal">
                         <div class="post-modal-header">
                             <h3>Create Post</h3>
-                            <span class="close-modal">&times;</span>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="post-modal-body">
                             <div class="modal-user-info">
-                                <img src="../assests/images/post_images/<?php echo getUserPorfileImageByID($_SESSION["userid"]) ?>" alt="Your Profile Picture">
+                                <img src="../assests/images/post_images/<?php echo getUserPorfileImageByID($_SESSION["userid"]) ?>"
+                                    alt="Your Profile Picture">
                                 <div>
                                     <div class="user-name"><?php echo $_SESSION["username"] ?></div>
-
                                     <div class="dropdown">
-                                        <button type="button" class="dropdown-toggle" id="selected" name="privacy">Public</button>
+                                        <button type="button" class="dropdown-toggle" id="selected" name="privacy">
+                                            <i class="fa-solid fa-earth-americas"></i> Public
+                                            <i class="fas fa-chevron-down"></i>
+                                        </button>
                                         <div class="dropdown-menu">
-                                            <button type="button" class="dropdown-item" onclick="choice_privacy('public')">Public</button>
-                                            <button type="button" class="dropdown-item" onclick="choice_privacy('batch')">Batch</button>
-                                            <button type="button" class="dropdown-item" onclick="choice_privacy('only_me')">Only Me</button>
+                                            <!-- The onclick attributes will still be present but won't have any effect without JavaScript -->
+                                            <button type="button" class="dropdown-item"
+                                                onclick="choice_privacy('public')">
+                                                <i class="fa-solid fa-earth-americas"></i> Public
+                                                <span class="check-icon" id="check-public"><i
+                                                        class="fa-solid fa-check"></i></span>
+                                            </button>
+                                            <button type="button" class="dropdown-item"
+                                                onclick="choice_privacy('batch')">
+                                                <i class="fa-solid fa-user-graduate"></i> Batch
+                                                <span class="check-icon" id="check-batch"><i
+                                                        class="fa-solid fa-check"></i></span>
+                                            </button>
+                                            <button type="button" class="dropdown-item"
+                                                onclick="choice_privacy('only_me')">
+                                                <i class="fa-solid fa-lock"></i> Only Me
+                                                <span class="check-icon" id="check-only_me"><i
+                                                        class="fa-solid fa-check"></i></span>
+                                            </button>
                                         </div>
                                     </div>
                                     <input type="hidden" id="privacy-input" name="privacy" value="public">
@@ -788,13 +1232,16 @@ include("../includes/image_gallery.php");
                             $parts = explode(' ', $fullName);
                             $firstWord = $parts[0]; // get first word
                             ?>
-                            <textarea class="post-textarea" name="post-textarea" placeholder="What's on your mind, <?php echo htmlspecialchars($firstWord); ?>?"></textarea>
+                            <textarea class="post-textarea" name="post-textarea"
+                                placeholder="What's on your mind, <?php echo htmlspecialchars($firstWord); ?>?"></textarea>
 
-                            <!-- Image Preview Container -->
+
                             <div id="preview-container" class="preview-container"></div>
 
-                            <!-- Hidden File Input -->
-                            <input type="file" name="post_image[]" id="upload" accept="image/*" multiple style="display:none;" onchange="readUrl(this)">
+                            <input type="file" name="post_image[]" id="upload" accept="image/*" multiple
+                                style="display:none;" onchange="readUrl(this)">
+
+
 
                             <div class="modal-add-to-post">
                                 <span>Add to your post</span>
@@ -802,11 +1249,6 @@ include("../includes/image_gallery.php");
                                     <label for="upload" style="cursor:pointer;">
                                         <i class="fa-solid fa-images"></i>
                                     </label>
-                                    <i class="fa-solid fa-user-plus"></i>
-                                    <i class="fa-solid fa-face-smile"></i>
-                                    <i class="fa-solid fa-location-dot"></i>
-                                    <i class="fa-solid fa-flag"></i>
-                                    <i class="fa-solid fa-ellipsis"></i>
                                 </div>
                             </div>
                         </div>
@@ -816,7 +1258,8 @@ include("../includes/image_gallery.php");
                     </div>
                 </div>
             </form>
-            <div class="modal fade" id="reactionModal" tabindex="-1" aria-labelledby="reactionModalLabel" aria-hidden="true">
+            <div class="modal fade" id="reactionModal" tabindex="-1" aria-labelledby="reactionModalLabel"
+                aria-hidden="true">
                 <div class="modal-dialog wide-modal modal-dialog-scrollable">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -825,13 +1268,20 @@ include("../includes/image_gallery.php");
                         </div>
                         <div class="modal-body">
                             <div class="reaction-tabs">
-                                <div class="reaction-tab active" onclick="specific_reacted_user('All')"><span>All</span></div>
-                                <div class="reaction-tab" onclick="specific_reacted_user('Like')"><img src="../assests/images/icon/Like.png" id="like_react"><span></span></div>
-                                <div class="reaction-tab" onclick="specific_reacted_user('Love')"><img src="../assests/images/icon/Love.png" id="love_react"><span></span></div>
-                                <div class="reaction-tab" onclick="specific_reacted_user('Haha')"><img src="../assests/images/icon/Haha.png" id="haa_react"><span></span></div>
-                                <div class="reaction-tab" onclick="specific_reacted_user('Angry')"><img src="../assests/images/icon/Angry.png" id="angry_react"><span></span></div>
-                                <div class="reaction-tab" onclick="specific_reacted_user('Sad')"><img src="../assests/images/icon/Sad.png" id="sad_react"> <span></span></div>
-                                <div class="reaction-tab" onclick="specific_reacted_user('Wow')"><img src="../assests/images/icon/Wow.png" id="wow_react"><span></span></div>
+                                <div class="reaction-tab active" onclick="specific_reacted_user('All')"><span>All</span>
+                                </div>
+                                <div class="reaction-tab" onclick="specific_reacted_user('Like')"><img
+                                        src="../assests/images/icon/Like.png" id="like_react"><span></span></div>
+                                <div class="reaction-tab" onclick="specific_reacted_user('Love')"><img
+                                        src="../assests/images/icon/Love.png" id="love_react"><span></span></div>
+                                <div class="reaction-tab" onclick="specific_reacted_user('Haha')"><img
+                                        src="../assests/images/icon/Haha.png" id="haa_react"><span></span></div>
+                                <div class="reaction-tab" onclick="specific_reacted_user('Angry')"><img
+                                        src="../assests/images/icon/Angry.png" id="angry_react"><span></span></div>
+                                <div class="reaction-tab" onclick="specific_reacted_user('Sad')"><img
+                                        src="../assests/images/icon/Sad.png" id="sad_react"> <span></span></div>
+                                <div class="reaction-tab" onclick="specific_reacted_user('Wow')"><img
+                                        src="../assests/images/icon/Wow.png" id="wow_react"><span></span></div>
                             </div>
                             <div id="loadingSpinner" style="display: none;">Loading...</div>
                             <ul id="reactionGiversList" class="list-group"></ul>
@@ -839,13 +1289,16 @@ include("../includes/image_gallery.php");
                     </div>
                 </div>
             </div>
-
-
-
         </div>
     </div>
     </div>
 
+    <div id="image-Modal" class="image-modal" style="display:none;">
+        <button id="closeBtn" class="nav-button close-btn">&times;</button>
+        <button id="prevBtn" class="nav-button prev-btn">&#10094;</button>
+        <img id="modal-Image" src="" alt="Modal Image">
+        <button id="nextBtn" class="nav-button next-btn">&#10095;</button>
+    </div>
     <!-- Report Modal -->
     <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -896,23 +1349,204 @@ include("../includes/image_gallery.php");
     </div>
 
     <script>
+        let currentReportedPostId = null;
+        const reportModal = document.getElementById('reportModal');
+        if (reportModal) {
+            reportModal.addEventListener('show.bs.modal', function (event) {
+
+                const button = event.relatedTarget;
+                if (button) {
+                    currentReportedPostId = button.getAttribute('data-post-id');
+                    console.log('Modal opened for Post ID:', currentReportedPostId);
+                }
+            });
+
+            reportModal.addEventListener('hidden.bs.modal', function () {
+                currentReportedPostId = null;
+                const form = document.getElementById('reportForm');
+                if (form) {
+                    form.reset();
+                }
+            });
+        }
+
         function submitReport() {
             const form = document.getElementById('reportForm');
             const reasons = Array.from(form.querySelectorAll('input[name="reason[]"]:checked'))
                 .map(cb => cb.value);
+
             const note = form.querySelector('#additionalNote').value;
 
-            console.log("Report submitted:");
-            console.log("Reasons:", reasons);
-            console.log("Note:", note);
+            // Use the stored postId
+            const postId = currentReportedPostId;
 
-            alert("Report submitted!");
-            const modal = bootstrap.Modal.getInstance(document.getElementById('reportModal'));
-            modal.hide();
+            if (!postId) {
+                alert("Error: Post ID not found for report. Please try again.");
+                console.error("Post ID is missing for report submission.");
+                return; // Stop the function if postId is not available
+            }
+
+            const reportData = {
+                postId: postId,
+                reasons: reasons,
+                note: note
+            };
+
+            console.log("Submitting Report Data:", reportData);
+
+            // Send the data to your backend API
+            fetch('../process/report_process.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(reportData),
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(errorData => {
+                            throw new Error(errorData.message || 'Something went wrong on the server.');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Report submitted successfully:', data);
+                    alert("Report submitted successfully!");
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('reportModal'));
+                })
+                .catch(error => {
+                    console.error('Error submitting report:', error);
+                    alert(`Error submitting report: ${error.message || 'Please try again.'}`);
+                });
         }
+
+
+        // Wait for the document to be fully loaded
+        document.addEventListener('DOMContentLoaded', function () {
+            // Get a reference to the modal element
+            var storyModal = document.getElementById('storyModal');
+
+            // Check if the modal exists to avoid errors
+            if (storyModal) {
+                // Listen for the Bootstrap 'shown.bs.modal' event
+                // This event fires after the modal has been made visible to the user
+                storyModal.addEventListener('shown.bs.modal', function (event) {
+                    // 'event.relatedTarget' is the element that triggered the modal (our story card)
+                    var storyCard = event.relatedTarget;
+
+                    // Add the 'viewed' class to the story card
+                    if (storyCard && storyCard.classList.contains('story-card')) {
+                        storyCard.classList.add('viewed');
+                    }
+                });
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // We attach one listener to the document
+            document.addEventListener('click', function (event) {
+                // Use event.target.closest() to check if the clicked element (or its parent)
+                // is one of our dropdown toggles.
+                const toggleButton = event.target.closest('.circular-dropdown-toggle');
+
+                if (toggleButton) {
+                    // A dropdown toggle was clicked
+                    event.stopPropagation(); // Prevent the document click listener from immediately hiding it
+
+                    // Extract the postID from the unique ID (e.g., "socialDropdownToggle_123" -> "123")
+                    const postId = toggleButton.id.replace('socialDropdownToggle_', '');
+                    const socialIconsContent = document.getElementById('socialIconsContent_' + postId);
+
+                    if (socialIconsContent) {
+                        // First, hide any other open dropdowns (improves user experience)
+                        document.querySelectorAll('.social-icons-content').forEach(content => {
+                            // Make sure not to hide the one we just clicked to open/close
+                            if (content.id !== socialIconsContent.id) {
+                                content.style.display = 'none';
+                            }
+                        });
+
+                        // Then, toggle the display of the current dropdown
+                        if (socialIconsContent.style.display === 'none' || socialIconsContent.style.display === '') {
+                            socialIconsContent.style.display = 'flex';
+                        } else {
+                            socialIconsContent.style.display = 'none';
+                        }
+                    }
+                } else {
+                    // If the click was anywhere else on the document AND not inside an open dropdown content,
+                    // close all open dropdowns.
+                    document.querySelectorAll('.social-icons-content').forEach(content => {
+                        if (!content.contains(event.target)) { // Check if click was outside this specific content area
+                            content.style.display = 'none';
+                        }
+                    });
+                }
+            });
+        });
+
+        function readUrl(input) {
+            const previewContainer = document.getElementById('preview-container');
+            previewContainer.innerHTML = ''; // Clear previous previews
+
+            if (input.files && input.files.length > 0) {
+                for (let i = 0; i < input.files.length; i++) {
+                    const reader = new FileReader();
+                    const file = input.files[i];
+
+                    reader.onload = function (e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.classList.add('preview-image'); // Add a class for styling
+                        previewContainer.appendChild(img);
+                    };
+
+                    reader.readAsDataURL(file);
+                }
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const modalOverlay = document.querySelector(".post-modal-overlay");
+            const modal = document.querySelector(".post-modal");
+            const closeButtons = document.querySelectorAll(".btn-close, .close-modal");
+            const textarea = document.querySelector(".post-textarea");
+            const fileInput = document.querySelector("#upload");
+            const previewContainer = document.querySelector("#preview-container");
+
+            function closeModal() {
+                modalOverlay.style.display = "none";
+                // Clear text
+                textarea.value = "";
+                // Clear file input
+                fileInput.value = "";
+                // Remove previews
+                previewContainer.innerHTML = "";
+            }
+
+            closeButtons.forEach(btn => {
+                btn.addEventListener("click", closeModal);
+            });
+
+            modalOverlay.addEventListener("click", function (e) {
+                if (!modal.contains(e.target)) {
+                    closeModal();
+                }
+            });
+        });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="../assests/js/clickImage.js"></script>
     <script src="../assests/js/script.js"></script>
+    <script src="../assests/js/commend.js"></script>
+    <!-- Bootstrap Bundle with Popper -->
+
+    <script>
+        const CURRENT_LOGGED_IN_USER_ID = "<?php echo htmlspecialchars($loggedInUserId); ?>";
+    </script>
+
 
 </body>
 

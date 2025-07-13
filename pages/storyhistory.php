@@ -1,5 +1,4 @@
 <?php
-session_start();
 include("../includes/db.php"); // Ensure this includes your database connection
 include("../process/post.php");
 $userid = $_SESSION['userid'];

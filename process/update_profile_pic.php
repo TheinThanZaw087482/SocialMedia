@@ -32,8 +32,20 @@ if (!empty($_FILES['profile_img']['name'])) {
     echo "<script>alert('No image selected.');</script>";
     exit();
 }
+$sqlcheck = "SELECT * FROM profile WHERE userid = ?";
+$stmt = $conn->prepare($sqlcheck);
+$stmt->bind_param("s", $_SESSION['userid']);
+$stmt->execute();
+$result = $stmt->get_result();
 
-$stmt = $conn->prepare("UPDATE `users` SET `ProfileimagePath` = ? WHERE `userid` = ?");
+if ($result && $result->num_rows > 0) {
+    $stmt->close(); // Close previous statement before preparing a new one
+    $stmt = $conn->prepare("UPDATE profile SET ProfileimagePath = ? WHERE userid = ?");
+} else {
+    $stmt->close();
+    $stmt = $conn->prepare("INSERT INTO profile (ProfileimagePath, userid) VALUES (?, ?)");
+}
+
 $stmt->bind_param("ss", $imageName, $_SESSION['userid']);
 
 if ($stmt->execute()) {
@@ -43,4 +55,6 @@ if ($stmt->execute()) {
 }
 
 $stmt->close();
+
+
 ?>

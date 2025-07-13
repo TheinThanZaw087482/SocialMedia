@@ -3,7 +3,7 @@ include("../includes/db.php");
 
 function fetch_comment($postID) {
     global $conn;
-    $sql = "SELECT u.name,u.ProfileimagePath,c.commentID,c.content,c.commentDate FROM comment c JOIN users u ON u.userid =c.userID WHERE c.postID = ? ORDER BY c.commentDate DESC; ;";
+    $sql = "SELECT u.name,pro.ProfileimagePath,c.commentID,c.content,c.Date FROM comment c JOIN users u JOIN profile pro ON u.userid = pro.userid  ON u.userid =c.userID WHERE c.postID = ? ORDER BY c.Date DESC; ;";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param('i', $postID);
     
@@ -36,10 +36,36 @@ function genereate_ReplyID(){
     return $ReplyID;
 
 }
+function getIDType($id)
+{
+    if (empty($id) || !is_string($id)) {
+        return null; 
+    }
+
+    $firstChar = strtoupper(substr($id, 0, 1)); 
+
+    if ($firstChar === 'C') {
+        return 'comment';
+    } elseif ($firstChar === 'R') {
+        return 'reply';
+    } else {
+        return null; 
+    }
+}
+
 function fetch_reply($parentID){
     global $conn;
-    $sql = "SELECT u.name ,u.ProfileimagePath, r.replyID,r.content,r.replyDate,r.ParentID 
-    FROM reply r JOIN users u ON r.replyUserID=u.userid WHERE r.ParentID = ?";
+    $sql = '';
+    $idType = getIDType($parentID);
+    if($idType == "comment"){
+        $sql = "SELECT u.name ,pro.ProfileimagePath, r.replyID,r.content,r.Date
+    FROM reply r JOIN users u JOIN profile pro ON u.userid = pro.userid ON r.replyUserID=u.userid WHERE r.Parent_commentID= ?";
+        
+    }else if($idType == "reply"){
+        $sql = "SELECT u.name ,pro.ProfileimagePath, r.replyID,r.content,r.Date
+    FROM reply r JOIN users u JOIN profile pro ON u.userid = pro.userid ON r.replyUserID=u.userid WHERE r.Parent_ReplyID= ?";
+
+    }
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s",$parentID);
     if($stmt->execute()){
@@ -68,6 +94,7 @@ function display_comment_tree($item, $is_reply = false) {
     $profile_image_path = $item['ProfileimagePath'];
     $author_name = $item['name'];
     $content = $item['content'];
+    $Date = $item['Date'];
 
     // You might also need to pass $postID if your write_reply function still depends on it
     // For the JS write_reply, it needs the parentID and the element itself.
@@ -96,7 +123,8 @@ function display_comment_tree($item, $is_reply = false) {
             </div>
         </div>
         <div class="comment-actions">
-            <span class="comment-time">Some Time Ago</span>
+            <span class="comment-time"><?php echo getTimeAgo($Date)
+            ?></span>
             <span class="comment-action-link like-button">Like</span>
             <span class="comment-action-link reply-button">Reply</span>
             <span class="comment-reactions">0</span> </div>

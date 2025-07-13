@@ -1,54 +1,167 @@
 <?php
 include("../includes/db.php");
 include("../includes/noti_functions.php");
-function getAllpost()
+function getAllpost($viewerID)
 {
     global $conn;
-    $sql = "SELECT * FROM `post` ORDER BY `post`.`postdate` DESC";
-    $result = mysqli_query($conn, $sql);
+
+    $sql = "SELECT 
+                p.postID,
+                p.postdate,
+                p.privacy,
+                p.content,
+                p.userID 
+            FROM post p
+            JOIN users poster ON p.userID = poster.userID
+            JOIN users viewer ON viewer.userID = ?
+            WHERE 
+                (viewer.userType = 'admin' AND p.privacy != 'only_me')
+                OR (p.privacy = 'public')
+                OR (p.privacy = 'batch' AND poster.Batch = viewer.Batch) AND p.is_ban = 0
+            ORDER BY p.postdate DESC";
+
+    $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        die("Prepare failed: " . $conn->error);
+    }
+
+    $stmt->bind_param("s", $viewerID);
+
+    if (!$stmt->execute()) {
+        die("Execute failed: " . $stmt->error);
+    }
+
+    // ✅ fetch the result set
+    $result = $stmt->get_result();
+
     return $result;
 }
-function getHidePost()
+
+function get_other_profile_post($viewerID, $posterID)
 {
-    $userid = $_SESSION['userid'];
     global $conn;
-    $sql = "SELECT
-    hp.hidden_post_id, 
+
+    $sql = "SELECT 
     p.postID,
     p.postdate,
-    p.userID,
+    p.privacy,
     p.content,
-    p.commentID,
-    p.reactID,
-    p.privacy
-FROM hidden_posts hp
-JOIN post p ON hp.postID = p.postID 
-WHERE hp.userID = '$userid'
+    p.userID 
+FROM post p
+JOIN users poster ON p.userID = poster.userID
+JOIN users viewer ON viewer.userID = ?
+WHERE poster.userID = ? AND (
+    (viewer.userType = 'admin' AND p.privacy != 'only_me') 
+    OR (p.privacy = 'public') 
+    OR (p.privacy = 'batch' AND poster.Batch = viewer.Batch)
+)
 ORDER BY p.postdate DESC;
 ";
-    $result = mysqli_query($conn, $sql);
+
+    $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        die("Prepare failed: " . $conn->error);
+    }
+
+    $stmt->bind_param("ss", $viewerID, $posterID);
+
+    if (!$stmt->execute()) {
+        die("Execute failed: " . $stmt->error);
+    }
+    $result = $stmt->get_result();
+
     return $result;
 }
-function getSavePost(){
-    $userid = $_SESSION['userid'];
+
+function get_current_user_post($userid) {
     global $conn;
-    $sql = "SELECT
-     sp.saveID,
-     p.postID,
-     p.postdate,
-     p.userID,
-     p.content,
-     p.commentID,
-     p.reactID,
-     p.privacy
-     from savepost sp join post p On sp.postID = p.postID where sp.userID = $userid";
-     $result = mysqli_query($conn,$sql);
-     return $result;
+
+    $sql = "SELECT * FROM post WHERE userID = ?";
+    $stmt = $conn->prepare($sql);
+
+    if (!$stmt) {
+        die("Prepare failed: " . $conn->error);
+    }
+
+    $stmt->bind_param("s", $userid);
+
+    if (!$stmt->execute()) {
+        die("Execute failed: " . $stmt->error);
+    }
+
+    return $stmt->get_result();
 }
 
 
 
-function is_hide_post($postID) {
+
+function getHidePost()
+{
+    global $conn;
+
+    $sql = "SELECT 
+                p.postID,
+                p.postdate,
+                p.privacy,
+                p.content,
+                p.userID 
+            FROM post p
+            JOIN hidden_posts s ON s.postID = p.postID WHERE s.userID = ? ";
+
+    $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        die("Prepare failed: " . $conn->error);
+    }
+
+    $stmt->bind_param("s", $_SESSION['userid']);
+
+    if (!$stmt->execute()) {
+        die("Execute failed: " . $stmt->error);
+    }
+
+    // ✅ fetch the result set
+    $result = $stmt->get_result();
+
+    return $result;
+
+}
+
+function getSavePost()
+{
+    global $conn;
+
+    $sql = "SELECT 
+                p.postID,
+                p.postdate,
+                p.privacy,
+                p.content,
+                p.userID 
+            FROM post p
+            JOIN savepost s ON s.postID = p.postID WHERE s.userID = ? ";
+
+    $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        die("Prepare failed: " . $conn->error);
+    }
+
+    $stmt->bind_param("s", $_SESSION['userid']);
+
+    if (!$stmt->execute()) {
+        die("Execute failed: " . $stmt->error);
+    }
+
+    // ✅ fetch the result set
+    $result = $stmt->get_result();
+
+    return $result;
+
+}
+
+
+
+
+function is_hide_post($postID)
+{
     $allpost = getHidePost();
     foreach ($allpost as $post) {
         if ($postID == $post['postID']) {
@@ -101,14 +214,14 @@ function getUserPorfileImageByID($userid)
     global $conn;
 
     $userid = mysqli_real_escape_string($conn, $userid);
-    $sql = "SELECT ProfileimagePath FROM users WHERE userid = '$userid'";
+    $sql = "SELECT ProfileimagePath FROM profile WHERE userid = '$userid'";
     $result = mysqli_query($conn, $sql);
 
     if ($result && mysqli_num_rows($result) > 0) {
         $row = mysqli_fetch_assoc($result);
-        return !empty($row['ProfileimagePath']) ? $row['ProfileimagePath'] : 'porfileimage.png';
+        return !empty($row['ProfileimagePath']) ? $row['ProfileimagePath'] : 'profileimage.png';
     } else {
-        return 'porfileimage.png';
+        return 'profileimage.png';
     }
 }
 function getCoverPhotoByID($userid)
@@ -116,7 +229,7 @@ function getCoverPhotoByID($userid)
     global $conn;
 
     $userid = mysqli_real_escape_string($conn, $userid);
-    $sql = "SELECT coverPhoto FROM users WHERE userid = '$userid'";
+    $sql = "SELECT coverPhoto FROM profile WHERE userid = '$userid'";
     $result = mysqli_query($conn, $sql);
 
     if ($result && mysqli_num_rows($result) > 0) {
@@ -126,12 +239,18 @@ function getCoverPhotoByID($userid)
         return 'porfileimage.png';
     }
 }
-
+function newstory()
+{
+    global $conn;
+    if (!isset($_SESSION['userid'])) {
+        echo "<scirpt>alert('Please log in to Story') window.location.href='../index.php';</script>";
+        exit();
+    }
+}
 
 function newpost()
 {
-    session_start();
-    include("../includes/db.php");
+    global $conn;
 
     if (!isset($_SESSION['userid'])) {
         echo "<script>alert('Please log in to post'); window.location.href='index.php';</script>";
@@ -141,7 +260,7 @@ function newpost()
     if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['post-button'])) {
         $userid = $_SESSION['userid'];
         $content = trim($_POST['post-textarea'] ?? '');
-        $privacy = trim($_POST['privacy'] ?? 'public');
+        $privacy = trim($_POST['privacy']);
         date_default_timezone_set('Asia/Yangon');
         $currentTime = date("Y-m-d H:i:s");
 
@@ -182,8 +301,16 @@ function newpost()
             echo "<script>alert('✅ Successfully posted');window.location.href='../pages/Dashboard.php';</script>";
             $message = "Hello";
             $type = "post";
-            $link = "new post";
-            send_noti_to_sameBatch($type, $link, $message);
+            $link = $postID;
+            if($privacy = "batch"){
+                send_noti_to_sameBatch($type, $link, $message);
+            }else if($privacy = "public"){
+                send_noti_to_Student($type, $link, $message);
+                send_noti_to_Teacher($type, $link, $message);
+                send_noti_to_Admin($type, $link, $message);
+
+            }
+            
         } else {
             echo "<script>alert('❌ Failed to post: " . $stmt->error . "');</script>";
         }
@@ -192,7 +319,8 @@ function newpost()
     }
 }
 
-function get_post_by_postID($postID) {
+function get_post_by_postID($postID)
+{
     global $conn;
     $sql = "SELECT * FROM post WHERE postID = ?";
     $stmt = $conn->prepare($sql);
@@ -298,7 +426,8 @@ function have_reaction($postid)
     }
 }
 
-function getUserIDByPost($postid){
+function getUserIDByPost($postid)
+{
     global $conn;
     $postid = intval($postid);
 
@@ -308,4 +437,24 @@ function getUserIDByPost($postid){
     $stmt->execute();
     $result = $stmt->get_result();
     return $result->fetch_all(MYSQLI_ASSOC);
+}
+
+function get_comment_count($postID)
+{
+    global $conn;
+    $postID = (int)$postID;
+    $sql = "SELECT COUNT(*) AS count FROM comment WHERE postID = $postID";
+    $result = mysqli_query($conn, $sql);
+
+    if ($result) {
+        $row = mysqli_fetch_assoc($result);
+        $count = $row['count'];
+        if ($count > 0) {
+            echo $count . " comment" . ($count == 1 ? "" : "s");
+        } else {
+            echo "comment";
+        }
+    } else {
+        echo "comment";
+    }
 }

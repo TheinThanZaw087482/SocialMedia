@@ -41,20 +41,9 @@ body {
     border-right: 1px solid #333;
 }
 
-.global-sidebar .search-global {
-    width: 80%;
-    margin-bottom: 30px;
-}
 
-.global-sidebar .search-global input {
-    background-color: #3a3a3a;
-    border: none;
-    border-radius: 8px;
-    padding: 8px;
-    color: #ffffff;
-    width: 100%;
-    text-align: center;
-}
+
+
 
 .global-sidebar .global-nav {
     list-style: none;
@@ -714,10 +703,6 @@ body {
         /* Smaller global sidebar on tablet */
     }
 
-    .global-sidebar .search-global input {
-        display: none;
-        /* Hide global search input */
-    }
 
     .global-sidebar .global-nav li a {
         font-size: 1.3em;
@@ -741,11 +726,6 @@ body {
         width: 100%;
         height: 100vh;
         border-radius: 0;
-    }
-
-    .global-sidebar {
-        display: none;
-        /* Hide global sidebar on mobile */
     }
 
     .contact-list-column {

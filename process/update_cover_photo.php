@@ -33,7 +33,20 @@ if (!empty($_FILES['coverPhoto']['name'])) {
     exit();
 }
 
-$stmt = $conn->prepare("UPDATE `users` SET `coverPhoto` = ? WHERE `users`.`userid` = ?;");
+$sqlcheck = "SELECT * FROM profile WHERE userid = ?";
+$stmt = $conn->prepare($sqlcheck);
+$stmt->bind_param("s", $_SESSION['userid']);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result && $result->num_rows > 0) {
+    $stmt->close(); 
+    $stmt = $conn->prepare("UPDATE profile SET coverPhoto = ? WHERE userid = ?");
+} else {
+    $stmt->close();
+    $stmt = $conn->prepare("INSERT INTO profile (coverPhoto, userid) VALUES (?, ?)");
+}
+
 $stmt->bind_param("ss", $imageName, $_SESSION['userid']);
 
 if ($stmt->execute()) {?>

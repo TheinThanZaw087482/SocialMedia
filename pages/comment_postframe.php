@@ -31,7 +31,9 @@ $currentUserID = isset($_SESSION['userid']) ? $_SESSION['userid'] : '';
     <link rel="stylesheet" href="../assests/css/image.css">
     <link rel="stylesheet" href="../assests/css/commend.css">
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <title>Metro Book</title>
@@ -43,35 +45,74 @@ $currentUserID = isset($_SESSION['userid']) ? $_SESSION['userid'] : '';
             margin-top: 10px;
         }
 
+        /* Custom CSS for the sticky sidebar and scrollbar hiding */
         #left-settings-panel {
-            /* --- Sticky Sidebar CSS --- */
             position: -webkit-sticky;
             /* For Safari */
             position: sticky;
             top: 20px;
-            /* Adjust this value based on your header's height + desired top margin.
-                                    If your header is fixed and, for example, 60px tall, you might set top: 70px (60px + 10px margin).
-                                    If you have no fixed header, you might use a smaller value like 10px or 20px for some spacing. */
+            /* Adjust based on your header's height + desired top margin */
             height: calc(100vh - 40px);
-            /* Calculates height to fill viewport minus top and some bottom space.
-                                            Adjust 40px (e.g., top value + desired bottom margin).
-                                            For example, if top is 70px, you might use height: calc(100vh - 80px); */
-            overflow-y: auto;
-            /* Allows content within the sidebar to scroll if it's too long */
             align-self: flex-start;
             /* Ensures it aligns to the top if the row is a flex container */
-            /* --- End Sticky Sidebar CSS --- */
-
-            background-color: #f8f9fa;
-            /* Light background for visibility */
+            background-color: #252426;
+            /* Dark background */
             padding: 15px;
-            /* min-height: 100vh; */
-            /* Remove or comment out min-height if using calculated height for sticky */
+            border-radius: 10px;
+            /* Rounded corners */
+            box-shadow:
+                rgba(107, 212, 219, 0.5) 0px 20px 30px -10px,
+                /* Increased top shadow and opacity */
+                rgba(224, 130, 180, 0.2) 0px 5px 10px -5px;
+            /* Subtler mid shadow */
+            overflow: hidden;
         }
 
-        .stories-section .add-story {
-            cursor: pointer;
-            /* Indicate it's clickable */
+        /* Hide scrollbar for Webkit browsers (Chrome, Safari) */
+        #left-settings-panel::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Hide scrollbar for Firefox */
+        #left-settings-panel {
+            scrollbar-width: none;
+            /* Firefox */
+        }
+
+
+        /* Custom CSS for the gradient icon */
+        .icon-saved {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            margin-right: 15px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 5px 0;
+            margin-bottom: 5px;
+            border-radius: 8px;
+            /* Rounded corners for menu items */
+            transition: background-color 0.3s ease;
+        }
+
+        .menu-item:hover {
+            background-color: #252426;
+            transform: scale(1.07);
+        }
+
+        .menu-item-text {
+            font-weight: 500;
+            color: #333;
+            font-size: 1.1rem;
+            /* Slightly larger text */
         }
 
         /* Ensure reaction panel displays correctly */
@@ -84,194 +125,6 @@ $currentUserID = isset($_SESSION['userid']) ? $_SESSION['userid'] : '';
             /* Position above the like button */
             margin-bottom: 5px;
             /* Add some space */
-        }
-
-        /* Custom CSS for the gradient icon */
-        .icon-saved {
-            width: 32px;
-            /* Increased size */
-            height: 32px;
-            /* Increased size */
-            background: linear-gradient(to right, #ee0979, #ff6a00);
-            /* Example gradient */
-            border-radius: 8px;
-            /* Slightly more rounded */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 18px;
-            /* Larger icon inside */
-            margin-right: 15px;
-            /* More space between icon and text */
-        }
-
-        /* Styling for the list item itself */
-        .menu-item {
-            display: flex;
-            align-items: center;
-            padding: 15px 20px;
-            /* Increased padding for a larger overall item */
-            cursor: pointer;
-            border-radius: 10px;
-            /* Slightly more rounded overall item */
-            transition: background-color 0.2s;
-        }
-
-        .menu-item:hover {
-            background-color: #f0f2f5;
-            /* Light grey on hover, similar to Facebook */
-        }
-
-        .menu-item-text {
-            font-weight: 500;
-            color: #333;
-            font-size: 1.1rem;
-            /* Slightly larger text */
-        }
-
-        /* story new css */
-        body {
-            background-color: #f0f2f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 200vh;
-            margin: 0px 40px 0px 0px;
-        }
-
-        .stories-container {
-            display: flex;
-            gap: 1rem;
-            /* Bootstrap's default gap is often .5 or 1rem */
-            padding: 1.5rem;
-            background-color: #fff;
-            border-radius: .5rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            overflow-x: auto;
-            /* Enable horizontal scrolling if many stories */
-            padding-bottom: 2rem;
-            /* Space for scrollbar */
-        }
-
-        .story-card {
-            width: 100px;
-            /* Fixed width */
-            height: 180px;
-            /* Fixed height */
-            border-radius: 10px;
-            /* More rounded corners */
-            overflow: hidden;
-            position: relative;
-            cursor: pointer;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            align-items: center;
-            background-color: #eee;
-            /* Placeholder for actual story content */
-            transition: transform 0.2s ease-in-out;
-            flex-shrink: 0;
-            /* Prevent cards from shrinking */
-        }
-
-        .story-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .story-card .story-avatar {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            border: 2px solid #1877f2;
-            /* Facebook blue for avatar ring */
-            z-index: 1;
-            object-fit: cover;
-            /* Ensure avatar image covers the circle */
-        }
-
-        .story-card .story-name {
-            color: #fff;
-            font-size: 0.8em;
-            text-align: center;
-            margin-bottom: 10px;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
-            width: 100%;
-            padding-top: 20px;
-            padding-bottom: 5px;
-            box-sizing: border-box;
-        }
-
-        /* Specific styling for 'Add Your Story' card */
-        .story-card.add-story {
-            background-color: #fff;
-            border: 1px dashed #ccc;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: #1877f2;
-            font-weight: bold;
-        }
-
-        .story-card.add-story .add-icon {
-            font-size: 2em;
-            margin-bottom: 5px;
-        }
-
-        /* Background images for story cards (replace with actual images) */
-        /* These are custom styles, Bootstrap doesn't provide background images this way */
-        .story-card[data-story-image="story-benjamin.jpg"] {
-            background: url('https://via.placeholder.com/100x180/e91e63/ffffff?text=Story1') center/cover no-repeat;
-        }
-
-        .story-card[data-story-image="story-ethan.jpg"] {
-            background: url('https://via.placeholder.com/100x180/9c27b0/ffffff?text=Story2') center/cover no-repeat;
-        }
-
-        .story-card[data-story-image="story-liam-1.jpg"] {
-            background: url('https://via.placeholder.com/100x180/00bcd4/ffffff?text=Story3') center/cover no-repeat;
-        }
-
-        .story-card[data-story-image="story-liam-2.jpg"] {
-            background: url('https://via.placeholder.com/100x180/4caf50/000000?text=Story4') center/cover no-repeat;
-        }
-
-        .story-card[data-story-image="story-liam-3.jpg"] {
-            background: url('https://via.placeholder.com/100x180/ffc107/000000?text=Story5') center/cover no-repeat;
-        }
-
-        .story-card[data-story-image="story-liam-4.jpg"] {
-            background: url('https://via.placeholder.com/100x180/ff5722/ffffff?text=Story6') center/cover no-repeat;
-        }
-
-        /* Modal specific styling to match the dark theme */
-        .modal-content.custom-dark-modal {
-            background-color: #242526;
-            /* Dark background */
-            color: #fff;
-            /* White text */
-        }
-
-        .modal-header.custom-dark-modal-header {
-            border-bottom: 1px solid #444;
-            /* Darker border */
-        }
-
-        .modal-header.custom-dark-modal-header .btn-close {
-            filter: invert(1);
-            /* Invert close button color for dark background */
-        }
-
-        /* Inside your <style> tags or your custom CSS file */
-        .story-card.story-bg-benjamin {
-            background: url('../assests/images/post_images/story-img-3.jpg') center/cover no-repeat;
-            /* Ensure the existing placeholder background for this specific card is overridden or removed */
-            /* If you have: .story-card:nth-child(2) { background: url('...') } then this new rule will override it */
         }
 
         /* story modal for reaction buttons */
@@ -324,46 +177,306 @@ $currentUserID = isset($_SESSION['userid']) ? $_SESSION['userid'] : '';
             /* Example padding */
         }
 
-        .story {
-            flex: 0 0 160px;
-            height: 240px;
-            border-radius: 16px;
-            overflow: hidden;
-            position: relative;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        /* Optional: Adjust for very narrow screens */
+        @media (max-width: 480px) {
+            .image-modal {
+
+                width: 50%;
+                height: 20%;
+                gap: 4%;
+                padding: 4%;
+                border-radius: 2%;
+            }
+        }
+
+        .image-modal img {
+            max-width: 80%;
+            max-height: 80%;
+            border-radius: 8px;
+        }
+
+        .nav-button {
+            position: absolute;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
             cursor: pointer;
-            background-color: #fff;
-            transition: transform 0.4s ease, box-shadow 0.4s ease, filter 0.3s ease;
-            transform-origin: center;
-            will-change: transform, box-shadow;
+            z-index: 1000;
         }
 
-        .stories-container {
-            padding: 10px 15px;
+        .close-btn {
+            top: 10px;
+            right: 15px;
+        }
+
+        .prev-btn {
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .next-btn {
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+
+        .postBorder {
+            border: 1px solid;
+            padding: 20px;
+            border-image: linear-gradient(to left, #e0aa3e, #f9f295) 1 / 1 / 0 stretch;
+            box-shadow:
+                rgba(107, 212, 219, 0.35) 0px 30px 80px -10px,
+                rgba(224, 130, 180, 0.3) 0px 15px 30px -15px,
+                rgba(221, 219, 224, 0.4) 0px -2px 3px 0px inset;
+        }
+
+        .textWhite {
+            color: white;
+
+        }
+
+        .social-icons-wrapper {
+            position: absolute;
+            top: 0;
+            /* Adjust as needed */
+            right: 0;
+            /* Adjust as needed */
+            margin-top: 10px;
+            /* Adjust as needed */
+            margin-right: 10px;
+            /* Adjust as needed */
+            /* Stacks toggle and content vertically */
+            align-items: flex-end;
+            /* Aligns content to the right */
+            z-index: 1000;
+            /* Ensure it's on top */
             display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            padding-bottom: 10px;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
+            /* Allows positioning of toggle and content */
+            flex-direction: column;
         }
 
-        .story:hover {
-            transform: scale(1.08) rotateZ(-0.5deg);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+        .circular-dropdown-toggle {
+            width: 40px;
+            /* Same size as your social icons */
+            height: 40px;
+            border-radius: 50%;
+            background-color: #333;
+            /* Dark background similar to your example */
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 1.2em;
+            /* Size of the three dots icon */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease;
         }
 
-        .stories-section {
-            overflow-x: auto;
+        .circular-dropdown-toggle:hover {
+            background-color: #555;
+            /* Slightly lighter on hover */
+        }
+
+        .social-icons-content {
+            /* Styles for the container of the social icons */
+            margin-top: 10px;
+            /* Space below the toggle icon */
+
+            background-color: white;
+            /* Or transparent, depending on desired look */
+            border-radius: 8px;
+            /* Slightly rounded corners */
+            padding: 8px;
+            /* Padding inside the container */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            /* Subtle shadow */
+            /* Initially hidden, will be controlled by JS */
+            display: none;
+            flex-direction: column;
+            /* This will stack the icons vertically */
+            align-items: center;
+            /* Center the icons within their new vertical stack */
+        }
+
+        /* Modify your existing .example-2 styles */
+        .example-2.vertical-layout {
+            /* Apply this specific style when the vertical-layout class is present */
+            display: flex;
+            /* Keep flex for children arrangement */
+            flex-direction: column;
+            /* Stack icons vertically */
+            align-items: center;
+            /* Center them horizontally */
+            gap: 2px;
+            /* Space between vertical icons */
+        }
+
+        /* Ensure individual icon content still displays correctly */
+        .example-2 .icon-content {
+            margin: 0;
+            /* Remove horizontal margin for vertical layout */
+            margin-bottom: 5px;
+            /* Add some vertical spacing if needed */
+            position: relative;
+            /* Keep for tooltips */
+            display: flex;
+            /* Make icon content a flex container to align icon and tooltip */
+            align-items: center;
+            /* Vertically align icon and tooltip */
+            width: 100%;
+            /* Ensure it takes full width for alignment */
+            justify-content: flex-start;
+            /* Align icon to the start */
+        }
+
+        /* MODIFY THIS SECTION FOR TOOLTIP PLACEMENT */
+        .example-2 .icon-content .tooltip {
+            position: absolute;
+            left: auto;
+            /* Reset left */
+            right: calc(100% + 10px);
+            /* Position to the right of the icon-content */
+            top: 50%;
+            /* Center vertically relative to icon-content */
+            transform: translateY(-50%);
+            /* Adjust for perfect vertical centering */
+
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 5px;
+            opacity: 0;
+            visibility: hidden;
+            font-size: 14px;
+            transition: all 0.3s ease;
             white-space: nowrap;
-            -webkit-overflow-scrolling: touch;
-            margin-top: 2px;
-            padding: 10px;
+            /* Prevent text from wrapping */
+        }
+
+        .example-2 .icon-content:hover .tooltip {
+            opacity: 1;
+            visibility: visible;
+            /* top: -50px; */
+            /* Remove or comment this out */
+            /* The new top/left/transform properties defined above will take effect */
+        }
+
+        .example-2 .icon-content a {
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            /* Keep this as flex for the icon itself */
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: #4d4d4d;
+            background-color: #fff;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .example-2 .icon-content a:hover {
+            box-shadow: 3px 2px 45px 0px rgb(0 0 0 / 12%);
+            color: white;
+        }
+
+        .example-2 .icon-content a svg,
+        .example-2 .icon-content a i {
+            /* Added 'i' for Font Awesome icons */
+            position: relative;
+            z-index: 1;
+            width: 20px;
+            height: 20px;
+        }
+
+        .example-2 .icon-content a .filled {
+            position: absolute;
+            top: auto;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0;
+            background-color: #000;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .example-2 .icon-content a:hover .filled {
+            height: 100%;
+        }
+
+        /* Color specific tooltips and filled backgrounds */
+        .example-2 .icon-content a[data-social="spotify"] .filled,
+        .example-2 .icon-content a[data-social="spotify"]~.tooltip {
+            background-color: #1db954;
+        }
+
+        .example-2 .icon-content a[data-social="pinterest"] .filled,
+        .example-2 .icon-content a[data-social="pinterest"]~.tooltip {
+            background-color: #bd081c;
+        }
+
+        .example-2 .icon-content a[data-social="dribbble"] .filled,
+        .example-2 .icon-content a[data-social="dribbble"]~.tooltip {
+            background-color: #ea4c89;
+        }
+
+        .example-2 .icon-content a[data-social="telegram"] .filled,
+        .example-2 .icon-content a[data-social="telegram"]~.tooltip {
+            background-color: #0088cc;
+        }
+
+        .comment-box {
+            display: flex;
+            align-items: center;
+            background-color: #f0f2f5;
+            border-radius: 999px;
+            padding: 8px 12px;
+            margin-right: 10px;
+            max-width: 650px;
+            flex: 1;
+            min-width: 100px;
+            transition: box-shadow 0.3s ease;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+            position: relative;
+        }
+
+
+        .btnDesign {
+            border: 2px solid #C5558E !important;
+            border-radius: 999px !important;
+            background: rgb(255, 255, 255);
+            color: white;
+        }
+
+        .btnDesign:hover {
+            border-color: #0D47A1 !important;
+            box-shadow:
+                0 0 15px #a855f7,
+                0 0 30px #9333ea,
+                inset 0 0 20px rgba(168, 85, 247, 0.4);
+        }
+
+        .cmtBoxStyle {
+            background-color: #252426;
+            border: 2px solid #C5558E !important;
+            border-radius: 999px !important;
+        }
+
+        .iconColor {
+            background: linear-gradient(20deg, #00E1FD, #FC007A);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+            font-size: 1.5rem;
         }
     </style>
 </head>
 
-<body>
+<body style="background:#252426; margin-top: 30px;">
 
     <div class="container-fluid">
         <?php
@@ -377,32 +490,34 @@ $currentUserID = isset($_SESSION['userid']) ? $_SESSION['userid'] : '';
         ?>
         <div class="container-fluid ">
             <div class="row">
-                <div class="col-lg-3 d-none d-lg-block" id="left-settings-panel">
-                    <h4>Settings Section</h4>
+                <div class="col-lg-3 d-none d-lg-block" id="left-settings-panel"
+                    style="padding: none; background: #252426;">
+                    <h2 class="textWhite">Settings</h2>
                     <li>
                         <a href="savepost.php" class="menu-item text-decoration-none">
-                            <div class="icon-saved">
-                                <i class="fas fa-bookmark"></i>
+                            <div class="icon-saved"
+                                style="background: linear-gradient(to right,rgb(255, 25, 25),rgb(48, 165, 255));">
+                                <i class="fas fa-bookmark textWhite"></i>
                             </div>
-                            <span class="menu-item-text">Saved</span>
+                            <span class="menu-item-text textWhite">Saved</span>
                         </a>
                     </li>
 
                     <li>
                         <a href="../pages/storyhistory.php" class="menu-item text-decoration-none">
                             <div class="icon-saved" style="background: linear-gradient(to right, #6a11cb, #2575fc);">
-                                <i class="fas fa-history"></i>
+                                <i class="fas fa-history textWhite"></i>
                             </div>
-                            <span class="menu-item-text">Story History</span>
+                            <span class="menu-item-text textWhite">Story History</span>
                         </a>
                     </li>
 
                     <li>
                         <a href="hidepost.php" class="menu-item text-decoration-none">
                             <div class="icon-saved" style="background: linear-gradient(to right, #dc3545, #fd7e14);">
-                                <i class="fas fa-eye-slash"></i>
+                                <i class="fas fa-eye-slash textWhite"></i>
                             </div>
-                            <span class="menu-item-text">Hide Post</span>
+                            <span class="menu-item-text textWhite">Hide Post</span>
                         </a>
                     </li>
                     <?php
@@ -412,51 +527,93 @@ $currentUserID = isset($_SESSION['userid']) ? $_SESSION['userid'] : '';
                         <li>
                             <a href="report-notifications.php" class="menu-item text-decoration-none">
                                 <div class="icon-saved" style="background: linear-gradient(to right, #dc3545, #ef476f);">
-                                    <i class="fas fa-flag"></i>
+                                    <i class="fas fa-flag textWhite"></i>
                                 </div>
-                                <span class="menu-item-text">Report Notification</span>
+                                <span class="menu-item-text textWhite">Report Notification</span>
                             </a>
                         </li>
 
                         <li>
                             <a href="request-notifications.php" class="menu-item text-decoration-none">
                                 <div class="icon-saved" style="background: linear-gradient(to right, #28a745, #82e0aa);">
-                                    <i class="fas fa-bell"></i>
+                                    <i class="fas fa-bell textWhite"></i>
                                 </div>
-                                <span class="menu-item-text">Request Notification</span>
+                                <span class="menu-item-text textWhite">Request Notification</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="#" class="menu-item text-decoration-none" data-bs-toggle="modal"
+                                data-bs-target="#adminPanelModal">
+                                <div class="icon-saved"
+                                    style="background: linear-gradient(60deg,rgb(16, 119, 134),rgb(56, 205, 250));">
+                                    <i class="fa-solid fa-user-tie textWhite"></i>
+                                </div>
+                                <span class="menu-item-text textWhite">Admin Panel</span>
                             </a>
                         </li>
 
                     <?php } ?>
 
+
                     <li>
-                        <a href="#" class="menu-item text-decoration-none">
-                            <div class="icon-saved" style="background: linear-gradient(to right, #6c757d, #adb5bd);">
-                                <i class="fas fa-question-circle"></i>
+                        <a href="./aboutus.php" class="menu-item text-decoration-none">
+                            <div class="icon-saved"
+                                style="background: linear-gradient(to right,rgb(255, 52, 153),rgb(57, 60, 255));">
+                                <i class="fas fa-info-circle textWhite"></i>
                             </div>
-                            <span class="menu-item-text">Help & Support</span>
+                            <span class="menu-item-text textWhite">About Us</span>
                         </a>
                     </li>
-                    <li>
-                        <a href="#" class="menu-item text-decoration-none">
-                            <div class="icon-saved" style="background: linear-gradient(to right, #17a2b8, #5bc0de);">
-                                <i class="fas fa-info-circle"></i>
-                            </div>
-                            <span class="menu-item-text">About Us</span>
-                        </a>
-                    </li>
+
+
+                    <!-- Admin Panel -->
+
                 </div>
+
+                <div class="modal" id="adminPanelModal" tabindex="-1" aria-labelledby="adminPanelModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="adminPanelModalLabel">Admin Panel</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-5">
+                                    <label for="loginIdentifier"
+                                        class="block text-gray-700 text-sm font-medium mb-2">Email Address</label>
+                                    <input type="email" id="loginIdentifier"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out placeholder-gray-400"
+                                        placeholder="your email@example.com" aria-required="true">
+                                </div>
+                                <div class="mb-6">
+                                    <label for="password"
+                                        class="block text-gray-700 text-sm font-medium mb-2">Password</label>
+                                    <input type="password" id="password"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out placeholder-gray-400"
+                                        placeholder="Enter your password" aria-required="true">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button class="btn btn-primary">Save changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="col-lg-9">
                     <?php
                     $postID = $_GET['postID'];
                     $post = get_post_by_postID($postID);
                     $row = $post->fetch_assoc(); ?>
 
-                    <div class="post-section" id="<?= $row['postID'] ?>">
+                    <div class="post-section postBorder" id="<?= $row['postID'] ?>" style="background:#252426;">
                         <?php
                         $postuserID = $row['userID'];
                         $sessionUserID = $_SESSION['userid'] ?? null; // make sure session userid is set
-
+                        
                         // Decide link target
                         if ($postuserID == $sessionUserID) {
                             $profileLink = "profile.php";
@@ -467,10 +624,12 @@ $currentUserID = isset($_SESSION['userid']) ? $_SESSION['userid'] : '';
 
                         <div class="post-header">
                             <a href="<?= $profileLink ?>">
-                                <img src="../assests/images/post_images/<?= getUserPorfileImageByID($postuserID) ?>" alt="User Profile Picture" class="profile-pic">
+                                <img src="../assests/images/post_images/<?= getUserPorfileImageByID($postuserID) ?>"
+                                    alt="User Profile Picture" class="profile-pic">
                             </a>
                             <div class="user-info">
-                                <a href="<?= $profileLink ?>" class="user-name">
+                                <a href="<?= $profileLink ?>" class="user-name"
+                                    style="text-decoration: none; color: white;">
                                     <?php echo htmlspecialchars(getUserNamebyID($postuserID)); ?>
                                 </a>
                                 <div class="post-time">
@@ -490,48 +649,111 @@ $currentUserID = isset($_SESSION['userid']) ? $_SESSION['userid'] : '';
                         </div>
 
                         <div class="post-content">
-                            <p><?php echo $row["content"]; ?></p>
+                            <p style="color: white;"><?php echo $row["content"]; ?></p>
                         </div>
-                        <div class="dropdown ms-auto position-absolute top-0 end-0 mt-2" style="margin-right: 60px;">
-                            <button class="btn btn-light btn-sm menu-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fa-solid fa-ellipsis-vertical"></i>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <?php if ($_SESSION['userid'] == $row['userID']) { ?>
-                                    <button class="dropdown-item" onclick="deletePost(<?= $row['postID'] ?>)">Delete</button>
-                                    <button class="dropdown-item" onclick="hidePost(123)">Edit</button>
-                                <?php } else { ?>
-                                    <button class="dropdown-item" onclick="hidePost(<?= $row['postID'] ?>)">Hide</button>
-                                    <button class="dropdown-item" data-bs-toggle="modal"
-                                        data-bs-target="#reportModal">Report</button>
-                                    <button class="dropdown-item" onclick="savepost(<?= $row['postID'] ?>)">Save</button>
-                                <?php } ?>
-                            </ul>
+                        <div class="social-icons-wrapper position-absolute top-0 end-0 mt-2 me-4">
+
+                            <div class="circular-dropdown-toggle" id="socialDropdownToggle_<?= $row['postID'] ?>">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </div>
+
+                            <div class="social-icons-content" id="socialIconsContent_<?= $row['postID'] ?>"
+                                style="display: none; background-color:grey;">
+                                <div class="example-2 vertical-layout">
+                                    <?php
+                                    $user = get_user_by_userID($_SESSION['userid']);
+                                    if ($_SESSION['userid'] == $row['userID']) { ?>
+                                        <div class="icon-content">
+                                            <a data-social="pinterest" onclick="deletePost(<?= $row['postID'] ?>)">
+                                                <div class="filled"></div>
+                                                <i class="fa-solid fa-trash"></i>
+                                            </a>
+                                            <div class="tooltip">DELETE</div>
+                                        </div>
+
+                                        <div class="icon-content">
+                                            <a data-social="pinterest" onclick="deletePost(<?= $row['postID'] ?>)">
+                                                <div class="filled"></div>
+                                                <i class="fa-solid fa-pen-to-square"></i>
+                                            </a>
+                                            <div class="tooltip">EDIT</div>
+                                        </div>
+
+
+                                    <?php } else { ?>
+                                        <div class="icon-content">
+                                            <a data-social="pinterest" onclick="hidePost(<?= $row['postID'] ?>)">
+                                                <div class="filled"></div>
+                                                <i class="fas fa-eye-slash"></i>
+                                            </a>
+                                            <div class="tooltip">HIDE</div>
+                                        </div>
+                                        <div class="icon-content">
+                                            <a data-social="dribbble">
+                                                <div class="filled"></div>
+                                                <i class="fas fa-bookmark" onclick="savepost(<?= $row['postID'] ?>)"></i>
+                                            </a>
+                                            <div class="tooltip">SAVE</div>
+                                        </div>
+
+
+                                    <?php }
+                                    if ($user['userType'] == "admin" && $_SESSION['userid'] != $row['userID']) { ?>
+                                        <div class="icon-content">
+                                            <a data-social="pinterest" onclick="ban_post(<?= $row['postID'] ?>)">
+                                                <div class="filled"></div>
+                                                <i class="fa-solid fa-ban"></i>
+                                            </a>
+                                            <div class="tooltip">BAN</div>
+                                        </div>
+
+                                    <?php }
+                                    if ($user['userType'] != "admin" && $_SESSION['userid'] != $row['userID']) { ?>
+                                        <div class="icon-content">
+                                            <a href="#" data-social="telegram" data-bs-toggle="modal"
+                                                data-bs-target="#reportModal" data-post-id="<?= $row['postID'] ?>">
+                                                <div class="filled"></div>
+                                                <i class="fas fa-flag"></i>
+                                            </a>
+                                            <div class="tooltip">REPORT</div>
+                                        </div>
+
+                                    <?php }
+                                    ?>
+
+
+                                </div>
+                            </div>
                         </div>
                         <?php $images = getImagesByPostId($conn, $row['postID']); ?>
-                        <?php renderGallery($images); ?>
+                        <?php renderGallery($images, $row['postID']); ?>
 
                         <div class="post-interactions-count">
                             <a href="#" data-bs-toggle="modal" data-bs-target="#reactionModal"
-                                onclick="setSessionAndLoad(<?= $row['postID'] ?>,'All')">
+                                onclick="setSessionAndLoad(<?= $row['postID'] ?>,'All')" style="text-decoration: none;">
                                 <div class="likes-count" data-postid="<?= $row['postID'] ?>">
                                     <?php have_reaction($row['postID']); ?>
                                     <span>
-                                        <h4 id="like_text">
+                                        <h7 id="like_text" style="color: white;">
                                             <?php
                                             $summary = getReactionSummary($row["postID"], $_SESSION["userid"], $conn);
                                             if (!empty($summary)) {
                                                 echo $summary;
                                             }
                                             ?>
-                                        </h4>
+                                        </h7>
                                     </span>
                                 </div>
                             </a>
 
-                            <div class="comments-count">
-                                1K Comments
-                            </div>
+
+                        </div>
+                        <!-- Reaction Panel -->
+                        <div class="reaction-panel">
+                            <?php foreach (["Like", "Love", "Haha", "Wow", "Sad", "Angry"] as $reaction): ?>
+                                <img src="../assests/images/icon/<?php echo $reaction; ?>.png" class="reaction-img"
+                                    title="<?php echo $reaction; ?>" data-reaction="<?php echo $reaction; ?>" />
+                            <?php endforeach; ?>
                         </div>
 
 
@@ -542,7 +764,7 @@ $currentUserID = isset($_SESSION['userid']) ? $_SESSION['userid'] : '';
                                 <!-- LIKE BUTTON -->
                                 <div class="group position-relative">
                                     <button type="button"
-                                        class="btn btn-outline-primary d-flex align-items-center gap-2 px-3 py-2 rounded-pill shadow-sm">
+                                        class="btn btnDesign d-flex align-items-center gap-2 px-3 py-2 rounded-pill shadow-sm">
                                         <div class="icon-container d-flex align-items-center gap-2">
                                             <?php
                                             $have_react = already_react($row['postID'], $_SESSION['userid'], $conn);
@@ -551,10 +773,11 @@ $currentUserID = isset($_SESSION['userid']) ? $_SESSION['userid'] : '';
                                             <?php if ($currentReaction): ?>
                                                 <img src="../assests/images/icon/<?php echo $currentReaction; ?>.png"
                                                     alt="<?php echo $currentReaction; ?>" class="reaction-img" />
-                                                <span class="text-muted"><?php echo $currentReaction; ?></span>
+                                                <span class="text"
+                                                    style="color: white;"><?php echo $currentReaction; ?></span>
                                             <?php else: ?>
-                                                <i class="fa-regular fa-thumbs-up"></i>
-                                                <span class="text-muted">Like</span>
+                                                <i class="fa-regular fa-thumbs-up textWhite"></i>
+                                                <span class="text" style="color: white;">Like</span>
                                             <?php endif; ?>
                                         </div>
                                     </button>
@@ -562,228 +785,285 @@ $currentUserID = isset($_SESSION['userid']) ? $_SESSION['userid'] : '';
                                     <!-- Reaction Panel -->
                                     <div class="reaction-panel">
                                         <?php foreach (["Like", "Love", "Haha", "Wow", "Sad", "Angry"] as $reaction): ?>
-                                            <img src="../assests/images/icon/<?php echo $reaction; ?>.png" class="reaction-img"
-                                                title="<?php echo $reaction; ?>" data-reaction="<?php echo $reaction; ?>" />
+                                            <img src="../assests/images/icon/<?php echo $reaction; ?>.png"
+                                                class="reaction-img" title="<?php echo $reaction; ?>"
+                                                data-reaction="<?php echo $reaction; ?>" />
                                         <?php endforeach; ?>
                                     </div>
                                 </div>
 
-
-
                                 <!-- Comment box -->
-                                <div class="comment-box">
-                                    <img src="../assests/images/post_images/<?php echo getUserPorfileImageByID($_SESSION["userid"]) ?>" alt="Your Profile Picture" class="avatar">
-
-                                    <input type="text" class="comment-input" placeholder="Write a comment..." id="comment_input">
-
-                                    <button class="send-btn" type="button" onclick="write_comment(<?php echo $postID; ?>)">
-                                        <i class="fas fa-paper-plane"></i>
+                                <div class="comment-box cmtBoxStyle">
+                                    <img src="../assests/images/post_images/<?php echo getUserPorfileImageByID($sessionUserID) ?>"
+                                        alt="profile" class="avatar">
+                                    <input type="text" class="comment-input" id = "comment_input" style="color: white;"
+                                        placeholder="Write a comment...">
+                                    <button class="send-btn" type="button"
+                                        onclick="write_comment(<?php echo $postID; ?>)">
+                                        <i class="fas fa-paper-plane iconColor"></i>
                                     </button>
                                 </div>
-
-                                <div class="container-fluid">
-
-                                    <div class="comments-section">
-                                        <div class="comments-sort">
-                                            <span class="sort-text">Most relevant</span>
-                                            <i class="fas fa-caret-down"></i>
-                                        </div>
-
-                                        <?php
-                                        // Include your necessary processing files
-                                        include("../process/fetch_comment.php"); // Assumed to contain fetch_comment()
-                                        // If fetch_reply() is in a separate file, include it:
-                                        // include("../process/fetch_reply.php");
-
-                                        // Fetch top-level comments for the specific post
-                                        $comments = fetch_comment($postID);
-
-                                        if (!empty($comments)) {
-                                            foreach ($comments as $comment) {
-                                                // Start the recursive display for each top-level comment
-                                                display_comment_tree($comment, false); // 'false' indicates it's a main comment
-                                            }
-                                        } else {
-                                            echo "<p>No comments yet. Be the first to comment!</p>";
-                                        }
-                                        ?>
-
-                                    </div>
-                                </div>
-
                             </div>
+                            <div class="container-fluid">
 
-                        </form>
-
-                    </div>
-                    <div class="dropdown ms-auto position-absolute top-0 end-0 mt-2" style="margin-right: 60px;">
-                        <button class="btn btn-light btn-sm menu-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fa-solid fa-ellipsis-vertical "></i>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><button class="dropdown-item" href="#">Save post</button></li>
-                            <li><a class="dropdown-item" href="#">Edit post</a></li>
-                            <li><a class="dropdown-item" href="#">Delete Post</a></li>
-                        </ul>
-                    </div>
-
-                    <form action="../process/post.php" method="post" enctype="multipart/form-data">
-                        <div class="post-modal-overlay">
-                            <div class="post-modal">
-                                <div class="post-modal-header">
-                                    <h3>Create Post</h3>
-                                    <span class="close-modal">&times;</span>
-                                </div>
-                                <div class="post-modal-body">
-                                    <div class="modal-user-info">
-                                        <img src="../assests/images/post_images/<?php echo getUserPorfileImageByID($_SESSION["userid"]) ?>" alt="Your Profile Picture">
-                                        <div>
-                                            <div class="user-name"><?php echo $_SESSION["username"] ?></div>
-
-                                            <div class="dropdown">
-                                                <button type="button" class="dropdown-toggle" id="selected" name="privacy">Public</button>
-                                                <div class="dropdown-menu">
-                                                    <button type="button" class="dropdown-item" onclick="choice_privacy('public')">Public</button>
-                                                    <button type="button" class="dropdown-item" onclick="choice_privacy('batch')">Batch</button>
-                                                    <button type="button" class="dropdown-item" onclick="choice_privacy('only_me')">Only Me</button>
-                                                </div>
-                                            </div>
-                                            <input type="hidden" id="privacy-input" name="privacy" value="public">
-                                        </div>
-                                    </div>
-
+                                <div class="comments-section">
                                     <?php
-                                    $fullName = trim($_SESSION['username']); // e.g. "San Min Htike"
-                                    $parts = explode(' ', $fullName);
-                                    $firstWord = $parts[0]; // get first word
+                                    // Include your necessary processing files
+                                    include("../process/fetch_comment.php"); // Assumed to contain fetch_comment()
+                                    // If fetch_reply() is in a separate file, include it:
+                                    // include("../process/fetch_reply.php");
+                                    
+                                    // Fetch top-level comments for the specific post
+                                    $comments = fetch_comment($postID);
+
+                                    if (!empty($comments)) {
+                                        foreach ($comments as $comment) {
+                                            // Start the recursive display for each top-level comment
+                                            display_comment_tree($comment, false); // 'false' indicates it's a main comment
+                                        }
+                                    } else {
+                                        echo "<p style='color:white;'>No comments yet. Be the first to comment!</p>";
+                                    }
                                     ?>
-                                    <textarea class="post-textarea" name="post-textarea" placeholder="What's on your mind, <?php echo htmlspecialchars($firstWord); ?>?"></textarea>
 
-                                    <!-- Image Preview Container -->
-                                    <div id="preview-container" class="preview-container"></div>
-
-                                    <!-- Hidden File Input -->
-                                    <input type="file" name="post_image[]" id="upload" accept="image/*" multiple style="display:none;" onchange="readUrl(this)">
-
-                                    <div class="modal-add-to-post">
-                                        <span>Add to your post</span>
-                                        <div class="add-icons">
-                                            <label for="upload" style="cursor:pointer;">
-                                                <i class="fa-solid fa-images"></i>
-                                            </label>
-                                            <i class="fa-solid fa-user-plus"></i>
-                                            <i class="fa-solid fa-face-smile"></i>
-                                            <i class="fa-solid fa-location-dot"></i>
-                                            <i class="fa-solid fa-flag"></i>
-                                            <i class="fa-solid fa-ellipsis"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="post-modal-footer">
-                                    <button type="submit" name="post-button" class="post-button">Post</button>
                                 </div>
                             </div>
+
+                    </div>
+
+                    </form>
+
+                </div>
+
+
+                <form action="../process/post.php" method="post" enctype="multipart/form-data">
+                    <div class="post-modal-overlay">
+                        <div class="post-modal">
+                            <div class="post-modal-header">
+                                <h3>Create Post</h3>
+                                <span class="close-modal">&times;</span>
+                            </div>
+                            <div class="post-modal-body">
+                                <div class="modal-user-info">
+                                    <img src="../assests/images/post_images/<?php echo getUserPorfileImageByID($_SESSION["userid"]) ?>"
+                                        alt="Your Profile Picture">
+                                    <div>
+                                        <div class="user-name"><?php echo $_SESSION["username"] ?></div>
+
+                                        <div class="dropdown">
+                                            <button type="button" class="dropdown-toggle" id="selected"
+                                                name="privacy">Public</button>
+                                            <div class="dropdown-menu">
+                                                <button type="button" class="dropdown-item"
+                                                    onclick="choice_privacy('public')">Public</button>
+                                                <button type="button" class="dropdown-item"
+                                                    onclick="choice_privacy('batch')">Batch</button>
+                                                <button type="button" class="dropdown-item"
+                                                    onclick="choice_privacy('only_me')">Only Me</button>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" id="privacy-input" name="privacy" value="public">
+                                    </div>
+                                </div>
+
+                                <?php
+                                $fullName = trim($_SESSION['username']); // e.g. "San Min Htike"
+                                $parts = explode(' ', $fullName);
+                                $firstWord = $parts[0]; // get first word
+                                ?>
+                                <textarea class="post-textarea" name="post-textarea"
+                                    placeholder="What's on your mind, <?php echo htmlspecialchars($firstWord); ?>?"></textarea>
+
+                                <!-- Image Preview Container -->
+                                <div id="preview-container" class="preview-container"></div>
+
+                                <!-- Hidden File Input -->
+                                <input type="file" name="post_image[]" id="upload" accept="image/*" multiple
+                                    style="display:none;" onchange="readUrl(this)">
+
+                                <div class="modal-add-to-post">
+                                    <span>Add to your post</span>
+                                    <div class="add-icons">
+                                        <label for="upload" style="cursor:pointer;">
+                                            <i class="fa-solid fa-images"></i>
+                                        </label>
+                                        <i class="fa-solid fa-user-plus"></i>
+                                        <i class="fa-solid fa-face-smile"></i>
+                                        <i class="fa-solid fa-location-dot"></i>
+                                        <i class="fa-solid fa-flag"></i>
+                                        <i class="fa-solid fa-ellipsis"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="post-modal-footer">
+                                <button type="submit" name="post-button" class="post-button">Post</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div class="modal fade" id="reactionModal" tabindex="-1" aria-labelledby="reactionModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog wide-modal modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="reactionModalLabel">People who reacted</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="reaction-tabs">
+                                    <div class="reaction-tab active" onclick="specific_reacted_user('All')">
+                                        <span>All</span>
+                                    </div>
+                                    <div class="reaction-tab" onclick="specific_reacted_user('Like')"><img
+                                            src="../assests/images/icon/Like.png" id="like_react"><span></span></div>
+                                    <div class="reaction-tab" onclick="specific_reacted_user('Love')"><img
+                                            src="../assests/images/icon/Love.png" id="love_react"><span></span></div>
+                                    <div class="reaction-tab" onclick="specific_reacted_user('Haha')"><img
+                                            src="../assests/images/icon/Haha.png" id="haa_react"><span></span></div>
+                                    <div class="reaction-tab" onclick="specific_reacted_user('Angry')"><img
+                                            src="../assests/images/icon/Angry.png" id="angry_react"><span></span></div>
+                                    <div class="reaction-tab" onclick="specific_reacted_user('Sad')"><img
+                                            src="../assests/images/icon/Sad.png" id="sad_react"> <span></span></div>
+                                    <div class="reaction-tab" onclick="specific_reacted_user('Wow')"><img
+                                            src="../assests/images/icon/Wow.png" id="wow_react"><span></span></div>
+                                </div>
+                                <div id="loadingSpinner" style="display: none;">Loading...</div>
+                                <ul id="reactionGiversList" class="list-group"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+            </div>
+        </div>
+    </div>
+
+    <div id="image-Modal" class="image-modal" style="display:none;">
+        <button id="closeBtn" class="nav-button close-btn">&times;</button>
+        <button id="prevBtn" class="nav-button prev-btn">&#10094;</button>
+        <img id="modal-Image" src="" alt="Modal Image">
+        <button id="nextBtn" class="nav-button next-btn">&#10095;</button>
+    </div>
+
+
+
+    <script src="../assests/js/clickImage.js"></script>
+
+    <!-- Report Modal -->
+    <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reportModalLabel">Tell me what's your problem with this post</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <form id="reportForm">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="reason[]" value="Sexual harassment"
+                                id="reason1">
+                            <label class="form-check-label" for="reason1">Sexual harassment</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="reason[]" value="Hate speech"
+                                id="reason2">
+                            <label class="form-check-label" for="reason2">Hate speech</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="reason[]" value="Spam" id="reason3">
+                            <label class="form-check-label" for="reason3">Spam</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="reason[]" value="Violent content"
+                                id="reason4">
+                            <label class="form-check-label" for="reason4">Violent content</label>
+                        </div>
+
+                        <div class="mb-3 mt-3">
+                            <label for="additionalNote" class="form-label">Additional note</label>
+                            <textarea class="form-control" id="additionalNote" name="note" rows="3"
+                                placeholder="Write something..." style="resize: none; height: 200px;"></textarea>
                         </div>
                     </form>
-                    <div class="modal fade" id="reactionModal" tabindex="-1" aria-labelledby="reactionModalLabel" aria-hidden="true">
-                        <div class="modal-dialog wide-modal modal-dialog-scrollable">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="reactionModalLabel">People who reacted</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="reaction-tabs">
-                                        <div class="reaction-tab active" onclick="specific_reacted_user('All')"><span>All</span></div>
-                                        <div class="reaction-tab" onclick="specific_reacted_user('Like')"><img src="../assests/images/icon/Like.png" id="like_react"><span></span></div>
-                                        <div class="reaction-tab" onclick="specific_reacted_user('Love')"><img src="../assests/images/icon/Love.png" id="love_react"><span></span></div>
-                                        <div class="reaction-tab" onclick="specific_reacted_user('Haha')"><img src="../assests/images/icon/Haha.png" id="haa_react"><span></span></div>
-                                        <div class="reaction-tab" onclick="specific_reacted_user('Angry')"><img src="../assests/images/icon/Angry.png" id="angry_react"><span></span></div>
-                                        <div class="reaction-tab" onclick="specific_reacted_user('Sad')"><img src="../assests/images/icon/Sad.png" id="sad_react"> <span></span></div>
-                                        <div class="reaction-tab" onclick="specific_reacted_user('Wow')"><img src="../assests/images/icon/Wow.png" id="wow_react"><span></span></div>
-                                    </div>
-                                    <div id="loadingSpinner" style="display: none;">Loading...</div>
-                                    <ul id="reactionGiversList" class="list-group"></ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-
                 </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" onclick="submitReport()">Submit</button>
+                </div>
+
             </div>
         </div>
-
-        <!-- Report Modal -->
-        <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="reportModalLabel">Tell me what's your problem with this post</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-
-                    <div class="modal-body">
-                        <form id="reportForm">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="reason[]" value="Sexual harassment"
-                                    id="reason1">
-                                <label class="form-check-label" for="reason1">Sexual harassment</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="reason[]" value="Hate speech"
-                                    id="reason2">
-                                <label class="form-check-label" for="reason2">Hate speech</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="reason[]" value="Spam" id="reason3">
-                                <label class="form-check-label" for="reason3">Spam</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="reason[]" value="Violent content"
-                                    id="reason4">
-                                <label class="form-check-label" for="reason4">Violent content</label>
-                            </div>
-
-                            <div class="mb-3 mt-3">
-                                <label for="additionalNote" class="form-label">Additional note</label>
-                                <textarea class="form-control" id="additionalNote" name="note" rows="3"
-                                    placeholder="Write something..." style="resize: none; height: 200px;"></textarea>
-                            </div>
-                        </form>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-danger" onclick="submitReport()">Submit</button>
-                    </div>
-
-                </div>
-            </div>
-        </div>
+    </div>
 
 
 
-        <script>
-            function submitReport() {
-                const form = document.getElementById('reportForm');
-                const reasons = Array.from(form.querySelectorAll('input[name="reason[]"]:checked'))
-                    .map(cb => cb.value);
-                const note = form.querySelector('#additionalNote').value;
+    <script>
+        function submitReport() {
+            const form = document.getElementById('reportForm');
+            const reasons = Array.from(form.querySelectorAll('input[name="reason[]"]:checked'))
+                .map(cb => cb.value);
+            const note = form.querySelector('#additionalNote').value;
 
-                console.log("Report submitted:");
-                console.log("Reasons:", reasons);
-                console.log("Note:", note);
+            console.log("Report submitted:");
+            console.log("Reasons:", reasons);
+            console.log("Note:", note);
 
-                alert("Report submitted!");
-                const modal = bootstrap.Modal.getInstance(document.getElementById('reportModal'));
-                modal.hide();
-            }
-        </script>
+            alert("Report submitted!");
+            const modal = bootstrap.Modal.getInstance(document.getElementById('reportModal'));
+            modal.hide();
+        }
 
-         <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // We attach one listener to the document
+            document.addEventListener('click', function (event) {
+                // Use event.target.closest() to check if the clicked element (or its parent)
+                // is one of our dropdown toggles.
+                const toggleButton = event.target.closest('.circular-dropdown-toggle');
+
+                if (toggleButton) {
+                    // A dropdown toggle was clicked
+                    event.stopPropagation(); // Prevent the document click listener from immediately hiding it
+
+                    // Extract the postID from the unique ID (e.g., "socialDropdownToggle_123" -> "123")
+                    const postId = toggleButton.id.replace('socialDropdownToggle_', '');
+                    const socialIconsContent = document.getElementById('socialIconsContent_' + postId);
+
+                    if (socialIconsContent) {
+                        // First, hide any other open dropdowns (improves user experience)
+                        document.querySelectorAll('.social-icons-content').forEach(content => {
+                            // Make sure not to hide the one we just clicked to open/close
+                            if (content.id !== socialIconsContent.id) {
+                                content.style.display = 'none';
+                            }
+                        });
+
+                        // Then, toggle the display of the current dropdown
+                        if (socialIconsContent.style.display === 'none' || socialIconsContent.style.display === '') {
+                            socialIconsContent.style.display = 'flex';
+                        } else {
+                            socialIconsContent.style.display = 'none';
+                        }
+                    }
+                } else {
+                    // If the click was anywhere else on the document AND not inside an open dropdown content,
+                    // close all open dropdowns.
+                    document.querySelectorAll('.social-icons-content').forEach(content => {
+                        if (!content.contains(event.target)) { // Check if click was outside this specific content area
+                            content.style.display = 'none';
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+
+    <script>
         // These are now global JavaScript variables, populated by PHP
         // Using JSON.stringify for safe and correct embedding of string values,
         // handling quotes and special characters. htmlspecialchars is also good for defense-in-depth.
@@ -796,9 +1076,9 @@ $currentUserID = isset($_SESSION['userid']) ? $_SESSION['userid'] : '';
         // console.log("JS_currentUserProfilePic:", JS_currentUserProfilePic);
         // console.log("JS_currentUserName:", JS_currentUserName);
     </script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="../assests/js/script.js"></script>
-        <script src="../assests/js/commend.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assests/js/script.js"></script>
+    <script src="../assests/js/commend.js"></script>
 
 
 </body>

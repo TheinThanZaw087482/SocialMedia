@@ -1,8 +1,9 @@
 <?php
-session_start();
 include("../includes/db.php");
 include("../process/post.php");
-$userid = $_SESSION['userid'];
+
+
+$userid = $_SESSION['userid'] ?? null; // Use null coalescing for safety
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -10,7 +11,7 @@ $userid = $_SESSION['userid'];
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Metro Book</title>
+    <title>Metro Book - Admin Reports</title>
 
     <link rel="stylesheet" href="../assests/css/noti.css">
     <link rel="stylesheet" href="../assests/css/style.css">
@@ -28,22 +29,14 @@ $userid = $_SESSION['userid'];
     <div class="container">
         <h2 class="mb-4">Report Notifications</h2>
 
-        <!-- All Notifications Section -->
-        <div class="mb-4">
-            <p class="text-muted text-body-tertiary fs-5 mb-2">All Notifications</p>
-            <div id="notificationList"></div>
-        </div>
-
-        <!-- Today Section -->
         <div>
-            <p class="text-muted text-body-tertiary fs-5 mb-2">Today</p>
-
             <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
                 <select class="form-select w-auto" id="reportTypeFilter">
                     <option value="">All</option>
                     <option value="Sexual Harassment">Sexual Harassment</option>
-                    <option value="Violence">Violence</option>
+                    <option value="Violent content">Violent content</option>
                     <option value="Spam">Spam</option>
+                    <option value="Hate speech">Hate speech</option>
                 </select>
 
                 <div class="dropdown">
@@ -68,40 +61,103 @@ $userid = $_SESSION['userid'];
         </div>
     </div>
 
-    <!-- Modal -->
     <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-scrollable">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="reportModalLabel">Report Content</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body" id="modalReportContent">
-            <!-- Full report content will appear here -->
-          </div>
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reportModalLabel">Report Content</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modalReportContent">
+                    </div>
+            </div>
         </div>
-      </div>
     </div>
 
-    <!-- Bootstrap JS -->
+    <?php
+    $sql = "SELECT 
+        rp.reportID,
+        rp.reportuserID,
+        rp.postID,
+        rp.Message,
+        rp.status,
+        rpt.report_type,
+        u.name AS postedUser,
+        rpu.name AS reportUser
+    FROM 
+        report rp
+    JOIN 
+        report_type rpt ON rp.reportID = rpt.reportID
+    JOIN 
+        post p ON p.postID = rp.postID
+    JOIN 
+        users u ON p.userID = u.userid
+    JOIN 
+        users rpu ON rp.reportuserID = rpu.userid";
+
+    $result = mysqli_query($conn, $sql);
+
+    $reports = [];
+    if ($result) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            // Apply htmlspecialchars for XSS protection when outputting user-generated content
+            // The JavaScript then uses textContent for modal, which is safer.
+            // For info.innerHTML, this escaping is important.
+            $row['Message'] = htmlspecialchars($row['Message'], ENT_QUOTES, 'UTF-8');
+            $reports[] = $row;
+        }
+    } else {
+        // Log the error for debugging
+        error_log("Database query failed: " . mysqli_error($conn));
+        // You might want to display a user-friendly error message
+        // echo "<p>Error loading reports. Please try again later.</p>";
+    }
+
+    $reports_json = json_encode($reports);
+    ?>
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- JavaScript Logic -->
     <script>
-        const mockReports = [
-            { id: 1, type: "Violence", content: "I don't like Ko Myo Aung because Ko Myo Aung makes me write code...", postId: 101 },
-            { id: 2, type: "Sexual Harassment", content: "Post by user456 about ABC with very aggressive and threatening language.", postId: 102 },
-            { id: 3, type: "Spam", content: "Post by user789 about JKL offering fake giveaways and repetitive links.", postId: 103 },
-        ];
+        const reportsFromPHP = <?= $reports_json ?>;
+
+        console.log("Reports loaded from PHP:", reportsFromPHP);
+        const allReports = reportsFromPHP.map(r => ({
+            id: r.reportID,
+            type: r.report_type,
+            content: r.Message, // Message is already HTML-escaped from PHP
+            postId: r.postID,
+            status: r.status,
+            postedUser: r.postedUser,
+            reportUser: r.reportUser
+        }));
+
+        console.log(allReports);
+
+        // Remove this line as 'content' is not defined here globally.
+        // content = reportUser + "reported" + postedUser + content; 
 
         let selectedReports = [];
 
         function renderReports() {
             const selectedType = document.getElementById("reportTypeFilter").value;
-            const filtered = selectedType ? mockReports.filter(r => r.type === selectedType) : mockReports;
+            // Filter from 'allReports' not 'mockReports' (renamed for clarity)
+            const filtered = selectedType ? allReports.filter(r => r.type === selectedType) : allReports;
 
             const container = document.getElementById("reportList");
-            container.innerHTML = "";
+            container.innerHTML = ""; // Clear existing content
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<p class="text-muted">No reports found for this filter.</p>';
+                document.getElementById("selectAllCheckbox").checked = false;
+                document.getElementById("selectAllCheckbox").disabled = true; // Disable if no items
+                document.getElementById("manageSelectedBtn").disabled = true;
+                return;
+            } else {
+                 document.getElementById("selectAllCheckbox").disabled = false;
+            }
+
 
             filtered.forEach(report => {
                 const isChecked = selectedReports.includes(report.id);
@@ -123,15 +179,25 @@ $userid = $_SESSION['userid'];
 
                 const info = document.createElement("div");
 
-                const shortContent = report.content.length > 30
-                    ? report.content.substring(0, 30) + "..."
-                    : report.content;
+                // Constructing the full message for display in the list
+                const fullDisplayContent = `${report.reportUser} reported ${report.postedUser}: "${report.content}"`;
+                const shortContent = fullDisplayContent.length > 50 ? // Adjusted length for combined message
+                    fullDisplayContent.substring(0, 50) + "..." :
+                    fullDisplayContent;
 
                 info.innerHTML = `
                     <strong>${report.type}</strong><br>
                     <small>${shortContent}</small>
-                    ${report.content.length > 30 ? `<a href="#" class="ms-2" onclick="showReportModal('${report.content.replace(/'/g, "\\'")}')">See more...</a>` : ""}
+                    ${fullDisplayContent.length > 50 ? `<a href="#" class="ms-2" onclick="showReportModal(
+                        '${report.reportUser.replace(/'/g, "\\'")}',
+                        '${report.postedUser.replace(/'/g, "\\'")}',
+                        '${report.type.replace(/'/g, "\\'")}',
+                        '${report.content.replace(/'/g, "\\'")}'
+                    )">See more...</a>` : ""}
                 `;
+                // Note: The 'replace' is for escaping single quotes in string literals for onclick.
+                // Since report.content is already HTML-escaped, using textContent in modal is safe.
+
 
                 left.appendChild(checkbox);
                 left.appendChild(info);
@@ -139,11 +205,11 @@ $userid = $_SESSION['userid'];
                 const right = document.createElement("div");
                 right.className = "d-flex align-items-center gap-2";
 
-                const viewBtn = document.createElement("button");
+                const viewBtn = document.createElement("a"); // Changed to <a> for a proper link
                 viewBtn.className = "btn btn-outline-primary btn-sm";
                 viewBtn.textContent = "View Post";
-                viewBtn.addEventListener("click", () => alert(`Viewing post #${report.postId}`));
-
+                
+                viewBtn.href = `../pages/comment_postframe.php?postID=${report.postId}`; 
                 right.appendChild(viewBtn);
 
                 cardBody.appendChild(left);
@@ -152,36 +218,87 @@ $userid = $_SESSION['userid'];
                 container.appendChild(card);
             });
 
-            const allSelected = filtered.length > 0 && selectedReports.length === filtered.length;
+            // Update selectAllCheckbox state correctly
+            const allSelected = filtered.length > 0 && selectedReports.length === filtered.map(r => r.id).filter(id => selectedReports.includes(id)).length;
             document.getElementById("selectAllCheckbox").checked = allSelected;
+
             document.getElementById("manageSelectedBtn").disabled = selectedReports.length === 0;
         }
 
         function toggleSelect(id) {
-            selectedReports = selectedReports.includes(id)
-                ? selectedReports.filter(r => r !== id)
-                : [...selectedReports, id];
+            selectedReports = selectedReports.includes(id) ?
+                selectedReports.filter(r => r !== id) : [...selectedReports, id];
             renderReports();
         }
 
         function toggleSelectAll() {
             const selectedType = document.getElementById("reportTypeFilter").value;
-            const filtered = selectedType ? mockReports.filter(r => r.type === selectedType) : mockReports;
+            const filtered = selectedType ? allReports.filter(r => r.type === selectedType) : allReports;
 
-            selectedReports = selectedReports.length === filtered.length ? [] : filtered.map(r => r.id);
+            if (selectedReports.length === filtered.length) {
+                // If all are currently selected, deselect all
+                selectedReports = [];
+            } else {
+                // Otherwise, select all filtered reports
+                selectedReports = filtered.map(r => r.id);
+            }
             renderReports();
         }
 
-        function handleAction(action) {
-            alert(`${action.toUpperCase()} reports: ${selectedReports.join(", ")}`);
-        }
-
-        function showReportModal(content) {
+        // Renamed 'content' parameter to 'messageContent' to avoid conflict and be more descriptive
+        function showReportModal(reportUser, postedUser, reportType, messageContent) {
             const modalBody = document.getElementById("modalReportContent");
-            modalBody.textContent = content;
+            // Format the content for the modal
+            modalBody.innerHTML = `
+                <p><strong>Reported by:</strong> ${reportUser}</p>
+                <p><strong>Posted by:</strong> ${postedUser}</p>
+                <p><strong>Reason:</strong> ${reportType}</p>
+                <p><strong>Message:</strong> ${messageContent}</p>
+            `; // Using innerHTML here is safe because messageContent is already HTML-escaped from PHP.
+
             const modal = new bootstrap.Modal(document.getElementById('reportModal'));
             modal.show();
         }
+
+        // This function will need to be implemented fully with AJAX
+        async function handleAction(action) {
+            if (selectedReports.length === 0) {
+                alert("Please select at least one report.");
+                return;
+            }
+
+            const confirmMessage = `Are you sure you want to ${action} the selected report(s)?`;
+            if (!confirm(confirmMessage)) {
+                return; // User cancelled
+            }
+
+            try {
+                const response = await fetch('../process/process_report_action.php', { // Create this file
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        reportIds: selectedReports,
+                        action: action
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert(result.message);
+                    window.location.reload();
+                } else {
+                    alert("Error: " + result.message);
+                    console.error("Server error:", result.message);
+                }
+            } catch (error) {
+                console.error("Error sending action to server:", error);
+                alert("An error occurred while processing your request. Check console for details.");
+            }
+        }
+
 
         document.getElementById("reportTypeFilter").addEventListener("change", renderReports);
         window.addEventListener("DOMContentLoaded", renderReports);

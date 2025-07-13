@@ -6,15 +6,15 @@ if (isset($_GET['post_id'])) {
 
     if ($type === 'All') {
         // Fetch all reactions
-        $stmt = $conn->prepare("SELECT u.name, u.ProfileimagePath, r.type 
+        $stmt = $conn->prepare("SELECT u.name, pro.ProfileimagePath, r.type 
                                 FROM reaction r 
-                                JOIN users u ON r.userID = u.userid 
+                                JOIN users u ON r.userID = u.userid JOIN profile pro ON u.userid = pro.userid
                                 WHERE r.postID = ?");
         $stmt->bind_param("i", $post_id);
     } else {
-        $stmt = $conn->prepare("SELECT u.name, u.ProfileimagePath, r.type 
+        $stmt = $conn->prepare("SELECT u.name, pro.ProfileimagePath, r.type 
                                 FROM reaction r 
-                                JOIN users u ON r.userID = u.userid 
+                                JOIN users u ON r.userID = u.userid JOIN profile pro ON u.userid = pro.userid
                                 WHERE r.postID = ? AND r.type = ?");
         $stmt->bind_param("is", $post_id, $type);
     }

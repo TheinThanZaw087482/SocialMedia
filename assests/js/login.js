@@ -1,3 +1,4 @@
+// Switch Forms
 const container = document.querySelector('.container');
 const registerBtn = document.querySelector('.register-btn');
 const loginBtn = document.querySelector('.login-btn');
@@ -10,94 +11,73 @@ loginBtn.addEventListener('click', () => {
     container.classList.remove('active');
 });
 
+// ---------------------------
+// Login Validation
+// ---------------------------
+document.getElementById('loginForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
 
-//login Valitation
-document.getElementById('loginForm').addEventListener('submit', function (e) {
     const form = e.target;
     const formData = new FormData(form);
 
-    // Clear previous error messages
-    document.getElementById('emailError').textContent = '';
-    document.getElementById('passwordError').textContent = '';
-    document.getElementById('loginMessage').textContent = '';
-
-    fetch('./process/login_process.php', {
-        method: 'POST',
-        body: formData
-    })
-        .then(async res => {
-            const contentType = res.headers.get("content-type");
-            if (contentType && contentType.includes("application/json")) {
-                return res.json();
-            } else {
-                throw new Error("Invalid response: not JSON");
-            }
-        })
-        .then(data => {
-            if (data.success) {
-                window.location.href = './pages/Dashboard.php';
-            } else {
-                if (data.error?.email) {
-                   alert( data.error.email);
-                }
-                if (data.error?.password) {
-                    alert( data.error.password);
-                }
-                    if (data.error?.approve) {
-                    alert( data.error.approve);
-                
-                }
-                if (data.message) {
-                    alert( data.error.message);
-                }
-            }
-        })
-        .catch(error => {
-             alert('Something went wrong: ' + error.message);
-            console.error(error);
+    try {
+        const res = await fetch('./process/login_process.php', {
+            method: 'POST',
+            body: formData
         });
-});
 
-//Register Valitation
-document.getElementById('register_form').addEventListener("submit", function (e) {
-    const form = e.target;
-    const formData = new FormData(form);
+        const contentType = res.headers.get("content-type");
+        // Ensure content-type is JSON; otherwise, it's an unexpected server response
+        if (!contentType || !contentType.includes("application/json")) {
+            alert("Server returned an unexpected response. Please try again.");
+            console.error("Invalid server response format. Expected JSON. Received:", contentType);
+            return; // Stop execution
+        }
 
-    fetch('process/register_process.php', {
-        method: 'POST',
-        body: formData
-    })
-        .then(async res => {
-            const contentType = res.headers.get("content-type");
-            if (contentType && contentType.includes("application/json")) {
-                return res.json(); // ✅ call the function
-            } else {
-                throw new Error("Invalid Response: Not JSON");
+        const data = await res.json();
+
+        // Check if the response was NOT OK (e.g., HTTP status 4xx or 5xx)
+        if (!res.ok) {
+            // Prioritize specific error messages
+            if (data.error?.email) {
+                alert(data.error.email);
+            } else if (data.error?.password) {
+                alert(data.error.password);
+            } else if (data.error?.approve) {
+                alert(data.error.approve);
             }
-        })
-        .then(data => {
-            if (data.success) {
-                alert("✅ You have registered successfully. Please wait for approval from the administrator.");
+            // Fallback for general messages or unhandled errors from PHP
+            else if (data.message) {
+                alert(data.message);
             } else {
-                if (data.error?.email) {
-                    alert(data.error.email);
-                }
-                if (data.error?.id) {
-                    alert(data.error.id); 
-                }
-                if (data.error?.approve) {
-                    alert(data.error.approve);
-                }
-                if (data.error?.message) {
-                    alert(data.error.message); 
-                }
+                alert("An unexpected server error occurred. Please try again.");
             }
-        })
-        .catch(error => {
-            alert("Something went wrong: " + error.message);
-            console.error(error);
-        });
+            console.error("Login Error (Server response not OK):", data);
+            return; // Stop execution as there was an error
+        }
+
+        // If the response IS OK (HTTP status 200) but 'success' is false
+        if (data.success) {
+            window.location.href = './pages/Dashboard.php';
+        } else {
+            // This block is for when PHP returns 200 OK, but success: false (e.g., due to specific validation errors)
+            if (data.error?.email) {
+                alert(data.error.email);
+            } else if (data.error?.password) {
+                alert(data.error.password);
+            } else if (data.error?.approve) {
+                alert(data.error.approve);
+            } else if (data.message) {
+                alert(data.message);
+            } else {
+                alert("Login failed due to an unknown reason. Please try again.");
+            }
+            console.warn("Login Failed (Success false, but HTTP OK):", data);
+        }
+
+    } catch (error) {
+        // This catch block is for network errors, parsing errors, or any other unexpected JavaScript errors
+        alert("A network error occurred or the server is unreachable. Please check your internet connection or try again later.");
+        console.error("Network or Client-side Error:", error);
+    }
 });
-
-
-

@@ -13,14 +13,15 @@ $sql = "SELECT
             u.email,
             u.gender,
             u.birthdate,
-            u.Address,
-            u.ProfileimagePath AS sender_profile,
+            pro.Address,
+            pro.ProfileimagePath AS sender_profile,
             u.Batch,
             n.type,
             n.link,
             n.created_at
         FROM notifications n
-        JOIN users u ON n.senderID = u.userid
+        JOIN users u ON n.senderID = u.userid 
+        JOIN profile pro ON u.userid = pro.userid
         WHERE n.reciverID = ?
         ORDER BY n.created_at DESC";
 

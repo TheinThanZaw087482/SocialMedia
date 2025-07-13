@@ -1,5 +1,5 @@
 body {
-    background-color: #f0f2f5; /* Light grey similar to Facebook background */
+    background-color: #f0f2f5; 
 }
 .profile-header {
     background-color: #fff;
@@ -142,8 +142,6 @@ body {
 /* For screens smaller than 768px (common breakpoint for tablets and mobiles) */
 @media (max-width: 767.98px) {
     .profile-picture-container {
-        /* Adjust top to position it correctly on mobile,
-           e.g., make it overlap less or be fully below the cover photo */
         top: 120px; /* Example: adjust this value for mobile */
         left: 50%; /* Center horizontally */
         transform: translateX(-50%); /* Adjust for perfect centering */

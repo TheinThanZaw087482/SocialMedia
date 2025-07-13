@@ -3,7 +3,7 @@ include("../includes/db.php");
 function get_all_users() {
     global $conn;
 
-    $stmt = $conn->prepare("SELECT * FROM users");
+    $stmt = $conn->prepare("SELECT * FROM users WHERE approve = 1");
     if ($stmt->execute()) {
         $result = $stmt->get_result();
         $users = $result->fetch_all(MYSQLI_ASSOC);

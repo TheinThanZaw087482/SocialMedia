@@ -18,26 +18,27 @@ if (empty($receiverId) || empty($myUserId)) {
     exit();
 }
 
-
 $sql = "
     SELECT
         m.id,
         m.sender_id,
         m.receiver_id,
-        m.message, 
+        m.message,
         m.created_at,
         s.name AS sender_name,
-        s.ProfileimagePath AS sender_avatar 
+        pro.ProfileimagePath AS sender_avatar
     FROM
         messages m
     JOIN
         users s ON m.sender_id = s.userid
+    LEFT JOIN
+        profile pro ON m.sender_id = pro.userid 
     WHERE
         (m.sender_id = ? AND m.receiver_id = ?)
         OR
         (m.sender_id = ? AND m.receiver_id = ?)
     ORDER BY
-        m.created_at"; // Order by timestamp ascending for correct display order
+        m.created_at";
 
 $stmt = $conn->prepare($sql);
 
@@ -46,17 +47,17 @@ if ($stmt === false) {
     exit();
 }
 
-
 $stmt->bind_param("ssss", $myUserId, $receiverId, $receiverId, $myUserId);
 
-// Execute the statement
 if ($stmt->execute()) {
     $result = $stmt->get_result(); // Get the result set
     $messages = [];
     while ($row = $result->fetch_assoc()) {
         $messages[] = $row;
     }
-    echo json_encode($messages); // Encode the fetched messages as JSON
+    // *** MODIFICATION START ***
+    echo json_encode(['status' => 'success', 'messages' => $messages]); // Wrap messages in a 'messages' key
+    // *** MODIFICATION END ***
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Failed to fetch messages: ' . $stmt->error]);
 }

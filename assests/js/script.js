@@ -114,9 +114,10 @@ document.addEventListener("DOMContentLoaded", () => {
             const parentGroup = img.closest('.group');
             const iconContainer = parentGroup.querySelector('.icon-container');
             iconContainer.innerHTML = `
-                <img src="${src}" alt="${reaction}" style="width: 20px; height: 20px;" />
-                <span class="reaction-text" style="color: gray;">${reaction}</span>
-            `;
+            <img src="${src}" alt="${reaction}" style="width: 20px; height: 20px; display: block;" />
+            <span class="reaction-text" style="color: gray;">${reaction}</span>
+            
+        `;
 
             const form = img.closest('form');
             const postID = form.querySelector('input[name="post_id"]').value;
@@ -324,7 +325,7 @@ function hidePost(postId) {
         });
 }
 
-function unhidePost(hide_ID,post_ID) {
+function unhidePost(hide_ID, post_ID) {
     fetch('../process/unhidepost.php', {
         method: 'POST',
         headers: {
@@ -342,51 +343,106 @@ function unhidePost(hide_ID,post_ID) {
             }
         });
 }
-function unsavepost(postID){
-    fetch('../process/unsavepost.php',{
+function unsavepost(postID) {
+    fetch('../process/unsavepost.php', {
         method: 'POST',
         headers: {
-            'Content-Type':'application/x-www-form-urlencoded',
+            'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: 'post_id='+encodeURIComponent(postID)
+        body: 'post_id=' + encodeURIComponent(postID)
     })
-    .then(response => response.text())
+        .then(response => response.text())
+        .then(data => {
+            if (data.trim() === 'success') {
+                document.getElementById(postID).style.display = 'none';
+                alert('You unsaved this post')
+            } else {
+                alert('Failed to unsave post');
+            }
+        });
+}
+function savepost($postID) {
+    fetch('../process/savepost.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'post_id=' + encodeURIComponent($postID)
+
+    })
+        .then(response => response.text())
+        .then(data => {
+            if (data.trim() === 'success') {
+                alert("You saved this post")
+            } else {
+                alert("Fail to save post");
+            }
+        });
+
+
+}
+function ban_post(postId) { // Renamed parameter to postId for consistency
+    // Optional: Add a confirmation dialog for better UX
+    if (!confirm('Are you sure you want to ban this post?')) {
+        return; // User cancelled the action
+    }
+
+    fetch('../process/ban_post.php', {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'post_id=' + encodeURIComponent(postId)
+    })
+    .then(response => {
+        // Check if the network request was successful (HTTP status 200-299)
+        if (!response.ok) {
+            // If the server responded with an HTTP error status (e.g., 404, 500)
+            // Try to parse JSON for more detailed error, but fallback to a general message
+            return response.json().catch(() => {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            });
+        }
+        // Parse the JSON response from the PHP script
+        return response.json();
+    })
     .then(data => {
-        if(data.trim()=== 'success'){
-            document.getElementById(postID).style.display ='none';
-            alert('You unsaved this post')
-        }else{
-            alert('Failed to unsave post');
-        }
-    });
-}
-function savepost($postID){
-    fetch('../process/savepost.php',{
-        method: 'POST',
-        headers: {
-            'Content-Type':'application/x-www-form-urlencoded',
-        },
-        body: 'post_id=' +encodeURIComponent($postID)
+        // 'data' is now the JavaScript object returned by PHP's json_encode
+        if (data.status === 'success' || data.status === 'info') { // Handle 'info' status as well
+            alert(data.message); // Display the success/info message from the server
+            
+            // Optional: Update the UI to reflect the banned status
+            const postElement = document.getElementById(`post-${postId}`); // Assuming post elements have IDs like 'post-123'
+            if (postElement) {
+                postElement.classList.add('banned-post'); // Add a class to style the banned post
+                // Example: Change the ban button to an unban button or disable it
+                const banButton = postElement.querySelector('.ban-button'); // Assuming a button with class 'ban-button'
+                if (banButton) {
+                    banButton.textContent = 'Unban Post';
+                    banButton.onclick = function() { unban_post(postId); }; // If you have an unban function
+                    // You might also want to change its class or style to indicate it's an unban button now
+                    banButton.classList.remove('ban-button');
+                    banButton.classList.add('unban-button');
+                }
+            }
 
+        } else {
+            // Display the error message from the server
+            alert(data.message || 'Failed to ban post.');
+            console.error('Server error:', data.message); // Log the detailed error
+        }
     })
-    .then(response=>response.text())
-    .then(data =>{
-        if(data.trim()=== 'success'){
-            alert("You saved this post")
-        }else{
-            alert("Fail to save post");
-        }
+    .catch(error => {
+        // Handle network errors or issues with parsing the JSON
+        alert('An error occurred while communicating with the server. Please try again. ' + error.message);
+        console.error('Fetch error:', error);
     });
-    
-
 }
-
-
-
-
-
-
 function deletePost(postId) {
+    if (!confirm('Are you sure you want to delete this post? This action cannot be undone.')) {
+        return; // User cancelled the deletion
+    }
+
     fetch('../process/delete_post.php', {
         method: 'POST',
         headers: {
@@ -394,15 +450,38 @@ function deletePost(postId) {
         },
         body: 'post_id=' + encodeURIComponent(postId)
     })
-        .then(response => response.text())
-        .then(data => {
-            if (data.trim() === 'success') {
-                document.getElementById(postId).style.display = 'none';
-                alert('you deleted this post.');
-            } else {
-                alert('Failed to delete post');
+    .then(response => {
+        // Check if the response is OK (status in the 200s)
+        if (!response.ok) {
+            // If the server responded with an HTTP error status (e.g., 404, 500)
+            // Try to parse JSON for more detailed error, but fallback to general message
+            return response.json().catch(() => {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            });
+        }
+        // If response is OK, always try to parse as JSON
+        return response.json();
+    })
+    .then(data => {
+        // 'data' will now be the parsed JSON object (e.g., {status: 'success', message: '...' })
+        if (data.status === 'success') {
+            // Assuming 'postId' is also the ID of the HTML element you want to remove
+            const postElement = document.getElementById(postId);
+            if (postElement) {
+                postElement.style.display = 'none'; // Or postElement.remove();
             }
-        });
+            alert(data.message || 'Post deleted successfully!'); // Use the message from the server
+        } else {
+            // Handle errors reported by the server (e.g., 'Post ID is missing.')
+            alert(data.message || 'Failed to delete post.');
+            console.error('Server error:', data.message); // Log the server's error message
+        }
+    })
+    .catch(error => {
+        // Handle network errors or errors thrown during response parsing
+        alert('An error occurred while trying to delete the post. Please try again. ' + error.message);
+        console.error('Fetch error:', error);
+    });
 }
 function submitProfilePicForm() {
     const form = document.getElementById('profilePicForm');
@@ -435,11 +514,11 @@ function submitCoverPhotoForm() {
     }
 }
 
-let currentpostID =null;
+let currentpostID = null;
 
 
 
-function loadReactedUsers(postId,type) {
+function loadReactedUsers(postId, type) {
     const listContainer = document.getElementById('reactionGiversList');
     const spinner = document.getElementById('loadingSpinner');
 
@@ -454,7 +533,7 @@ function loadReactedUsers(postId,type) {
     // 🔁 First: Set PHP session postID
     fetch('../process/set_post_session.php', {
         method: 'POST',
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: `post_id=${postId}`
     });
 
@@ -489,19 +568,19 @@ function loadReactedUsers(postId,type) {
             console.error('Error loading reactions:', error);
         });
 
-        fetch(`../process/get_reaction_data.php?post_id=${postId}`)
-    .then(response => response.json())
-    .then(data => {
-        // console.log(data); // For debugging
-        updateReactionTabs(data);
-    })
-    .catch(error => {
-        console.error('Error loading reaction counts:', error);
-    });
+    fetch(`../process/get_reaction_data.php?post_id=${postId}`)
+        .then(response => response.json())
+        .then(data => {
+            // console.log(data); // For debugging
+            updateReactionTabs(data);
+        })
+        .catch(error => {
+            console.error('Error loading reaction counts:', error);
+        });
 }
 
 
-function setSessionAndLoad(postID,type) {
+function setSessionAndLoad(postID, type) {
     currentpostID = postID;
     fetch('../process/set_post_session.php', {
         method: 'POST',
@@ -510,10 +589,10 @@ function setSessionAndLoad(postID,type) {
         },
         body: `postID=${postID}`
     })
-    .then(() => {
-        loadReactedUsers(postID,type);  // After setting session, load reactions
-    })
-    .catch(error => console.error('Error setting session:', error));
+        .then(() => {
+            loadReactedUsers(postID, type);  // After setting session, load reactions
+        })
+        .catch(error => console.error('Error setting session:', error));
 }
 function updateReactionTabs(counts) {
     const reactionMap = {
@@ -595,10 +674,26 @@ function specific_reacted_user(type) {
             });
         })
 
-        
+
         .catch(error => {
             alert("error")
             spinner.style.display = 'none';
             console.error('Error loading reactions:', error);
         });
+}
+
+function choice_privacy(value) {
+    document.getElementById("privacy-input").value = value;
+
+    let displayText = '';
+    if (value === 'public') displayText = '🌍 Public';
+    else if (value === 'batch') displayText = '🎓 Batch';
+    else if (value === 'only_me') displayText = '🔒 Only Me';
+    
+    document.getElementById("selected").innerHTML = displayText + ' <i class="fas fa-chevron-down"></i>';
+}
+
+function choice_privacy(value) {
+    document.getElementById("privacy-input").value = value;
+    document.getElementById("selected").textContent = value.charAt(0).toUpperCase() + value.slice(1).replace('_', ' ');
 }

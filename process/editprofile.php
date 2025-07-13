@@ -11,7 +11,7 @@ if (isset($_POST["btn_edit_profile"])) {
     $DOB = $_POST['profileBirthday'];
 
 
-    $stmt = $conn->prepare("UPDATE `users` SET `name` = ?, `email` = ?,`nickname` = ?, `birthdate` = ? ,bio = ? WHERE `users`.`userid` = ?;");
+    $stmt = $conn->prepare("UPDATE users JOIN profile SET users.name = ?, users.email = ?,profile.nickname = ?, users.birthdate = ? ,profile.bio = ? WHERE `users`.`userid` = ?;");
     $stmt->bind_param("ssssss", $name,$mail,$nickName,$DOB,$bio, $userid);
 
     if ($stmt->execute()) {

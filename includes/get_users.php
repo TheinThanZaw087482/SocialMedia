@@ -3,7 +3,22 @@ include("../includes/db.php");
 function get_all_users()
 {
     global $conn;
-    $stmt = $conn->prepare("SELECT * FROM users");
+    $stmt = $conn->prepare("SELECT u.userid,
+    u.name,
+    u.email, 
+    u.gender, 
+    u.birthdate, 
+    u.Batch, 
+    u.userType, 
+    u.approve, 
+    pro.ProfileimagePath, 
+    pro.coverPhoto, 
+    pro.Address, 
+    pro.login_date, 
+    pro.online, 
+    pro.nickname, 
+    pro.bio FROM users u LEFT JOIN profile pro ON u.userid = pro.userid WHERE u.approve = 1;
+");
     if ($stmt->execute()) {
         $result = $stmt->get_result();
         return $result->fetch_all(MYSQLI_ASSOC); // return as array
@@ -14,7 +29,22 @@ function get_all_users()
 function get_user_by_userID($userID)
 {
     global $conn;
-    $sql = "SELECT * FROM users WHERE userid = ?";
+    $sql = "SELECT u.userid,
+    u.name,
+    u.email, 
+    u.gender, 
+    u.birthdate, 
+    u.Batch, 
+    u.userType, 
+    u.approve, 
+    pro.ProfileimagePath, 
+    pro.coverPhoto, 
+    pro.Address, 
+    pro.login_date, 
+    pro.online, 
+    pro.nickname, 
+    pro.bio FROM users u LEFT JOIN profile pro ON u.userid = pro.userid
+    WHERE u.userid = ?";
     $stmt = $conn->prepare($sql);
     if (!$stmt) return null;
 
@@ -25,6 +55,31 @@ function get_user_by_userID($userID)
     }
     return null;
 }
+
+function get_search_users($search){
+    global $conn;
+    $sql = "SELECT * FROM users u 
+            LEFT JOIN profile pro ON u.userid = pro.userid
+            WHERE u.name LIKE ? 
+               OR pro.bio LIKE ? 
+               OR u.userid LIKE ? 
+               OR pro.Address LIKE ? 
+               OR u.Batch LIKE ? 
+               OR u.userType LIKE ? 
+               OR pro.nickname LIKE ?";
+
+    $stmt = $conn->prepare($sql);
+    $search_term = "%" . $search . "%";
+    $stmt->bind_param("sssssss", $search_term, $search_term, $search_term, $search_term, $search_term, $search_term, $search_term);
+
+    if ($stmt->execute()) {
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    } else {
+        return [];
+    }
+}
+
 
 function get_same_batch_users($batch, $excludeUserID)
 {
@@ -86,4 +141,24 @@ function get_last_message_by_userID($myUserId,$receiverId)
         return $result->fetch_all(MYSQLI_ASSOC);
     }
     return [];
+}
+
+function get_all_story(){
+    global $conn;
+    $sql = "SELECT * FROM story";
+    $result = mysqli_query($conn, $sql);
+    $stories = []; // Initialize an empty array to hold all stories
+
+    if ($result) {
+        // Loop through each row in the result set
+        while ($row = $result->fetch_assoc()) {
+            $stories[] = $row; // Add each row (story) to the array
+        }
+        $result->free(); // Free the result set memory
+        return $stories;
+    } else {
+        // Log the error for debugging purposes (optional but recommended)
+        error_log("Error fetching stories: " . mysqli_error($conn));
+        return [];
+    }
 }
