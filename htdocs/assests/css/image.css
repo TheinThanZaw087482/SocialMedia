@@ -1,0 +1,358 @@
+/* General container for the examples */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f2f5; /* Light Facebook-like background */
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box; /* Include padding in element's total width and height */
+    overflow-x: auto; /* Allow horizontal scrolling for the entire body if content overflows */
+}
+
+.container {
+    max-width: 900px; /* Typical content width */
+    margin: 0 auto; /* Center the container */
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2); /* Subtle shadow */
+    min-width: 320px; /* Ensure a minimum width to prevent layout collapse */
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+    font-size: 2em;
+}
+
+.post-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+.post-card h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #555;
+    font-size: 1.5em;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+/* Base styles for all image galleries */
+.image-gallery {
+    display: flex;
+    flex-wrap: wrap; /* Allows items to wrap to the next line if explicitly allowed by flex-basis */
+    gap: 5px; /* Spacing between images */
+    overflow: hidden; /* To handle border-radius better */
+    border-radius: 8px; /* Rounded corners for the whole gallery */
+    width: 100%; /* Ensure it takes full width of its parent */
+    /* Add min-width to prevent gallery from collapsing completely */
+    min-width: 280px; /* Adjust based on smallest comfortable layout for images */
+}
+
+.image-gallery img {
+    display: block; /* Remove extra space below images */
+    width: 100%; /* Default to full width within its flex item */
+    height: 100%; /* Ensure images fill their space */
+    object-fit: cover; /* Cover the area, cropping if necessary */
+    border-radius: 8px; /* Rounded corners for individual images */
+    transition: transform 0.2s ease; /* Smooth hover effect */
+}
+
+.image-gallery img:hover {
+    transform: scale(1.02); /* Slight zoom on hover */
+    z-index: 1; /* Bring to front on hover */
+}
+
+
+/* Specific Layouts */
+
+/* Single Image */
+.image-gallery.single-image img {
+    height: 350px; /* Larger height for a single prominent image */
+}
+
+/* Two Images (Side by Side) */
+.image-gallery.two-images img {
+    flex: 1 1 calc(50% - 2.5px); /* Each image takes equal space, maintains side-by-side */
+    height: 250px;
+}
+
+/* Three Images (One top, two bottom) */
+.image-gallery.three-images {
+    flex-direction: column; /* This still stacks the top image and the bottom row */
+}
+
+.image-gallery.three-images > img { /* The single image on top */
+    width: 100%;
+    height: 300px;
+    margin-bottom: 5px; /* Space between top image and bottom row */
+}
+
+.image-gallery.three-images .bottom-row {
+    display: flex;
+    gap: 5px;
+    width: 100%;
+}
+
+.image-gallery.three-images .bottom-row img {
+    flex: 1 1 calc(50% - 2.5px); /* Two images side-by-side in bottom row */
+    height: 180px; /* Height for bottom row images */
+}
+
+/* Four Images (Two top, two bottom) */
+.image-gallery.four-images {
+    flex-direction: column; /* This still stacks the top row and the bottom row */
+}
+
+.image-gallery.four-images .top-row,
+.image-gallery.four-images .bottom-row {
+    display: flex;
+    gap: 5px;
+    width: 100%;
+}
+
+.image-gallery.four-images .top-row {
+    margin-bottom: 5px;
+}
+
+.image-gallery.four-images .top-row img,
+.image-gallery.four-images .bottom-row img {
+    flex: 1 1 calc(50% - 2.5px); /* Each image takes half space in its row, maintains side-by-side */
+    height: 200px; /* Consistent height for all four images */
+}
+
+/* Five Images (Two top, three bottom) */
+.image-gallery.five-images {
+    flex-direction: column; /* This still stacks the top row and the bottom row */
+}
+
+.image-gallery.five-images .top-row,
+.image-gallery.five-images .bottom-row {
+    display: flex;
+    gap: 5px;
+    width: 100%;
+}
+
+.image-gallery.five-images .top-row {
+    margin-bottom: 5px;
+}
+
+.image-gallery.five-images .top-row img {
+    flex: 1 1 calc(50% - 2.5px); /* Two images in top row */
+    height: 250px; /* Height for top row images */
+}
+
+.image-gallery.five-images .bottom-row img {
+    flex: 1 1 calc(33.333% - 3.333px); /* Three images in bottom row, maintains side-by-side */
+    height: 150px; /* Height for bottom row images */
+}
+
+.image-overlay {
+    position: relative;
+    display: inline-block;
+}
+
+.image-overlay img {
+    display: block;
+    width: 100%;
+}
+
+.overlay-text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    color: white;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    pointer-events: none; /* ✅ THIS LINE ensures click passes through */
+}
+
+.image-modal {
+  display: flex; /* Initially hidden */
+  position: fixed; /* Position relative to the viewport */
+  top: 50%; /* Start at 50% from the top */
+  left: 50%; /* Start at 50% from the left */
+  width: 50%; /* Set width to 50% of the viewport */
+  height: 60%; /* Set height to 60% of the viewport */
+  transform: translate(-50%, -50%); /* Crucially, shift it back by half its own width/height to truly center it */
+  background: rgba(0,0,0,0.9);
+  /* Use flexbox to center the *content* (the image) within this 50%x60% modal */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.image-modal img {
+  max-width: 80%; /* Image max-width relative to the modal's width */
+  max-height: 80%; /* Image max-height relative to the modal's height */
+  border-radius: 8px;
+}
+
+/* IMPORTANT CHANGE FOR CLOSE BUTTON */
+#closeBtn {
+  position: fixed; /* Make it fixed to the viewport */
+  top: 20px; /* Positions 20px from the top of the viewport */
+  right: 20px; /* Positions 20px from the right of the viewport */
+  font-size: 24px;
+  background: red;
+}
+#nextBtn {
+  right: 5%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+/* ====================================================================== */
+/* RESPONSIVENESS (Adjusted to PREVENT stacking)                       */
+/* ====================================================================== */
+
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    .container {
+        padding: 15px;
+        margin: 0; /* Remove horizontal margin on small screens */
+        box-shadow: none; /* Less prominent shadow on phones */
+    }
+
+    h1 {
+        font-size: 1.6em;
+        margin-bottom: 20px;
+    }
+
+    .post-card {
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+    .post-card h2 {
+        font-size: 1.3em;
+        margin-bottom: 10px;
+        padding-bottom: 8px;
+    }
+
+    /* Important: We REMOVE any flex-direction: column; or flex: 1 1 100%; from multi-column image containers here */
+    /* This ensures they attempt to keep their row layout. */
+
+    /* General adjustment for image heights on smaller screens (can be reduced to force horizontal scroll) */
+    .image-gallery img,
+    .image-gallery .image-overlay {
+        height: 150px; /* Reduced height to make horizontal scrolling more likely for multi-column */
+    }
+    .image-gallery.single-image img {
+        height: 250px; /* Maintain good height for single image */
+    }
+
+    /* Ensure specific image containers still try to maintain their relative widths */
+    .image-gallery.two-images img {
+        flex: 1 1 calc(50% - 2.5px); /* Maintain two columns */
+        min-width: 100px; /* Ensure they don't shrink smaller than a readable width */
+    }
+    .image-gallery.three-images .bottom-row img {
+        flex: 1 1 calc(50% - 2.5px); /* Maintain two columns */
+        min-width: 80px;
+    }
+    .image-gallery.four-images .top-row img,
+    .image-gallery.four-images .bottom-row img {
+        flex: 1 1 calc(50% - 2.5px); /* Maintain two columns */
+        min-width: 80px;
+    }
+    .image-gallery.five-images .top-row img {
+        flex: 1 1 calc(50% - 2.5px); /* Maintain two columns */
+        min-width: 80px;
+    }
+    .image-gallery.five-images .bottom-row img {
+        flex: 1 1 calc(33.333% - 3.333px); /* Maintain three columns */
+        min-width: 60px; /* Even smaller min-width for 3-column on mobile */
+    }
+    .image-gallery.six-images .top-row img {
+        flex: 1 1 calc(50% - 2.5px); /* Maintain two columns */
+        min-width: 80px;
+    }
+    .image-gallery.fives-images .bottom-row img,
+    .image-gallery.more-than-five-images .bottom-row img,
+    .image-gallery.more-than-five-images .image-overlay {
+        flex: 1 1 calc(25% - 3.75px); /* Maintain four columns */
+        min-width: 50px; /* Even smaller min-width for 4-column on mobile */
+    }
+
+    .hidden {
+  visibility: hidden;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  position: absolute;
+}
+
+    .image-gallery.more-than-six-images .overlay-text {
+        font-size: 1.5em; /* Adjust overlay text size */
+    }
+}
+
+/* Specific adjustments for very small screens (e.g., iPhone SE) */
+@media (max-width: 480px) {
+    .image-gallery img,
+    .image-gallery .image-overlay {
+        height: 120px; /* Slightly reduce height on very small screens to fit more */
+    }
+    .image-gallery.single-image img {
+        height: 200px;
+    }
+
+    .image-gallery.more-than-six-images .overlay-text {
+        font-size: 1.2em; /* Smaller overlay text */
+    }
+}
+
+.preview-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.preview-container img {
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+/* Layouts based on image count */
+.preview-container[data-count="1"] img {
+    width: 100%;
+    max-height: 300px;
+}
+
+.preview-container[data-count="2"] img,
+.preview-container[data-count="3"] img {
+    width: calc(50% - 4px);
+    max-height: 250px;
+}
+
+.preview-container[data-count="4"] img {
+    width: calc(50% - 4px);
+    max-height: 200px;
+}
+
+.preview-container[data-count="5"] img,
+.preview-container[data-count="6"] img {
+    width: calc(33.33% - 4px);
+    max-height: 180px;
+}
+
+.preview-container img {
+    display: block;
+}

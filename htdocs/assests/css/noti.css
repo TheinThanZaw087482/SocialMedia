@@ -1,0 +1,78 @@
+/* Base styles */
+
+html,body{
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #18191a;
+    color: white;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    overflow: hidden;
+  }
+  
+  .container {
+    max-width: 900px;
+    height: 100vh;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+    margin: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .container::-webkit-scrollbar{
+    display: none;
+  }
+  
+  h2 {
+    font-size: 28px;
+    margin-bottom: 20px;
+  }
+
+  .section{
+    flex-shrink: 0;
+  }
+  
+  .section-title {
+    font-size: 18px;
+    color: #aaa;
+    margin-top: 30px;
+  }
+
+  .notification{
+    display: flex;
+    /* align-items: flex-start; */
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 15px 0;
+    border-bottom: 1px solid #333;
+    position: relative;
+
+  }
+
+  .menu-icon{
+    font-size: 22px;
+    color: #999;
+    cursor: pointer;
+    padding: 5px;
+    align-self: center;
+    margin-left: auto;
+  }
+  
+  
+   .modal-dialog-centered {
+            display: flex;
+            align-items: center;
+            min-height: calc(100vh - 1rem);
+        }

@@ -1,0 +1,108 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+/* Suiko's code starts here*/
+/* Fix modal width */
+.wide-modal {
+  max-width: 950px;   
+  width: 100%;
+  margin: auto;
+}
+
+/* Prevent shift on scroll */
+.wide-modal.modal-dialog-scrollable {
+  margin: auto;
+  overflow: hidden;
+}
+
+.wide-modal .modal-content {
+  min-width: 100%;
+  max-height: 80vh;    
+  overflow-y: auto;
+}
+
+/* Shrinks space between users */
+.reactioned-user {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    margin: 0;
+}
+
+/* Removes faint border and background */
+.list-group-item {
+    border: none !important;
+    padding: 4px 8px !important;
+    background-color: transparent !important;
+}
+
+/* Profile image container */
+.profile-wrapper {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+}
+
+/* Profile picture */
+.profile-pic {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* Reaction icon over profile */
+.reaction_user_img {
+    position: absolute;
+    bottom: -3px;
+    right: -3px;
+    width: 18px;
+    height: 18px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    background-color: white;
+}
+
+/* Optional: adjusts overall layout */
+.reaction-item {
+    display: flex;
+    align-items: center;
+    padding: 4px 0;
+}
+
+.reaction-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.reaction-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #f0f0f0;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.reaction-tab.active,
+.reaction-tab:hover {
+  background-color: #557597;
+  color: white;
+}
+
+.reaction-tab img {
+  width: 18px;
+  height: 18px;
+}

@@ -1,0 +1,951 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+
+}
+
+body {
+    background: #d9dfe0;
+    color: #252525;
+    font-family: "Dosis", sans-serif;
+}
+
+/* nav-style*/
+nav {
+    width: 100%;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #88bdcf;
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.3);
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+}
+
+/* nav-letf-style*/
+.nav-left2 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 3%;
+    /* background-color: rgb(255, 255, 255); */
+}
+
+.nav-left2 .logo {
+    width: 40px;
+    margin: 5px 8px;
+    cursor: pointer;
+}
+
+.nav-left2 .logo img {
+    width: 100%;
+    border-radius: 50%;
+}
+
+.nav-left2 .search-box {
+    width: 230px;
+    height: 40px;
+    background: #efefef;
+    border-radius: 20px;
+    margin-left: 4px;
+    padding: 0 8px;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.nav-left2 .search-box i {
+    color: #919191;
+    margin-left: 5px;
+
+}
+
+.nav-left2 .search-box input {
+    background: transparent;
+    outline: none;
+    border: 0;
+    margin-left: 4px;
+    width: 100%;
+    font-size: 14px;
+}
+
+/* nav-center-style */
+.nav-center2 {
+    margin-right: 1%;
+    display: flex;
+    align-items: center;
+    /* background-color: rgb(175, 235, 204); */
+}
+
+.nav-center2 a {
+    text-decoration: none;
+    color: #4387a4;
+    margin-left: 20px;
+    font-size: 22px;
+    padding: 13px 20px;
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+}
+
+
+.nav-center2 i {
+    width: 100px;
+    background: none;
+    border-radius: 10px;
+    margin-left: 10px;
+    font-size: 22px;
+    padding: 13px 40px;
+    color: #646262;
+}
+
+.nav-center2 .fa-house {
+    color: #3636f8;
+    position: relative;
+}
+
+.nav-center2 .fa-house::after {
+    content: "";
+    background: #3636f8;
+    width: 100%;
+    height: 2px;
+    bottom: -6px;
+    left: 0;
+    /* Adjusted left */
+    position: absolute;
+}
+
+.nav-center2 a:hover {
+    background: #efefef;
+    color: #252525;
+}
+
+
+/* Styles for the settings dropdown */
+.settings-dropdown-container {
+    position: relative;
+    display: inline-block;
+    margin-left: 20px;
+}
+
+.settings-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 10ox);
+    right: 0;
+    background-color: #fff;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    min-width: 350px;
+    z-index: 1;
+    display: none;
+    padding: 10px 0;
+}
+
+.dropdown-user-info {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    border-bottom: 1px solid #be9e9e;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.dropdown-user-info img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+    object-fit: cover;
+}
+
+.dropdown-user-info span {
+    font-weight: bold;
+    color: #181717;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: #171717;
+    transition: background-color 0.2s ease;
+}
+
+.dropdown-item i {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+    color: #2b2c2c;
+}
+
+.dropdown-item:hover {
+    background-color: #9e9fa1;
+}
+
+
+.stories-container {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding: 10px;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.stories-container::-webkit-scrollbar {
+    display: none;
+}
+
+.story img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.story:hover img {
+    transform: scale(1.05);
+}
+
+.story .story-profile {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #1877f2;
+    z-index: 1;
+}
+
+.story .story-profile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.story .story-user-name {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+    z-index: 1;
+}
+
+.story.add-story {
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding-bottom: 15px;
+    height: 240px;
+    flex: 0 0 160px;
+}
+
+.add-story .add-story-icon {
+    width: 40px;
+    height: 40px;
+    background-color: #1877f2;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    margin-top: -10px;
+    border: 3px solid #fff;
+}
+
+.add-story .add-story-icon i {
+    color: #fff;
+    font-size: 20px;
+}
+
+.add-story span {
+    color: #252525;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.add-story img {
+    display: none;
+}
+
+/* Create Post Section Styles */
+.create-post-section {
+    max-width: 80%;
+    /* Set a max width for the post section */
+    margin: 20px auto;
+    /* Center the section and add top/bottom margin */
+    background-color: #fff;
+    /* White background */
+
+    padding: 15px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.create-post-top {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    /* Separator line */
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+
+.create-post-top .profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.create-post-top .post-input-container {
+    flex-grow: 1;
+    /* Allow the input area to take up remaining space */
+    background-color: #f0f2f5;
+    /* Light grey background */
+    border-radius: 20px;
+    padding: 8px 15px;
+    cursor: pointer;
+    /* Indicate it's clickable */
+}
+
+.create-post-top .post-input-container p {
+    color: #65676b;
+    /* Placeholder text color */
+    font-size: 16px;
+}
+
+.create-post-bottom {
+    display: flex;
+    justify-content: space-around;
+    /* Distribute items evenly */
+}
+
+.create-post-bottom .post-option {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 8px 10px;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+}
+
+.create-post-bottom .post-option:hover {
+    background-color: #f0f2f5;
+}
+
+.create-post-bottom .post-option i {
+    margin-right: 8px;
+    font-size: 20px;
+}
+
+.create-post-bottom .post-option span {
+    font-weight: 500;
+    color: #65676b;
+}
+
+.post-option .live-video i {
+    color: #f02849;
+    /* Red color for live video icon */
+}
+
+.post-option .photo-video i {
+    color: #45bd62;
+    /* Green color for photo/video icon */
+}
+
+.post-option .feeling-activity i {
+    color: #f7b928;
+    /* Yellow color for feeling/activity icon */
+}
+
+/* Modal Styles */
+.post-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    /* Semi-transparent white background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1001;
+    /* Above the navigation bar */
+    display: none;
+    /* Hidden by default */
+}
+
+.post-modal {
+    background-color: #fff;
+    border-radius: 8px;
+    width: 90%;
+    /* Responsive width */
+    max-width: 500px;
+    /* Max width for larger screens */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    /* Hide anything outside rounded corners */
+}
+
+.post-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.post-modal-header h3 {
+    font-size: 20px;
+    font-weight: bold;
+    color: #252525;
+}
+
+.post-modal-header .close-modal {
+    font-size: 24px;
+    color: #65676b;
+    cursor: pointer;
+}
+
+.post-modal-body {
+    padding: 15px;
+}
+
+.modal-user-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.modal-user-info img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.modal-user-info .user-name {
+    font-weight: bold;
+    color: #252525;
+}
+
+.modal-user-info .privacy {
+    font-size: 12px;
+    color: #65676b;
+}
+
+.post-textarea {
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: 18px;
+    min-height: 150px;
+    /* Minimum height for the textarea */
+    resize: vertical;
+    /* Allow vertical resizing */
+    margin-bottom: 15px;
+}
+
+.modal-add-to-post {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 15px;
+}
+
+.modal-add-to-post span {
+    font-weight: 500;
+    color: #252525;
+}
+
+.modal-add-to-post .add-icons i {
+    margin-left: 10px;
+    font-size: 20px;
+    color: #65676b;
+    cursor: pointer;
+}
+
+.post-modal-footer {
+    padding: 15px;
+    border-top: 1px solid #eee;
+}
+
+.post-modal-footer .post-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #1877f2;
+    /* Blue color for the button */
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.post-modal-footer .post-button:hover {
+    background-color: #166fe5;
+    /* Darker blue on hover */
+}
+
+/* Post Section Styles */
+.post-section {
+    max-width: 80%;
+    /* Match the create post section width */
+    margin: 20px auto 40px auto;
+    /* Center and add spacing */
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    position: relative;
+    gap: 230px;
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.post-header .profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.post-header .user-info .user-name {
+    font-weight: bold;
+    color: #252525;
+}
+
+.post-header .user-info .post-time {
+    font-size: 12px;
+    color: #65676b;
+}
+
+.post-content {
+    margin-bottom: 10px;
+    color: #252525;
+}
+
+.post-interactions-count {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+    color: #65676b;
+}
+
+.post-interactions-count .likes-count i {
+    color: #000000;
+    /* Blue color for like icon */
+    margin-right: 4px;
+}
+
+.post-interactions-buttons {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.post-interactions-buttons .interaction-button {
+    display: flex;
+    align-items: center;
+    padding: 8px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.post-interactions-buttons .interaction-button:hover {
+    background-color: #f0f2f5;
+}
+
+.post-interactions-buttons .interaction-button i {
+    margin-right: 8px;
+    font-size: 18px;
+    color: #65676b;
+}
+
+.post-interactions-buttons .interaction-button span {
+    font-weight: 500;
+    color: #65676b;
+}
+
+.toggle-panel {
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 0 30px;
+    text-align: center;
+    top: 0;
+    transform: translateX(0);
+    transition: all 0.6s ease-in-out;
+}
+
+.toggle-left {
+    transform: translateX(-200%);
+}
+
+.container.active .toggle-left {
+    transform: translateX(0);
+}
+
+.toggle-right {
+    right: 0;
+    transform: translateX(0);
+}
+
+.container.active .toggle-right {
+    transform: translateX(200%);
+}
+
+.group {
+    display: inline-block;
+    position: relative;
+}
+
+.group img.main-image {
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+}
+
+.reaction-panel {
+    pointer-events: auto;
+    background-color: white;
+    padding: 6px 10px;
+    border-radius: 9999px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 50;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    opacity: 0;
+    visibility: hidden;
+    position: absolute;
+    bottom: 100%;
+    /* above */
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 5px;
+    display: flex;
+    gap: 6px;
+}
+
+.group:hover .reaction-panel {
+    opacity: 1;
+    visibility: visible;
+}
+
+.reaction-img {
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+    border: none;
+}
+
+.reaction-img:hover {
+    transform: scale(1.5);
+    cursor: pointer;
+}
+
+/* Basic styling for the dropdown container */
+.dropdown {
+    position: relative;
+    /* Needed for absolute positioning of the menu */
+    display: inline-block;
+    /* Allows the container to size to its content */
+}
+
+/* Style for the dropdown button */
+.dropdown button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    background-color: #f8f8f8;
+    cursor: pointer;
+    border-radius: 4px;
+    /* Rounded corners */
+}
+
+/* Styling for the dropdown menu */
+.dropdown-menu {
+    display: none;
+    /* Hidden by default */
+    position: absolute;
+    /* Position relative to the parent .dropdown */
+    top: 100%;
+    /* Position below the button */
+    left: 0;
+    background-color: #fff;
+    min-width: 160px;
+    /* Minimum width for the menu */
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    /* Add a shadow */
+    z-index: 1;
+    /* Ensure it appears above other content */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    /* Rounded corners */
+    margin-top: 5px;
+    /* Space between button and menu */
+}
+
+/* Style for individual dropdown items */
+.dropdown-item {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    /* Remove underline from links */
+    display: block;
+    /* Make the whole area clickable */
+}
+
+/* Change color on hover for dropdown items */
+.dropdown-item:hover {
+    background-color: #f1f1f1;
+}
+
+/* Style for the divider */
+.dropdown-divider {
+    height: 1px;
+    margin: 0.5rem 0;
+    overflow: hidden;
+    background-color: #e9ecef;
+}
+
+/* Class to show the dropdown menu */
+.dropdown-menu.show {
+    display: block;
+}
+
+/* Custom styles for the modal (using Tailwind classes) */
+.post-modal-overlay {
+    display: none;
+    /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Semi-transparent background */
+    justify-content: center;
+    /* Center modal horizontally */
+    align-items: center;
+    /* Center modal vertically */
+    z-index: 1000;
+    /* Ensure it's on top */
+}
+
+.post-modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-width: 500px;
+    /* Max width of the modal */
+    width: 90%;
+    /* Responsive width */
+    position: relative;
+    /* Needed for close button positioning */
+}
+
+.close-modal {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    cursor: pointer;
+    border: none;
+    background: none;
+}
+
+#image {
+    width: 5em;
+    height: 6em;
+}
+
+
+/* reaction modal */
+.modal {
+    display: none;
+    /* Initially hide the modal */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgba(0, 0, 0, 0.598);
+    /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    /* Could be more or less, depending on screen size */
+}
+
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.reaction-item {
+    /* Style for each reaction item */
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+}
+
+.reaction-item .profile-pic {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.reaction-item .reaction-type-icon {
+    width: 24px;
+    height: 24px;
+    margin-left: 8px;
+}
+
+.menu-btn {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* Suiko's code */
+.like-btn:hover,
+.comment-btn:hover {
+    background-color: #f0f2f5;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.2s ease-in-out;
+}
+
+.like-btn:hover span,
+.comment-btn:hover span,
+.like-btn:hover i,
+.comment-btn:hover i {
+    color: #84ade3;
+    transition: color 0.2s ease;
+}
+
+.comment-box:hover {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.comment-box .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 10px;
+    object-fit: cover;
+}
+
+.comment-box .comment-input {
+    border: none;
+    background: transparent;
+    outline: none;
+    width: 100%;
+    font-size: 18px;
+    color: #333;
+    flex: 1;
+}
+
+.send-btn {
+    background: transparent;
+    border: none;
+    color: rgb(60, 87, 121);
+    font-size: 18px;
+    margin-left: 10px;
+    cursor: pointer;
+    padding: 4px;
+    transition: transform 0.2s ease;
+}
+
+.send-btn:hover {
+    transform: scale(1.1);
+}
+
+@media (max-width: 576px) {
+    .post .d-flex {
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center;
+        justify-content: start;
+        gap: 8px;
+    }
+
+    .comment-box {
+        margin-right: 0 !important;
+        flex-grow: 1;
+    }
+
+    .group {
+        flex-shrink: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .create-post-section {
+        max-width: 100%;
+        margin: 10px auto;
+    }
+
+    .post-section {
+        max-width: 100%;
+        margin: 10px auto;
+        padding: 10px;
+    }
+}
+

@@ -1,0 +1,632 @@
+.stories-container {
+    margin-top: 20px;
+    display: flex;
+    overflow-x: auto;
+    padding: 10px;
+    gap: 10px;
+    background-color: #252426;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    align-items: center;
+    position: relative;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.stories-container::-webkit-scrollbar {
+    display: none;
+}
+
+.story {
+    flex-shrink: 0;
+    width: 120px;
+    height: 180px;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+}
+
+.story:not(.create-story) .story-thumbnail {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid #ddd;
+}
+
+.story:not(.create-story) .story-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.story:not(.create-story) .user-avatar-overlay {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: #fff;
+    border: 3px solid transparent;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+    z-index: 2;
+}
+
+.story:not(.create-story) .user-avatar-overlay img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* Thinner and more specific rule for the blue border for "new" stories */
+.story:not(.create-story) .user-avatar-overlay.has-new-story {
+    border: 1.5px solid #1877f2;
+    box-shadow: 0 0 0 1.5px #1877f2;
+}
+
+.story:not(.create-story) p {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    margin: 0;
+    font-size: 13px;
+    color: #fff;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 10px;
+    text-align: left;
+    z-index: 1;
+}
+
+/* ------------------------------------------------ */
+/* --- REVISED CREATE STORY SPECIFIC STYLES --- */
+/* ------------------------------------------------ */
+.create-story {
+    background-color: #e4e6eb;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0;
+    height: 180px;
+}
+
+.create-story .create-story-top-visual {
+    width: 100%;
+    height: 120px;
+    background-color: #f0f2f5;
+    border-radius: 8px 8px 0 0;
+    overflow: hidden;
+    position: relative;
+}
+
+.create-story .create-story-profile-thumbnail {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.create-story-plus-btn {
+    background-color: #1877f2;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 95px;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 3px solid #fff;
+    z-index: 10;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.create-story-plus-btn .fas.fa-plus {
+    color: #fff;
+    font-size: 2.5em;
+    line-height: 1;
+    font-weight: 900;
+}
+
+/* Thinner rule for the blue ring on "Create Story" button (if needed, currently not applied) */
+.create-story .create-story-plus-btn.has-new-story {
+    border: 1.5px solid #1877f2;
+    box-shadow: 0 0 0 1.5px #1877f2;
+}
+
+
+.create-story .create-story-text-area {
+    width: 100%;
+    height: 60px;
+    background-color: #fff;
+    border-radius: 0 0 8px 8px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    padding-bottom: 8px;
+    box-sizing: border-box;
+}
+
+.create-story .create-story-text-area p {
+    position: static;
+    margin: 0;
+    padding: 0 5px;
+    color: #333;
+    font-weight: bold;
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-shadow: none;
+    z-index: 1;
+}
+
+.story p {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    margin: 0;
+    font-size: 13px;
+    color: #fff;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 10px;
+    text-align: left;
+    z-index: 1;
+}
+
+.story-navigation-arrow {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+}
+
+.story-navigation-arrow .fas {
+    color: #333;
+    font-size: 1.2em;
+}
+
+#storyViewerModal .modal-dialog {
+    max-width: 350px;
+    margin: auto;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+}
+
+#storyViewerModal .modal-content {
+    height: 95vh;
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: #000;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+#storyViewerModal .modal-header {
+    background-color: transparent;
+    border-bottom: none;
+    padding: 15px;
+    z-index: 10;
+    flex-shrink: 0;
+}
+
+#storyViewerModal .modal-title {
+    font-size: 1rem;
+}
+
+#storyViewerModal .modal-body {
+    flex-grow: 1;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+#storyViewerModal #storyViewerContentImage {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.story-nav-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(128, 128, 128, 0.5);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    z-index: 5;
+    transition: background-color 0.2s ease;
+}
+
+.story-nav-arrow:hover {
+    background: rgba(128, 128, 128, 0.8);
+}
+
+.story-nav-arrow-left {
+    left: 10px;
+}
+
+.story-nav-arrow-right {
+    right: 10px;
+}
+
+#storyViewerModal .modal-footer {
+    background-color: transparent;
+    border-top: none;
+    padding: 15px;
+    z-index: 10;
+    /* Ensure it is a flex container for its children */
+    display: flex;
+    justify-content: space-between;
+    /* Space out items */
+    align-items: center;
+    /* Align items vertically */
+}
+
+/* Adjusted styles for the reaction buttons and reply input */
+#defaultStoryFooter {
+    /* Changed to column layout */
+    flex-direction: column;
+    /* Align children to the start (left) or center if desired */
+    align-items: center;
+    /* Center horizontally in column layout */
+}
+
+.story-reply-input {
+    background-color: #333;
+    border: none;
+    color: white;
+    border-radius: 20px;
+    padding: 8px 15px;
+    flex-grow: 1;
+    /* Ensure it takes available width in column */
+    width: 100%;
+    /* Make input take full width */
+}
+
+.story-reply-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.story-reactions {
+    /* Ensure reactions are flex for internal icons */
+    display: flex;
+    justify-content: center;
+    /* Center the icons horizontally within their container */
+    align-items: center;
+    /* Vertically align if icons have different heights */
+    margin-bottom: 8px;
+    /* Spacing between reactions and input */
+    width: 100%;
+    /* Make reaction container take full width */
+}
+
+/* Styling for your actual image icons */
+.story-reactions .reaction-icon {
+    width: 28px;
+    /* Adjust size as needed, e.g., 24px, 32px */
+    height: 28px;
+    /* Adjust size as needed */
+    object-fit: contain;
+    /* Ensures the image fits without cropping or stretching */
+    margin: 0 8px;
+    /* Spacing between individual icons */
+    cursor: pointer;
+    /* Indicates it's clickable */
+}
+
+/* This rule now only applies if some Font Awesome icons remain.
+           If you're replacing ALL of them, you can remove or comment this block out. */
+.story-reactions i {
+    font-size: 1.5rem;
+    /* ~24px, maintain existing FA icon size */
+    color: white;
+    cursor: pointer;
+    margin: 0 8px;
+    /* Consistent spacing with images */
+}
+
+/* Progress Bars Container */
+.story-progress-container {
+    position: absolute;
+    top: 5px;
+    left: 15px;
+    right: 15px;
+    display: flex;
+    justify-content: space-between;
+    height: 3px;
+    z-index: 100;
+    gap: 4px;
+}
+
+.story-progress-bar {
+    background-color: rgba(255, 255, 255, 0.3);
+    height: 100%;
+    border-radius: 2px;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.story-progress-bar .progress-fill {
+    height: 100%;
+    width: 0%;
+    background-color: white;
+    transition: width linear;
+}
+
+/* My Day Specific Footer Styles */
+#myDayStoryFooter {
+    flex-direction: column;
+    /* Stack handle, text, and profiles vertically */
+    justify-content: flex-start;
+    /* Align content to the top of the footer */
+    align-items: flex-start;
+    /* Align content to the left of the footer */
+    padding-top: 10px;
+    /* Add some space above */
+    width: 100%;
+    /* Ensure it takes full width */
+    padding-left: 15px;
+    /* Padding from the left edge */
+    padding-right: 15px;
+    /* Padding from the right edge */
+}
+
+.my-day-pull-up-handle {
+    color: white;
+    font-size: 1.5rem;
+    /* Size of the chevron icon */
+    cursor: pointer;
+    /* Adjusted margin-bottom to bring closer to text */
+    margin-bottom: 2px;
+    align-self: flex-start;
+    /* Ensure it stays left-aligned */
+    width: 100%;
+    /* Take full width to align content inside */
+    text-align: left;
+    /* Align icon to the left within its own div */
+}
+
+.my-day-viewers-count {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-top: 0;
+    /* Override default p margin */
+    margin-bottom: 5px;
+    /* Small space below text */
+    align-self: flex-start;
+    /* Ensure it stays left-aligned */
+}
+
+#myDayViewerProfiles {
+    display: flex;
+    align-self: flex-start;
+    /* Ensure it stays left-aligned */
+    margin-top: 5px;
+    /* Space between count and profiles */
+    width: 100%;
+    /* Take full width if needed */
+}
+
+#myDayViewerProfiles img {
+    width: 24px;
+    /* Small size for viewer avatars */
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid #fff;
+    /* Small white border */
+    margin-right: -8px;
+    /* Negative margin for overlapping effect */
+    background-color: #f0f2f5;
+    /* Background for placeholder */
+}
+
+/* Ensure the last image doesn't have negative margin if no more follow */
+#myDayViewerProfiles img:last-child {
+    margin-right: 0;
+}
+
+/* Story Details Pull-Up Modal - Now INSIDE the main modal-content */
+#storyDetailsPullUp {
+    position: absolute;
+    /* Position relative to modal-content */
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0;
+    /* Start with 0 height */
+    background-color: #fff;
+    border-radius: 10px 10px 0 0;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+    /* Above story content but below progress bar (which is 100) */
+    transition: transform 0.3s ease-out, height 0.3s ease-out;
+    transform: translateY(100%);
+    /* Start completely off-screen at the bottom */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    /* Hide content until active */
+}
+
+#storyDetailsPullUp.show {
+    transform: translateY(0);
+    /* Slide up to visible */
+    height: 70vh;
+    /* Or a fixed height, adjust as needed */
+    max-height: 90vh;
+    /* Max height to prevent overflowing parent modal */
+}
+
+#storyDetailsPullUp .modal-header {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fff;
+    /* Ensure header background is white */
+    flex-shrink: 0;
+    /* Prevent it from shrinking */
+}
+
+/* Specific style for the pull-up's close button to ensure visibility */
+#storyDetailsPullUp .modal-header .btn-close {
+    /* Override Bootstrap's default filter and background for dark 'x' */
+    filter: none !important;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e") !important;
+    opacity: 1 !important;
+    /* Ensure it's not transparent */
+    /* Add any other specific styling if needed */
+}
+
+
+#storyDetailsPullUp .modal-header .modal-title {
+    color: #333;
+    /* Make title visible */
+    font-weight: bold;
+}
+
+
+#storyDetailsContent {
+    flex-grow: 1;
+    padding: 15px;
+    overflow-y: auto;
+    /* Enable scrolling for viewer list */
+}
+
+/* Removed .story-details-thumbnails styles */
+
+
+.story-details-viewer-count {
+    font-weight: bold;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    color: #333;
+    /* Darker color for readability */
+}
+
+.story-details-viewer-count i {
+    margin-right: 8px;
+    font-size: 1.2em;
+    color: #666;
+}
+
+
+.story-details-viewer-list .viewer-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.story-details-viewer-list .viewer-item:last-child {
+    border-bottom: none;
+}
+
+.story-details-viewer-list .viewer-item img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 12px;
+}
+
+.story-details-viewer-list .viewer-item .viewer-info {
+    flex-grow: 1;
+    display: flex;
+    /* Make viewer-info a flex container */
+    flex-direction: column;
+    /* Stack name and status */
+    justify-content: center;
+}
+
+.story-details-viewer-list .viewer-item .viewer-info .viewer-name {
+    font-weight: bold;
+    color: #333;
+}
+
+.story-details-viewer-list .viewer-item .viewer-info .viewer-status {
+    font-size: 0.85em;
+    color: #666;
+}
+
+.story-details-viewer-list .viewer-item .viewer-reaction-emoji {
+    font-size: 1.8em;
+    /* Larger emoji size */
+    margin-left: 10px;
+    padding: 5px;
+    /* Padding around emoji for better click target */
+}
+
+
+/* story-style.css */
+
+/* Keyframe for the pulse effect */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+        /* Scale up to 120% */
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Class to apply the animation */
+.reaction-icon.animate-pulse {
+    animation: pulse 0.3s ease-out;
+    /* 0.3 seconds, ease-out timing */
+}
